@@ -28,6 +28,11 @@
 #define SND_PRIORITY_DOUBLE_INSTANCE		2
 #define SND_PRIORITY_TRIPLE_INSTANCE		3
 
+//For the adjust-audio-volume sexp
+#define AAV_MUSIC		0
+#define AAV_VOICE		1
+#define AAV_EFFECTS		2
+
 typedef struct game_snd
 {
 	int	sig;						// index number of sound in as specified in sounds.tbl
@@ -51,7 +56,7 @@ typedef struct game_snd
 
 typedef struct sound_env
 {
-	unsigned long id;
+	int id;
 	float volume;
 	float damping;
 	float decay;
@@ -63,6 +68,9 @@ extern float	Master_voice_volume;		// 0 -> 1.0
 extern int		Snd_sram;					// System memory consumed by sound data	
 extern int		Snd_hram;					// Soundcard memory consumed by sound data
 extern ushort	UserSampleRate, UserSampleBits;
+extern float aav_voice_volume;
+extern float aav_music_volume;
+extern float aav_effect_volume;
 
 //int	snd_load( char *filename, int hardware=0, int three_d=0, int *sig=NULL );
 int	snd_load( game_snd *gs, int allow_hardware_load = 0);
@@ -129,9 +137,6 @@ void	snd_close();
 // Return 1 or 0 to show that sound system is inited ok
 int	snd_is_inited();
 
-// Returns a pointer to the direct sound object
-uint	sound_get_ds();
-
 void	snd_update_listener(vec3d *pos, vec3d *vel, matrix *orient);
 
 void 	snd_use_lib(int lib_id);
@@ -139,6 +144,7 @@ void 	snd_use_lib(int lib_id);
 int snd_num_playing();
 
 void snd_do_frame();
+void snd_adjust_audio_volume(int type, float percent, int time);
 
 // repositioning of the sound buffer pointer
 void snd_rewind(int snd_handle, game_snd *sg, float seconds);					// rewind N seconds from the current position
@@ -183,6 +189,10 @@ enum
     SND_ENV_PSYCHOTIC
 };
 
+
 int sound_env_disable();
+
+// adjust-audio-volume
+void snd_aav_init();
 
 #endif

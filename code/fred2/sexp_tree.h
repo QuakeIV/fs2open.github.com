@@ -236,7 +236,6 @@ public:
 	sexp_list_item *get_listing_opf_sun_bitmap();
 	sexp_list_item *get_listing_opf_nebula_storm_type();
 	sexp_list_item *get_listing_opf_nebula_poof();
-	// Goober5000 ----------------------------------------------
 	sexp_list_item *get_listing_opf_cargo();
 	sexp_list_item *get_listing_opf_ai_class();
 	sexp_list_item *get_listing_opf_support_ship_class();
@@ -256,9 +255,9 @@ public:
 	sexp_list_item *get_listing_opf_armor_types();
 	sexp_list_item *get_listing_opf_turret_target_priorities();
 	sexp_list_item *get_listing_opf_persona();
-	// ---------------------------------------------------------
 	sexp_list_item *get_listing_opf_post_effect();
 	sexp_list_item *get_listing_opf_hud_elements();
+	sexp_list_item *get_listing_opf_adjust_audio_volume();
 
 	int m_mode;
 	int item_index;

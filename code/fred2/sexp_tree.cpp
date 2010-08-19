@@ -43,6 +43,7 @@
 #include "iff_defs/iff_defs.h"
 #include "mission/missionmessage.h"
 #include "graphics/gropenglshader.h"
+#include "sound/ds.h"
 
 #define TREE_NODE_INCREMENT	100
 
@@ -2573,6 +2574,10 @@ int sexp_tree::get_default_value(sexp_list_item *item, int op, int i)
 			str = "<persona name>";
 			break;
 
+		case OPF_AUDIO_VOLUME_OPTION:
+			str = "Music";
+			break;
+
 		default:
 			str = "<new default required!>";
 			break;
@@ -2653,6 +2658,7 @@ int sexp_tree::query_default_argument_available(int op, int i)
 		case OPF_TARGET_PRIORITIES:
 		case OPF_ARMOR_TYPES:
 		case OPF_HUD_ELEMENT:
+		case OPF_AUDIO_VOLUME_OPTION:
 			return 1;
 
 		case OPF_SHIP:
@@ -4344,10 +4350,14 @@ sexp_list_item *sexp_tree::get_listing_opf(int opf, int parent_node, int arg_ind
 
 		case OPF_POST_EFFECT:
 			list = get_listing_opf_post_effect();
-			break; 
+			break;
 
 		case OPF_HUD_ELEMENT:
 			list = get_listing_opf_hud_elements();
+			break;s
+
+		case OPF_AUDIO_VOLUME_OPTION:
+			list = get_listing_opf_adjust_audio_volume();
 			break;
 
 		default:
@@ -5148,6 +5158,18 @@ sexp_list_item *sexp_tree::get_listing_opf_persona()
 	return head.next;
 }
 
+sexp_list_item *sexp_tree::get_listing_opf_font()
+{
+	int i;
+	sexp_list_item head;
+
+	for (i = 0; i < Num_fonts; i++) {
+		head.add_data(Fonts[i].filename);
+	}
+
+	return head.next;
+}
+
 sexp_list_item *sexp_tree::get_listing_opf_who_from()
 {
 	object *ptr;
@@ -5176,6 +5198,16 @@ sexp_list_item *sexp_tree::get_listing_opf_priority()
 	head.add_data("High");
 	head.add_data("Normal");
 	head.add_data("Low");
+	return head.next;
+}
+
+sexp_list_item *sexp_tree::get_listing_opf_adjust_audio_volume()
+{
+	sexp_list_item head;
+
+	for (int i = 0; i < Num_adjust_audio_options; i++)
+		head.add_data(Adjust_audio_options[i]);
+
 	return head.next;
 }
 
@@ -5599,7 +5631,7 @@ sexp_list_item *sexp_tree::get_listing_opf_nebula_storm_type()
 	sexp_list_item head;
 	int i;
 
-	head.add_data("none");
+	head.add_data(SEXP_NONE_STRING);
 
 	for (i=0; i < Num_storm_types; i++)
 	{

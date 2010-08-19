@@ -114,6 +114,7 @@ struct ship;
 #define OPF_TARGET_PRIORITIES	68		// FUBAR - Target priority groups
 #define OPF_ARMOR_TYPES			69		// FUBAR - Armor type or <none>
 #define OPF_HUD_ELEMENT			71		// A magic name of a specific HUD element
+#define OPF_AUDIO_VOLUME_OPTION 75		// The E
 
 // Operand return types
 #define	OPR_NUMBER				1	// returns number
@@ -575,8 +576,9 @@ struct ship;
 #define OP_SET_ARMOR_TYPE					(0x00d2 | OP_CATEGORY_CHANGE | OP_NONCAMPAIGN_FLAG) // FUBAR
 #define OP_CUTSCENES_SHOW_SUBTITLE_TEXT		(0x00d3 | OP_CATEGORY_CHANGE | OP_NONCAMPAIGN_FLAG)	// Goober5000
 #define OP_CUTSCENES_SHOW_SUBTITLE_IMAGE	(0x00d4 | OP_CATEGORY_CHANGE | OP_NONCAMPAIGN_FLAG)	// Goober5000
-#define OP_MISSION_SET_SUBSPACE				(0x00d5 | OP_CATEGORY_CHANGE | OP_NONCAMPAIGN_FLAG)
-#define OP_HUD_DISPLAY_GAUGE				(0x00d6 | OP_CATEGORY_CHANGE | OP_NONCAMPAIGN_FLAG)
+#define OP_MISSION_SET_SUBSPACE           (0x00d5 | OP_CATEGORY_CHANGE | OP_NONCAMPAIGN_FLAG)
+#define OP_HUD_DISPLAY_GAUGE				      (0x00d6 | OP_CATEGORY_CHANGE | OP_NONCAMPAIGN_FLAG)
+#define OP_ADJUST_AUDIO_VOLUME            (0x00d9 | OP_CATEGORY_CHANGE | OP_NONCAMPAIGN_FLAG) // The E
 
 /* made obsolete by Goober5000
 // debugging sexpressions
@@ -1041,8 +1043,11 @@ extern int Num_submenus;
 //Outputs sexp.html file
 bool output_sexps(char *filepath);
 
-
 void multi_sexp_eval();
+
+//The E
+extern int Num_adjust_audio_options;
+extern char *Adjust_audio_options[];
 
 /** Global state variables for the hud-display-gauge sexp.
 They all should be named Sexp_hud_display_*;

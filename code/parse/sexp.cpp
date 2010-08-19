@@ -61,6 +61,8 @@
 #include "weapon/shockwave.h"
 #include "weapon/emp.h"
 #include "sound/audiostr.h"
+#include "sound/ds.h"
+#include "sound/sound.h"
 #include "cmdline/cmdline.h"
 #include "hud/hudparse.h"
 #include "starfield/starfield.h"
@@ -424,8 +426,9 @@ sexp_oper Operators[] = {
 
 	{ "change-soundtrack",				OP_CHANGE_SOUNDTRACK,				1, 1 },		// Goober5000	
 	{ "play-sound-from-table",		OP_PLAY_SOUND_FROM_TABLE,		4, 4 },		// Goober5000
-	{ "play-sound-from-file",		OP_PLAY_SOUND_FROM_FILE,		1, 2 },		// Goober5000
+	{ "play-sound-from-file",		OP_PLAY_SOUND_FROM_FILE,		1, 3 },		// Goober5000
 	{ "close-sound-from-file",		OP_CLOSE_SOUND_FROM_FILE,	1, 1 },		// Goober5000
+	{ "adjust-audio-volume",		OP_ADJUST_AUDIO_VOLUME,			1, 3},
 
 	{ "modify-variable",				OP_MODIFY_VARIABLE,			2,	2,			},
 	{ "variable-array-get",				OP_GET_VARIABLE_BY_INDEX,	1,	1,			},
@@ -679,6 +682,11 @@ int Players_mlocked_timestamp;
 // for play-music - Goober5000
 int	Sexp_music_handle = -1;
 void sexp_stop_music(int fade = 1);
+
+// for adjust-audio-volume - The E
+char *Adjust_audio_options[] = { "Music", "Voice", "Effects" };
+int Num_adjust_audio_options = 3;
+int audio_volume_option_lookup(char *text);
 
 int get_sexp(char *token);
 void build_extended_sexp_string(int cur_node, int level, int mode, int max_len);
@@ -2383,6 +2391,11 @@ int check_sexp_syntax(int node, int return_type, int recursive, int *bad_node, i
 				}
 				break;
 				
+			case OPF_AUDIO_VOLUME_OPTION:
+				if (audio_volume_option_lookup(CTEXT(node)) == -1)
+					return SEXP_CHECK_TYPE_MISMATCH;
+				break;
+
 			case OPF_KEYPRESS:
 				if (type2 != SEXP_ATOM_STRING)
 					return SEXP_CHECK_TYPE_MISMATCH;
@@ -3859,6 +3872,10 @@ int sexp_number_compare(int n, int op)
 
 			case OP_LESS_THAN:
 				if (first_number >= current_number) return SEXP_FALSE;
+				break;
+
+			default:
+				Warning(LOCATION, "Unhandled comparison case!  Operator = ", op);
 				break;
 		}
 	}
@@ -8441,7 +8458,7 @@ void sexp_start_music(int loop)
 {
 	if ( Sexp_music_handle != -1 ) {
 		if ( !audiostream_is_playing(Sexp_music_handle) )
-			audiostream_play(Sexp_music_handle, Master_event_music_volume, loop);
+			audiostream_play(Sexp_music_handle, (Master_event_music_volume * aav_music_volume), loop);
 	}
 	else {
 		nprintf(("Warning", "Can not play music. sexp_start_music called when no music file is set for Sexp_music_handle!\n"));
@@ -8572,6 +8589,55 @@ void multi_sexp_play_sound_from_file()
 	sexp_start_music(loop);	
 }
 
+//The E
+	//From sexp help:
+	//{ OP_ADJUST_AUDIO_VOLUME, "adjust-audio-volume\r\n"
+	//	"Adjusts the relative volume of one sound type. Takes 2 or 3 arguments....\r\n"
+	//	"\t1:\tSound Type to adjust, either Master, Music, Voice or Effects\r\n"
+	//	"\t2:\tPercentage of the users' settings to adjust to, 0 will be silence, 100 means the maximum volume as set by the user\r\n"
+	//	"\t3:\tFade time (optional), time in milliseconds to adjust the volume"},
+
+int audio_volume_option_lookup(char *text)
+{
+	int i;
+
+	Assert(text != NULL);
+	if (text == NULL) {
+		return -1;
+	}
+	
+	for (i = 0; i < Num_adjust_audio_options; i++) {
+		if (!strcmp(text, Adjust_audio_options[i])) {
+			return i;
+		}
+	}
+
+	return -1;
+}
+
+void sexp_adjust_audio_volume(int node)
+{
+	int n = node;
+
+	if (n > 0) {
+		int option = audio_volume_option_lookup(CTEXT(n));
+		n = CDR(n);
+
+		float target_volume = 1.0f;
+		if (n >= 0) {
+			target_volume = (float)eval_num(n) / 100;
+			CLAMP(target_volume, 0.0f, 1.0f);
+			n = CDR(n);
+		}
+
+		int time = 0;
+		if (n >= 0)
+			time = eval_num(n);
+
+		snd_adjust_audio_volume(option, target_volume, time);
+	}
+}
+
 // Goober5000
 void sexp_explosion_effect(int n)
 /* From the SEXP help...
@@ -8587,7 +8653,7 @@ void sexp_explosion_effect(int n)
 		"\t7:  Inner radius to apply damage (if 0, explosion will not be visible)\r\n"
 		"\t8:  Outer radius to apply damage (if 0, explosion will not be visible)\r\n"
 		"\t9:  Shockwave speed (if 0, there will be no shockwave)\r\n"
-		"\t10: Type (0 = medium, 1 = large1, 2 = large2)\r\n"
+		"\t10: Type (0 = medium, 1 = large1, 2 = large2)\r\n"  (otherwise use the index in fireball.tbl - FUBAR)
 		"\t11: Sound (index into sounds.tbl)\r\n"
 		"\t12: EMP intensity (optional)\r\n"
 		"\t13: EMP duration in seconds (optional)" },
@@ -9817,6 +9883,29 @@ void sexp_mission_set_nebula(int n)
 	stars_set_nebula(eval_num(n) > 0);
 }
 
+/* freespace.cpp does not have these availiable externally, and we must call
+them so that the main simulation loop does not have to constantly check for
+Game_subspace_effect so that it could turn on the subspace sounds.
+
+Because these are in freespace.cpp there are also stubs of these functions
+in fred.cpp as it does not deal with the game loop (obviously) but still
+links against code.lib. */
+extern void game_start_subspace_ambient_sound();
+extern void game_stop_subspace_ambient_sound();
+
+void sexp_mission_set_subspace(int n)
+{
+	if (eval_num(n) > 0) {
+		The_mission.flags |= MISSION_FLAG_SUBSPACE;
+		Game_subspace_effect = 1;
+		game_start_subspace_ambient_sound();
+	} else {
+		The_mission.flags &= ~MISSION_FLAG_SUBSPACE;
+		Game_subspace_effect = 0;
+		game_stop_subspace_ambient_sound();
+	}
+}
+
 void sexp_add_background_bitmap(int n)
 {
 	int sexp_var;
@@ -9893,29 +9982,6 @@ void sexp_add_background_bitmap(int n)
 	{
 		Error(LOCATION, "sexp-add-background-bitmap: Variable %s must be a number variable!", Sexp_variables[sexp_var].variable_name);
 		return;
-	}
-}
-
-/* freespace.cpp does not have these availiable externally, and we must call
-them so that the main simulation loop does not have to constantly check for
-Game_subspace_effect so that it could turn on the subspace sounds.
-
-Because these are in freespace.cpp there are also stubs of these functions
-in fred.cpp as it does not deal with the game loop (obviously) but still
-links against code.lib. */
-extern void game_start_subspace_ambient_sound();
-extern void game_stop_subspace_ambient_sound();
-
-void sexp_mission_set_subspace(int n)
-{
-	if (eval_num(n) > 0) {
-		The_mission.flags |= MISSION_FLAG_SUBSPACE;
-		Game_subspace_effect = 1;
-		game_start_subspace_ambient_sound();
-	} else {
-		The_mission.flags &= ~MISSION_FLAG_SUBSPACE;
-		Game_subspace_effect = 0;
-		game_stop_subspace_ambient_sound();
 	}
 }
 
@@ -17351,6 +17417,11 @@ int eval_sexp(int cur_node, int referenced_node)
 				sexp_val = SEXP_TRUE;
 				break;
 
+			case OP_ADJUST_AUDIO_VOLUME:
+				sexp_adjust_audio_volume(node);
+				sexp_val = SEXP_TRUE;
+				break;
+
 			case OP_HUD_DISABLE:
 				sexp_hud_disable(node);
 				sexp_val = SEXP_TRUE;
@@ -19014,6 +19085,7 @@ int query_operator_return_type(int op)
 		case OP_PLAY_SOUND_FROM_FILE:
 		case OP_CLOSE_SOUND_FROM_FILE:
 		case OP_PLAY_SOUND_FROM_TABLE:
+		case OP_ADJUST_AUDIO_VOLUME:
 		case OP_EXPLOSION_EFFECT:
 		case OP_WARP_EFFECT:
 		case OP_SET_OBJECT_POSITION:
@@ -19753,6 +19825,14 @@ int query_operator_argument_type(int op, int argnum)
 
 		case OP_CLOSE_SOUND_FROM_FILE:
 			return OPF_BOOL;
+
+		case OP_ADJUST_AUDIO_VOLUME:
+		{
+			if (argnum == 0)
+				return OPF_AUDIO_VOLUME_OPTION;
+			else
+				return OPF_POSITIVE;
+		}
 
 		case OP_HUD_DISABLE:
 		case OP_HUD_DISABLE_EXCEPT_MESSAGES:
@@ -21324,7 +21404,7 @@ void sexp_modify_variable(char *text, int index, bool sexp_callback)
 	else
 	{
 		// no variables, so no substitution
-	strcpy_s(Sexp_variables[index].text, text);
+	        strcpy_s(Sexp_variables[index].text, text);
 	}
 	Sexp_variables[index].type |= SEXP_VARIABLE_MODIFIED;
 
@@ -21894,6 +21974,7 @@ int get_subcategory(int sexp_id)
 		case OP_PLAY_SOUND_FROM_TABLE:
 		case OP_PLAY_SOUND_FROM_FILE:
 		case OP_CLOSE_SOUND_FROM_FILE:
+		case OP_ADJUST_AUDIO_VOLUME:
 			return CHANGE_SUBCATEGORY_MUSIC_AND_SOUND;
 
 		case OP_ADD_REMOVE_ESCORT:
@@ -21923,7 +22004,6 @@ int get_subcategory(int sexp_id)
 
 		case OP_SET_SKYBOX_MODEL:
 		case OP_MISSION_SET_NEBULA:
-		case OP_MISSION_SET_SUBSPACE:
 		case OP_ADD_BACKGROUND_BITMAP:
 		case OP_REMOVE_BACKGROUND_BITMAP:
 		case OP_ADD_SUN_BITMAP:
@@ -21932,6 +22012,7 @@ int get_subcategory(int sexp_id)
 		case OP_NEBULA_TOGGLE_POOF:
 		case OP_SET_AMBIENT_LIGHT:
 		case OP_SET_POST_EFFECT:
+		case OP_MISSION_SET_SUBSPACE:
 			return CHANGE_SUBCATEGORY_BACKGROUND_AND_NEBULA;
 
 		case OP_HUD_DISABLE:
@@ -22167,21 +22248,21 @@ sexp_help_struct Sexp_help[] = {
 		"Takes 2 or 3 arguments...\r\n"
 		"\t1: The name of the object.\r\n"
 		"\t2: The speed to set.\r\n"
-		"\t3: Whether the speed should be set subjectively; i.e. from the object's point of view (optional; defaults to false).\r\n" },
+		"\t3: Whether the speed on the axis should be set according to the universe grid (when false) or according to the object's facing (when true); You almost always want to set this to true; (optional; defaults to false).\r\n" },
 
 	{ OP_SET_OBJECT_SPEED_Y, "set-object-speed-y\r\n"
 		"\tSets the Y speed of a ship, wing, or waypoint."
 		"Takes 2 or 3 arguments...\r\n"
 		"\t1: The name of the object.\r\n"
 		"\t2: The speed to set.\r\n"
-		"\t3: Whether the speed should be set subjectively; i.e. from the object's point of view (optional; defaults to false).\r\n" },
+		"\t3: Whether the speed on the axis should be set according to the universe grid (when false) or according to the object's facing (when true); You almost always want to set this to true; (optional; defaults to false).\r\n" },
 
 	{ OP_SET_OBJECT_SPEED_Z, "set-object-speed-z\r\n"
 		"\tSets the Z speed of a ship, wing, or waypoint."
 		"Takes 2 or 3 arguments...\r\n"
 		"\t1: The name of the object.\r\n"
 		"\t2: The speed to set.\r\n"
-		"\t3: Whether the speed should be set subjectively; i.e. from the object's point of view (optional; defaults to false).\r\n" },
+		"\t3: Whether the speed on the axis should be set according to the universe grid (when false) or according to the object's facing (when true); You almost always want to set this to true; (optional; defaults to false).\r\n" },
 
 	// Goober5000
 	{ OP_GET_OBJECT_X, "get-object-x\r\n"
@@ -22249,11 +22330,11 @@ sexp_help_struct Sexp_help[] = {
 		"Returns a boolean value.  Takes 2 or more numeric arguments." },
 
 	{ OP_GREATER_THAN, "Greater Than (Boolean operator)\r\n"
-		"\tTrue if the first argument is greater than the second argument.\r\n\r\n"
+		"\tTrue if the first argument is greater than the subsequent argument(s).\r\n\r\n"
 		"Returns a boolean value.  Takes 2 numeric arguments." },
 
 	{ OP_LESS_THAN, "Less Than (Boolean operator)\r\n"
-		"\tTrue if the first argument is less than the second argument.\r\n\r\n"
+		"\tTrue if the first argument is less than the subsequent argument(s).\r\n\r\n"
 		"Returns a boolean value.  Takes 2 numeric arguments." },
 
 	// Goober5000
@@ -22522,7 +22603,7 @@ sexp_help_struct Sexp_help[] = {
 
 	{ OP_MISSION_TIME, "Mission time (Time operator)\r\n"
 		"\tReturns the current time into the mission.\r\n\r\n"
-		"Returns a numeric value." },
+		"Returns a numeric value.  Takes no arguments." },
 
 	{ OP_TIME_DOCKED, "Time docked (Time operator)\r\n"
 		"\tReturns the time the specified ships docked.\r\n\r\n"
@@ -22977,6 +23058,13 @@ sexp_help_struct Sexp_help[] = {
 		"\tCloses the currently playing sound started by play-sound-from-file, if there is any.  Takes 1 argument...\r\n"
 		"\t1: Fade (default is true)" },
 
+	//The E
+	{ OP_ADJUST_AUDIO_VOLUME, "adjust-audio-volume\r\n"
+		"Adjusts the relative volume of one sound type. Takes 1 to 3 arguments....\r\n"
+		"\t1:\tSound Type to adjust, either Music, Voice or Effects. Will act as a reset for the given category, if no other argument present\r\n"
+		"\t2:\tPercentage of the users' settings to adjust to (optional), 0 will be silence, 100 means the maximum volume as set by the user\r\n"
+		"\t3:\tFade time (optional), time in milliseconds to adjust the volume"},
+
 	// Goober5000
 	{ OP_EXPLOSION_EFFECT, "explosion-effect\r\n"
 		"\tCauses an explosion at a given origin, with the given parameters.  "
@@ -23006,7 +23094,7 @@ sexp_help_struct Sexp_help[] = {
 		"\t5:  Location Y\r\n"
 		"\t6:  Location Z\r\n"
 		"\t7:  Radius\r\n"
-		"\t8:  Duration in seconds\r\n"
+		"\t8:  Duration in seconds (values smaller than 4 are ignored)\r\n"
 		"\t9:  Warp opening sound (index into sounds.tbl)\r\n"
 		"\t10: Warp closing sound (index into sounds.tbl)\r\n"
 		"\t11: Type (0 for standard blue [default], 1 for Knossos green)\r\n"
@@ -23966,15 +24054,15 @@ sexp_help_struct Sexp_help[] = {
 		"\t2: Range, in meters\r\n" },
 
 	{ OP_SEND_MESSAGE_LIST, "send-message-list\r\n"
-		"\tSends a series of delayed messages. All times are accumulated"
+		"\tSends a series of delayed messages. All times are accumulated.\r\n"
 		"\t1:\tName of who the message is from.\r\n"
 		"\t2:\tPriority of message (\"Low\", \"Normal\" or \"High\").\r\n"
 		"\t3:\tName of message (from message editor).\r\n"
 		"\t4:\tDelay from previous message in list (if any) in ms\r\n"
-		"Use Add-Data for multiple messages"
-		"IMPORTANT : each additional message in the list MUST HAVE 4 entries;\r\n"
-		"any message without the 4 proper fields will be ignored, as will any\r\n"
-		"successive messages"},
+		"Use Add-Data for multiple messages.\r\n\r\n"
+		"IMPORTANT: Each additional message in the list MUST HAVE four entries; "
+		"any message without the four proper fields will be ignored, as will any "
+		"successive messages."},
 
 	{ OP_CAP_WAYPOINT_SPEED, "cap-waypoint-speed\r\n"
 		"\tSets the maximum speed of a ship while flying waypoints.\r\n"
