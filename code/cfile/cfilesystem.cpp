@@ -85,8 +85,8 @@ typedef struct cf_file {
 	int		pack_offset;									// For pack files, where it is at.   0 if not in a pack file.  This can be used to tell if in a pack file.
 } cf_file;
 
-#define CF_NUM_FILES_PER_BLOCK   256
-#define CF_MAX_FILE_BLOCKS			128						// Can store 256*128 = 32768 files
+#define CF_NUM_FILES_PER_BLOCK  256
+#define CF_MAX_FILE_BLOCKS		256						// Can store 256*128 = 32768 files
 
 typedef struct cf_file_block {
 	cf_file						files[CF_NUM_FILES_PER_BLOCK];
