@@ -179,7 +179,7 @@ void ChttpGet::GetFile(char *URL,char *localfile)
 #ifdef WIN32
 	if ( _beginthread(HTTPObjThread,0,this) == NULL )
 #else
-	if ( (thread_id = SDL_CreateThread(HTTPObjThread, this)) == NULL )
+	if ( (thread_id = SDL_CreateThread(HTTPObjThread, "getfile", this)) == NULL )
 #endif
 	{
 		m_State = HTTP_STATE_INTERNAL_ERROR;

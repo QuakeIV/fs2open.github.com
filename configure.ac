@@ -318,13 +318,13 @@ dnl Setup paths for lib and include dirs
 
 dnl SDL check
 if test "$fs2_os_unix" = "yes" ; then
-	dnl Check for SDL 1.2.6+
-	SDL_VERSION=1.2.6
+	dnl Check for SDL 2+
+	SDL_VERSION=2.0.0
 	AM_PATH_SDL($SDL_VERSION,:,AC_MSG_ERROR([*** SDL >= $SDL_VERSION not found!]))
 elif test "$fs2_os_osx" = "yes" ; then
 	SDL_LIBS="-framework SDL"
-	dnl Check for SDL 1.2.6+
-	SDL_VERSION=1.2.6
+	dnl Check for SDL 2+
+	SDL_VERSION=2.0.0
 	AM_PATH_SDL($SDL_VERSION,:,[AC_CHECK_HEADER(/Library/Frameworks/SDL.framework/Headers/SDL.h,
 		SDL_CFLAGS="-I/Library/Frameworks/SDL.framework/Headers",
 		[AC_CHECK_HEADER($HOME/Library/Frameworks/SDL.framework/Headers/SDL.h,

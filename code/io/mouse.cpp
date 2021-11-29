@@ -21,6 +21,7 @@
 #define THREADED	// to use the proper set of macros
 #include "osapi/osapi.h"
 #include "cmdline/cmdline.h"
+#include "graphics/gropenglstate.h"
 
 #ifdef WIN32
 #define USE_DIRECTINPUT
@@ -746,6 +747,6 @@ void setWindowMousePos(POINT * pt)
 	ClientToScreen((HWND) os_get_window(), pt);
 	SetCursorPos(pt->x, pt->y);
 #else
-	SDL_WarpMouse(pt->x, pt->y);
+	SDL_WarpMouseInWindow(main_sdl_window, pt->x, pt->y);
 #endif
 }

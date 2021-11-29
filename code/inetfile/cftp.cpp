@@ -186,7 +186,7 @@ CFtpGet::CFtpGet(char *URL, char *localfile, char *Username, char *Password)
 #ifdef WIN32
 	if ( _beginthread(FTPObjThread,0,this) == NULL )
 #else
-	if ( (thread_id = SDL_CreateThread(FTPObjThread, this)) == NULL )
+	if ( (thread_id = SDL_CreateThread(FTPObjThread, "ftpget", this)) == NULL )
 #endif
 	{
 		m_State = FTP_STATE_INTERNAL_ERROR;

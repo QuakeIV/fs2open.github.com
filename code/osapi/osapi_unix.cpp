@@ -24,6 +24,7 @@
 #include "osapi/osregistry.h"
 #include "graphics/2d.h"
 #include "freespace2/freespace.h"
+#include "graphics/gropenglstate.h"
 
 #define THREADED	// to use the proper set of macros
 #include "osapi/osapi.h"
@@ -96,7 +97,7 @@ void os_set_title( char *title )
 {
 	strcpy_s( szWinTitle, title );
 
-	SDL_WM_SetCaption( szWinTitle, NULL );
+	SDL_SetWindowTitle( main_sdl_window, szWinTitle );
 }
 
 extern void gr_opengl_shutdown();
@@ -153,7 +154,7 @@ void os_resume()
 // OSAPI FORWARD DECLARATIONS
 //
 
-extern int SDLtoFS2[SDLK_LAST];
+extern int SDLtoFS2[SDL_NUM_SCANCODES];
 extern void joy_set_button_state(int button, int state);
 extern void joy_set_hat_state(int position);
 
@@ -163,17 +164,18 @@ DWORD unix_process(DWORD lparam)
 
 	while( SDL_PollEvent(&event) ) {
 		switch(event.type) {
-			case SDL_ACTIVEEVENT:
-				if( (event.active.state & SDL_APPACTIVE) || (event.active.state & SDL_APPINPUTFOCUS) ) {
-					if (fAppActive != event.active.gain) {
-						if (fAppActive)
-							game_pause();
-						else
-							game_unpause();
-					}
-					fAppActive = event.active.gain;
-					gr_activate(fAppActive);
+			case SDL_WINDOWEVENT:
+				if ( event.window.event == SDL_WINDOWEVENT_FOCUS_LOST )
+				{
+                    game_pause();
+                    fAppActive = false;
 				}
+				else if ( event.window.type == SDL_WINDOWEVENT_FOCUS_GAINED )
+				{
+                    game_unpause();
+                    fAppActive = true;
+				}
+				gr_activate(fAppActive);
 				break;
 
 			case SDL_KEYDOWN:

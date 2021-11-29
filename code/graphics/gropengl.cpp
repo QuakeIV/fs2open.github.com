@@ -33,6 +33,7 @@
 #include "graphics/gropengldraw.h"
 #include "graphics/gropenglshader.h"
 #include "graphics/gropenglstate.h"
+#include "SDL.h"
 
 
 #if defined(_WIN32)
@@ -172,16 +173,19 @@ void opengl_go_fullscreen()
 
 	os_resume();  
 #else
-	if ( (os_config_read_uint(NULL, NOX("Fullscreen"), 1) == 1) && !(SDL_GetVideoSurface()->flags & SDL_FULLSCREEN) ) {
+	if ( (os_config_read_uint(NULL, NOX("Fullscreen"), 1) == 1) && !(SDL_GetWindowFlags(main_sdl_window) & SDL_WINDOW_FULLSCREEN) ) {
 		os_suspend();
-	//	SDL_WM_ToggleFullScreen( SDL_GetVideoSurface() );
-		if ( (SDL_SetVideoMode(gr_screen.max_w, gr_screen.max_h, 0, SDL_OPENGL | SDL_FULLSCREEN)) == NULL ) {
+	    
+        main_sdl_window = SDL_CreateWindow("placeholder", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, gr_screen.max_w, gr_screen.max_h, SDL_WINDOW_OPENGL | SDL_WINDOW_FULLSCREEN);
+		if ( main_sdl_window == NULL ) {
 			mprintf(("Couldn't go fullscreen!\n"));
-			if ( (SDL_SetVideoMode(gr_screen.max_w, gr_screen.max_h, 0, SDL_OPENGL)) == NULL ) {
+			main_sdl_window = SDL_CreateWindow("placeholder", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, gr_screen.max_w, gr_screen.max_h, SDL_WINDOW_OPENGL);
+			if ( main_sdl_window == NULL ) {
 				mprintf(("Couldn't drop back to windowed mode either!\n"));
 				exit(1);
 			}
 		}
+		SDL_GL_CreateContext(main_sdl_window);
 		os_resume();
 	}
 #endif
@@ -228,13 +232,14 @@ void opengl_go_windowed()
 	os_resume();  
 
 #else
-	if (SDL_GetVideoSurface()->flags & SDL_FULLSCREEN) {
+	if (SDL_GetWindowFlags(main_sdl_window) & SDL_WINDOW_FULLSCREEN) {
 		os_suspend();
 
-	//	SDL_WM_ToggleFullScreen( SDL_GetVideoSurface() );
-		if ( (SDL_SetVideoMode(gr_screen.max_w, gr_screen.max_h, 0, SDL_OPENGL)) == NULL ) {
+	    main_sdl_window = SDL_CreateWindow("placeholder", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, gr_screen.max_w, gr_screen.max_h, SDL_WINDOW_OPENGL);
+		if ( main_sdl_window == NULL ) {
 			Warning( LOCATION, "Unable to enter windowed mode!" );
 		}
+		SDL_GL_CreateContext(main_sdl_window);
 
 		os_resume();
 	}
@@ -278,16 +283,16 @@ void opengl_minimize()
 	os_resume();
 #else
 	// lets not minimize if we are in windowed mode
-	if ( !(SDL_GetVideoSurface()->flags & SDL_FULLSCREEN) )
+	if ( !(SDL_GetWindowFlags(main_sdl_window) & SDL_WINDOW_FULLSCREEN) )
 		return;
 
 	os_suspend();
 
 	if (GL_original_gamma_ramp != NULL) {
-		SDL_SetGammaRamp( GL_original_gamma_ramp, (GL_original_gamma_ramp+256), (GL_original_gamma_ramp+512) );
+		SDL_SetWindowGammaRamp( main_sdl_window, GL_original_gamma_ramp, (GL_original_gamma_ramp+256), (GL_original_gamma_ramp+512) );
 	}
 
-	SDL_WM_IconifyWindow();
+	SDL_MinimizeWindow(main_sdl_window);
 	os_resume();
 #endif
 
@@ -306,8 +311,8 @@ void gr_opengl_activate(int active)
 
 #ifdef SCP_UNIX
 		// Check again and if we didn't go fullscreen turn on grabbing if possible
-		if(!Cmdline_no_grab && !(SDL_GetVideoSurface()->flags & SDL_FULLSCREEN)) {
-			SDL_WM_GrabInput(SDL_GRAB_ON);
+		if(!Cmdline_no_grab && !(SDL_GetWindowFlags(main_sdl_window) & SDL_WINDOW_FULLSCREEN)) {
+			SDL_SetRelativeMouseMode(SDL_TRUE);
 		}
 #endif
 	} else {
@@ -315,8 +320,8 @@ void gr_opengl_activate(int active)
 
 #ifdef SCP_UNIX
 		// let go of mouse/keyboard
-		if (SDL_WM_GrabInput(SDL_GRAB_QUERY) == SDL_GRAB_ON)
-			SDL_WM_GrabInput(SDL_GRAB_OFF);
+		if (SDL_GetRelativeMouseState(0,0))
+			SDL_SetRelativeMouseMode(SDL_FALSE);
 #endif
 	}
 }
@@ -361,7 +366,7 @@ void gr_opengl_flip()
 #ifdef _WIN32
 	SwapBuffers(GL_device_context);
 #else
-	SDL_GL_SwapBuffers();
+	SDL_GL_SwapWindow(main_sdl_window);
 #endif
 
 	opengl_tcache_frame();
@@ -850,7 +855,7 @@ void gr_opengl_set_gamma(float gamma)
 #ifdef _WIN32
 		SetDeviceGammaRamp( GL_device_context, gamma_ramp );
 #else
-		SDL_SetGammaRamp( gamma_ramp, (gamma_ramp+256), (gamma_ramp+512) );
+		SDL_SetWindowGammaRamp(main_sdl_window, gamma_ramp, (gamma_ramp+256), (gamma_ramp+512) );
 #endif
 
 		vm_free(gamma_ramp);
@@ -1392,7 +1397,7 @@ void gr_opengl_shutdown()
 	ChangeDisplaySettings( NULL, 0 );
 #else
 	if (GL_original_gamma_ramp != NULL) {
-		SDL_SetGammaRamp( GL_original_gamma_ramp, (GL_original_gamma_ramp+256), (GL_original_gamma_ramp+512) );
+		SDL_SetWindowGammaRamp( main_sdl_window, GL_original_gamma_ramp, (GL_original_gamma_ramp+256), (GL_original_gamma_ramp+512) );
 	}
 #endif
 
@@ -1641,7 +1646,7 @@ int opengl_init_display_device()
 
 #else
 
-	int flags = SDL_OPENGL;
+	int flags = SDL_WINDOW_OPENGL;
 	int r = 0, g = 0, b = 0, depth = 0, db = 1;
 
 	mprintf(("  Initializing SDL...\n"));
@@ -1653,7 +1658,7 @@ int opengl_init_display_device()
 
 	// grab mouse/key unless told otherwise, ignore when we are going fullscreen
 	if ( (Cmdline_fullscreen_window|| Cmdline_window || os_config_read_uint(NULL, "Fullscreen", 1) == 0) && !Cmdline_no_grab ) {
-		SDL_WM_GrabInput(SDL_GRAB_ON);
+		SDL_SetRelativeMouseMode(SDL_TRUE);
 	}
 
 	SDL_GL_SetAttribute(SDL_GL_RED_SIZE, Gr_red.bits);
@@ -1669,10 +1674,12 @@ int opengl_init_display_device()
 
 	mprintf(("  Requested SDL Video values = R: %d, G: %d, B: %d, depth: %d, double-buffer: %d, FSAA: %d\n", Gr_red.bits, Gr_green.bits, Gr_blue.bits, (bpp == 32) ? 24 : 16, db, fsaa_samples));
 
-	if (SDL_SetVideoMode(gr_screen.max_w, gr_screen.max_h, bpp, flags) == NULL) {
+    main_sdl_window = SDL_CreateWindow("placeholder", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, gr_screen.max_w, gr_screen.max_h, flags);
+	if (main_sdl_window == NULL) {
 		fprintf (stderr, "Couldn't set video mode: %s", SDL_GetError());
 		return 1;
 	}
+	SDL_GL_CreateContext(main_sdl_window);
 
 	SDL_GL_GetAttribute(SDL_GL_RED_SIZE, &r);
 	SDL_GL_GetAttribute(SDL_GL_GREEN_SIZE, &g);
@@ -1686,10 +1693,11 @@ int opengl_init_display_device()
 	SDL_ShowCursor(0);
 
 	/* might as well put this here */
-	SDL_EnableKeyRepeat(SDL_DEFAULT_REPEAT_DELAY, SDL_DEFAULT_REPEAT_INTERVAL);
+	//TODO: validate that this can be ignored
+	//SDL_EnableKeyRepeat(SDL_DEFAULT_REPEAT_DELAY, SDL_DEFAULT_REPEAT_INTERVAL);
 
 	if (GL_original_gamma_ramp != NULL) {
-		SDL_GetGammaRamp( GL_original_gamma_ramp, (GL_original_gamma_ramp+256), (GL_original_gamma_ramp+512) );
+		SDL_GetWindowGammaRamp(main_sdl_window, GL_original_gamma_ramp, (GL_original_gamma_ramp+256), (GL_original_gamma_ramp+512) );
 	}
 #endif
 

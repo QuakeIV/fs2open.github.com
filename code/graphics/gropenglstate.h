@@ -317,6 +317,8 @@ inline GLenum opengl_state::DepthFunc(GLenum new_val)
 
 extern opengl_state GL_state;
 
+extern SDL_Window *main_sdl_window;
+
 void opengl_setup_render_states(int &r,int &g,int &b,int &alpha, int &tmap_type, int flags, int is_scaler = 0);
 
 

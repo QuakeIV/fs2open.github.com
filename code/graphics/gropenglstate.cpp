@@ -17,6 +17,7 @@ extern GLfloat GL_max_anisotropy;
 
 
 opengl_state GL_state;
+SDL_Window *main_sdl_window;
 
 
 opengl_texture_state::~opengl_texture_state()

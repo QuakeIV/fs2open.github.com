@@ -186,7 +186,6 @@ EXTRA_DIST =	\
 # D_ variants are defaults and should always be used
 # FS2_ variants are for game building and wxFRED
 AM_CXXFLAGS = @D_CFLAGS@ @FS2_CXXFLAGS@ -I../lua
-AM_LDFLAGS = @D_LDFLAGS@ @FS2_LDFLAGS@
 
 noinst_LIBRARIES = libcode.a
 noinst_PROGRAMS = @FS2_BINARY@
@@ -818,10 +817,10 @@ fs2_open_INF_d_SOURCES =	\
 fs2_open_INF_r_SOURCES =	\
 	${FS2OPEN_SOURCES}
 
-fs2_open_d_LDADD = libcode.a ../libjpeg/libjpeg.a ../lua/liblua.a
-fs2_open_r_LDADD = libcode.a ../libjpeg/libjpeg.a ../lua/liblua.a
-fs2_open_INF_d_LDADD = libcode.a ../libjpeg/libjpeg.a ../lua/liblua.a
-fs2_open_INF_r_LDADD = libcode.a ../libjpeg/libjpeg.a ../lua/liblua.a
+fs2_open_d_LDADD = libcode.a ../libjpeg/libjpeg.a ../lua/liblua.a -ldl @D_LDFLAGS@ @FS2_LDFLAGS@
+fs2_open_r_LDADD = libcode.a ../libjpeg/libjpeg.a ../lua/liblua.a -ldl @D_LDFLAGS@ @FS2_LDFLAGS@
+fs2_open_INF_d_LDADD = libcode.a ../libjpeg/libjpeg.a ../lua/liblua.a -ldl @D_LDFLAGS@ @FS2_LDFLAGS@
+fs2_open_INF_r_LDADD = libcode.a ../libjpeg/libjpeg.a ../lua/liblua.a -ldl @D_LDFLAGS@ @FS2_LDFLAGS@
 
 ##
 ## End MAIN binary
