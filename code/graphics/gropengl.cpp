@@ -173,19 +173,26 @@ void opengl_go_fullscreen()
 
 	os_resume();  
 #else
-	if ( (os_config_read_uint(NULL, NOX("Fullscreen"), 1) == 1) && !(SDL_GetWindowFlags(main_sdl_window) & SDL_WINDOW_FULLSCREEN) ) {
+	if ( (os_config_read_uint(NULL, NOX("Fullscreen"), 1) == 1) && !(SDL_GetWindowFlags(main_sdl_window) & SDL_WINDOW_FULLSCREEN_DESKTOP) ) {
 		os_suspend();
 	    
-        main_sdl_window = SDL_CreateWindow("placeholder", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, gr_screen.max_w, gr_screen.max_h, SDL_WINDOW_OPENGL | SDL_WINDOW_FULLSCREEN);
-		if ( main_sdl_window == NULL ) {
-			mprintf(("Couldn't go fullscreen!\n"));
-			main_sdl_window = SDL_CreateWindow("placeholder", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, gr_screen.max_w, gr_screen.max_h, SDL_WINDOW_OPENGL);
-			if ( main_sdl_window == NULL ) {
-				mprintf(("Couldn't drop back to windowed mode either!\n"));
-				exit(1);
-			}
+	    if (!main_sdl_window)
+	    {
+            main_sdl_window = SDL_CreateWindow("placeholder", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, gr_screen.max_w, gr_screen.max_h, SDL_WINDOW_OPENGL | SDL_WINDOW_FULLSCREEN_DESKTOP);
+		    if ( main_sdl_window == NULL ) {
+			    mprintf(("Couldn't go fullscreen!\n"));
+			    main_sdl_window = SDL_CreateWindow("placeholder", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, gr_screen.max_w, gr_screen.max_h, SDL_WINDOW_OPENGL);
+			    if ( main_sdl_window == NULL ) {
+				    mprintf(("Couldn't drop back to windowed mode either!\n"));
+				    exit(1);
+			    }
+		    }
+    		SDL_GL_CreateContext(main_sdl_window);
 		}
-		SDL_GL_CreateContext(main_sdl_window);
+		else
+		{
+		    SDL_SetWindowFullscreen(main_sdl_window, SDL_WINDOW_FULLSCREEN_DESKTOP);
+		}
 		os_resume();
 	}
 #endif
@@ -232,7 +239,7 @@ void opengl_go_windowed()
 	os_resume();  
 
 #else
-	if (SDL_GetWindowFlags(main_sdl_window) & SDL_WINDOW_FULLSCREEN) {
+	if (SDL_GetWindowFlags(main_sdl_window) & SDL_WINDOW_FULLSCREEN_DESKTOP) {
 		os_suspend();
 
 	    main_sdl_window = SDL_CreateWindow("placeholder", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, gr_screen.max_w, gr_screen.max_h, SDL_WINDOW_OPENGL);
@@ -283,7 +290,7 @@ void opengl_minimize()
 	os_resume();
 #else
 	// lets not minimize if we are in windowed mode
-	if ( !(SDL_GetWindowFlags(main_sdl_window) & SDL_WINDOW_FULLSCREEN) )
+	if ( !(SDL_GetWindowFlags(main_sdl_window) & SDL_WINDOW_FULLSCREEN_DESKTOP) )
 		return;
 
 	os_suspend();
@@ -311,7 +318,7 @@ void gr_opengl_activate(int active)
 
 #ifdef SCP_UNIX
 		// Check again and if we didn't go fullscreen turn on grabbing if possible
-		if(!Cmdline_no_grab && !(SDL_GetWindowFlags(main_sdl_window) & SDL_WINDOW_FULLSCREEN)) {
+		if(!Cmdline_no_grab && !(SDL_GetWindowFlags(main_sdl_window) & SDL_WINDOW_FULLSCREEN_DESKTOP)) {
 			SDL_SetRelativeMouseMode(SDL_TRUE);
 		}
 #endif

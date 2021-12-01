@@ -1,0 +1,19 @@
+*.o
+*.a
+Makefile
+Makefile.in
+aclocal.m4
+autom4te.cache/
+compile
+config.guess
+config.log
+config.status
+config.sub
+configure
+depcomp
+install-sh
+missing
+.deps/
+
+# the man himself
+code/fs2_open*

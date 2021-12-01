@@ -65,7 +65,7 @@ CRITICAL_SECTION key_lock;
 								// is stopped.
 
 #ifdef SCP_UNIX
-	int SDLtoFS2[SDL_NUM_SCANCODES];
+	std::map<SDL_Keycode,int> SDLtoFS2;
 #endif
 
 int ascii_table[128] = 

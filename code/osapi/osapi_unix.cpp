@@ -154,7 +154,7 @@ void os_resume()
 // OSAPI FORWARD DECLARATIONS
 //
 
-extern int SDLtoFS2[SDL_NUM_SCANCODES];
+extern std::map<SDL_Keycode,int> SDLtoFS2;
 extern void joy_set_button_state(int button, int state);
 extern void joy_set_hat_state(int position);
 
@@ -167,11 +167,13 @@ DWORD unix_process(DWORD lparam)
 			case SDL_WINDOWEVENT:
 				if ( event.window.event == SDL_WINDOWEVENT_FOCUS_LOST )
 				{
+				    printf("FOCUS LOST\n");
                     game_pause();
                     fAppActive = false;
 				}
-				else if ( event.window.type == SDL_WINDOWEVENT_FOCUS_GAINED )
+				else if ( event.window.event == SDL_WINDOWEVENT_FOCUS_GAINED )
 				{
+				    printf("FOCUS GAINED\n");
                     game_unpause();
                     fAppActive = true;
 				}
@@ -185,7 +187,8 @@ DWORD unix_process(DWORD lparam)
 					break;
 				}*/
 
-				if( SDLtoFS2[event.key.keysym.sym] ) {
+                // switched to dict, this weird shit is checking if the key is in the map or not
+				if( SDLtoFS2.find(event.key.keysym.sym) != SDLtoFS2.end()) {
 					key_mark( SDLtoFS2[event.key.keysym.sym], 1, 0 );
 				}
 				break;
@@ -196,7 +199,8 @@ DWORD unix_process(DWORD lparam)
 					break;
 				}*/
 
-				if (SDLtoFS2[event.key.keysym.sym]) {
+                // switched to dict, this weird shit is checking if the key is in the map or not
+				if (SDLtoFS2.find(event.key.keysym.sym) != SDLtoFS2.end()) {
 					key_mark( SDLtoFS2[event.key.keysym.sym], 0, 0 );
 				}
 				break;

@@ -6579,6 +6579,10 @@ void do_random_sidethrust(ai_info *aip, ship_info *sip)
 	//This means that we get the same random values for a little bit.
 	//Using static_rand(shipnum) as a crude hash function to make sure that the seed is different for each ship and direction
 	//The *2 ensures that y and x stay separate.
+	
+	// not sure what retard logic went into this randomization but this actually occasionally causes SIGFPE with division by zero (confirmed via gdb that it was in fact a 0 getting through)
+	if (strafeHoldDirAmount == 0)
+	    strafeHoldDirAmount = 1;
 	side_vec.x = static_randf_range((((Missiontime + static_rand(aip->shipnum)) >> 16) / strafeHoldDirAmount) , -1.0f, 1.0f);
 	side_vec.y = static_randf_range((((Missiontime + static_rand(aip->shipnum)) >> 16) / strafeHoldDirAmount) * 2, -1.0f, 1.0f);
 	//Scale it up so that the longest dimension is length 1.0. This ensures we are always getting as much use out of sidethrust as possible.

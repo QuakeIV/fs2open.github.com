@@ -114,7 +114,7 @@ extern int Key_normal_game;
 #define KEY_EQUAL       0x0D
 #define KEY_DIVIDE      0x35
 #define KEY_SLASH       0x2B
-#define KEY_SLASH_UK		0x56
+#define KEY_SLASH_UK	0x56
 #define KEY_COMMA       0x33
 #define KEY_PERIOD      0x34
 #define KEY_SEMICOL     0x27
@@ -186,8 +186,8 @@ extern int Key_normal_game;
 #define KEY_RIGHT       0xCD
 
 #define KEY_PRINT_SCRN	0xB7
-#define KEY_PAUSE			0x45	//DOS: 0x61
-#define KEY_BREAK			0xc6
+#define KEY_PAUSE		0x45	//DOS: 0x61
+#define KEY_BREAK		0xc6
 
 /*
 #ifdef __cplusplus
