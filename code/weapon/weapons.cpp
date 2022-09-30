@@ -1565,6 +1565,13 @@ int parse_weapon(int subtype, bool replace)
 		wip->free_flight_time = HOMING_DEFAULT_FREE_FLIGHT_TIME;
 	}
 
+    // TODO: lol based, this was stolen from 3.6.14
+	if(optional_string("$Free Flight Speed:")) {
+		float temp;
+		stuff_float(&temp);
+		nprintf(("Warning", "Ignoring free flight speed for weapon '%s'\n", wip->name));
+	}
+
 	//Launch sound
 	parse_sound("$LaunchSnd:", &wip->launch_snd, wip->name);
 
