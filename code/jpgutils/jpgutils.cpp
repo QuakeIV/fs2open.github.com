@@ -12,8 +12,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <setjmp.h>
-
-#include "../../libjpeg/jpeglib.h"
+#include <jpeglib.h>
 
 #undef LOCAL // fix from a jpeg header, pstypes.h will define it again
 

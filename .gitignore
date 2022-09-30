@@ -1,19 +1,7 @@
-*.o
-*.a
-Makefile
-Makefile.in
-aclocal.m4
-autom4te.cache/
-compile
-config.guess
-config.log
-config.status
-config.sub
-configure
-depcomp
-install-sh
-missing
-.deps/
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+build/
 
 # the man himself
-code/fs2_open*
+fs2_open*
