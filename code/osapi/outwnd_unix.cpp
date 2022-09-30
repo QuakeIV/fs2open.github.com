@@ -26,7 +26,7 @@
 
 
 
-void outwnd_print(char *id = NULL, char *tmp = NULL);
+void outwnd_print(const char *id = NULL, char *tmp = NULL);
 
 #define MAX_LINE_WIDTH	128
 
@@ -154,7 +154,7 @@ void save_filter_info(void)
 	}
 }
 
-void outwnd_printf2(char *format, ...)
+void outwnd_printf2(const char *format, ...)
 {
 	char tmp[MAX_LINE_WIDTH*4] = {'\0'};
 	va_list args;
@@ -169,7 +169,7 @@ void outwnd_printf2(char *format, ...)
 	outwnd_print("General", tmp);
 }
 
-void outwnd_printf(char *id, char *format, ...)
+void outwnd_printf(char *id, const char *format, ...)
 {
 	char tmp[MAX_LINE_WIDTH*4] = {'\0'};
 	va_list args;
@@ -184,7 +184,7 @@ void outwnd_printf(char *id, char *format, ...)
 	outwnd_print(id, tmp);
 }
 
-void outwnd_print(char *id, char *tmp)
+void outwnd_print(const char *id, char *tmp)
 {
 	uint i;
 

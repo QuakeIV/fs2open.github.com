@@ -15,8 +15,8 @@
 void load_filter_info(void);
 void outwnd_init(int display_under_freespace_window = 0);
 void outwnd_close();
-void outwnd_printf(char *id = NULL, char *format = NULL, ...);
-void outwnd_printf2(char *format = NULL, ...);
+void outwnd_printf(char *id = NULL, const char *format = NULL, ...);
+void outwnd_printf2(const char *format = NULL, ...);
 
 extern int Log_debug_output_to_file;
 

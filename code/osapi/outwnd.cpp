@@ -89,7 +89,7 @@ int find_line = -1, find_pos;
 #define NMONO
 HANDLE  mono_driver=NULL;				// handle to the monochrome driver
 
-void outwnd_print(char *id, char *tmp);
+void outwnd_print(const char *id, char *tmp);
 BOOL CALLBACK find_dlg_handler(HWND hwnd,UINT msg,WPARAM wParam, LPARAM lParam);
 void find_text_in_outwindow(int n, int p);
 void outwnd_copy_marked_selection(HWND hwnd);
@@ -269,7 +269,7 @@ void save_filter_info(void)
 	}
 }
 
-void outwnd_printf2(char *format, ...)
+void outwnd_printf2(const char *format, ...)
 {
 	char tmp[MAX_LINE_WIDTH*4] = {'\0'};
 	va_list args;
@@ -375,7 +375,7 @@ void mono_print( char * text, int len )
 #endif // NMONO
 
 
-void outwnd_printf(char *id, char *format, ...)
+void outwnd_printf(char *id, const char *format, ...)
 {
 	char tmp[MAX_LINE_WIDTH*4] = {'\0'};
 	va_list args;
@@ -392,7 +392,7 @@ void outwnd_printf(char *id, char *format, ...)
 	outwnd_print(id, tmp);
 }
 
-void outwnd_print(char *id, char *tmp)
+void outwnd_print(const char *id, char *tmp)
 {
 	char *sptr;
 	char *dptr;

@@ -352,9 +352,9 @@ MMRESULT mmioClose(HMMIO hmmio, uint wFlags)
 }
 
 // get a filename minus any leading path
-char *clean_filename(char *name)
+char *clean_filename(const char *name)
 {
-	char *p = name + strlen(name)-1;
+	char *p = const_cast<char*>(name) + strlen(const_cast<char*>(name))-1;
 
 	// Move p to point to first letter of EXE filename
 	while( (p > name) && (*p != '\\') && (*p != '/') && (*p != ':') )

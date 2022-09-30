@@ -753,7 +753,7 @@ void os_poll()
 #endif
 }
 
-void debug_int3(char *file, int line)
+void debug_int3(const char *file, int line)
 {
 	mprintf(("Int3(): From %s at line %d\n", file, line));
 
