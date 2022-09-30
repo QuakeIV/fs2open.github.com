@@ -66,6 +66,11 @@ flag_def_list Script_actions[] =
 	{"On Death",				CHA_DEATH,			0},
 	{"On Mission End",			CHA_MISSIONEND,		0},
 	{"On Weapon Delete",		CHA_ONWEAPONDELETE,	0},
+	{"On Weapon Equipped",		CHA_ONWPEQUIPPED,	0},
+	{"On Weapon Fired",			CHA_ONWPFIRED,		0},
+	{"On Weapon Selected",		CHA_ONWPSELECTED,	0},
+	{"On Weapon Deselected",	CHA_ONWPDESELECTED,	0},
+	{"On Gameplay Start",		CHA_GAMEPLAYSTART,	0},
 };
 
 int Num_script_actions = sizeof(Script_actions)/sizeof(flag_def_list);
@@ -271,10 +276,70 @@ bool ConditionedHook::ConditionsValid(int action, object *objp)
 					break;
 				}
 			case CHC_WEAPONCLASS:
-				if(objp == NULL || objp->type != OBJ_WEAPON)
-					return false;
-				if(stricmp(Weapon_info[Weapons[objp->instance].weapon_info_index].name, scp->data.name))
-					return false;
+			    if (objp == NULL)
+			        return false;
+			    
+			    // TODO: this will need a lot of validation at some point, however this is an attempt to replicate the shit from 3.6.14 implementing these expressions
+			    if (objp->type == OBJ_SHIP)
+			    {
+					ship* shipp = &Ships[objp->instance];
+				    switch (action)
+				    {
+					    case CHA_ONWPSELECTED:
+					    {
+					        if (! ((stricmp(Weapon_info[shipp->weapons.primary_bank_weapons[shipp->weapons.current_primary_bank]].name, scp->data.name) == 0)
+						        || (stricmp(Weapon_info[shipp->weapons.secondary_bank_weapons[shipp->weapons.current_secondary_bank]].name, scp->data.name) == 0)))
+						        return false;
+					        break;
+					    }
+					    case CHA_ONWPDESELECTED:
+					    {
+							if (! (((stricmp(Weapon_info[shipp->weapons.primary_bank_weapons[shipp->weapons.previous_primary_bank]].name, scp->data.name) == 0)
+								&&  ( stricmp(Weapon_info[shipp->weapons.primary_bank_weapons[shipp->weapons.current_primary_bank]].name, scp->data.name) != 0))
+								|| ((stricmp(Weapon_info[shipp->weapons.secondary_bank_weapons[shipp->weapons.previous_secondary_bank]].name, scp->data.name) == 0)
+								&&  (stricmp(Weapon_info[shipp->weapons.secondary_bank_weapons[shipp->weapons.current_secondary_bank]].name, scp->data.name) != 0)) ))
+								return false;
+							break;
+					    }
+					    case CHA_ONWPEQUIPPED:
+					    {
+							bool equipped = false;
+							for(int j = 0; j < 3; j++) {
+								if (!equipped) {
+									if ( !stricmp(Weapon_info[shipp->weapons.primary_bank_weapons[j]].name, scp->data.name) )
+									{
+										equipped = true;
+										break;
+									}
+								}
+							}
+						
+							if (!equipped) {
+								for(int j = 0; j < 4; j++) {
+									if (!equipped) {
+										if ( !stricmp(Weapon_info[shipp->weapons.secondary_bank_weapons[j]].name, scp->data.name) )
+										{
+											equipped = true;
+											break;
+										}
+									}
+								}
+							}
+					    }
+					    case CHA_ONWPFIRED:
+					    {
+							if (! (stricmp(Weapon_info[shipp->weapons.primary_bank_weapons[shipp->weapons.current_primary_bank]].name, scp->data.name) == 0 || (stricmp(Weapon_info[shipp->weapons.secondary_bank_weapons[shipp->weapons.current_secondary_bank]].name, scp->data.name) == 0)))
+								return false;
+				        }
+				    }
+				}
+				else
+				{
+				    if (objp->type != OBJ_WEAPON)
+					    return false;
+				    if (stricmp(Weapon_info[Weapons[objp->instance].weapon_info_index].name, scp->data.name))
+					    return false;
+			    }
 				break;
 			case CHC_OBJECTTYPE:
 				if(objp == NULL)

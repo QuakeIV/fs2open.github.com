@@ -61,6 +61,11 @@ struct image_desc
 #define CHA_ONSTATESTART	19
 #define CHA_ONSTATEEND		20
 #define CHA_ONWEAPONDELETE	21
+#define CHA_ONWPEQUIPPED	22
+#define CHA_ONWPFIRED		23
+#define CHA_ONWPSELECTED	24
+#define CHA_ONWPDESELECTED	25
+#define CHA_GAMEPLAYSTART	26 // matching 3.6.14 values
 
 
 struct script_condition
