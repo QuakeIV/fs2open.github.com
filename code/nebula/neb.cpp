@@ -155,6 +155,10 @@ int neb_tossed_count = 0;		// nebs tossed because of max render count
 // the AWACS suppresion level for the nebula
 float Neb2_awacs = -1.0f;
 
+// The visual render distance multipliers for the nebula
+float Neb2_fog_near_mult = 1.0f;
+float Neb2_fog_far_mult = 1.0f;
+
 // how many "slices" are in the current player nebuls
 int Neb2_slices = 5;
 
@@ -555,7 +559,7 @@ int neb2_skip_render(object *objp, float z_depth)
 	}
 
 	// get near and far fog values based upon object type and rendering mode
-	neb2_get_fog_values(&fog_near, &fog_far, objp);
+	neb2_get_adjusted_fog_values(&fog_near, &fog_far, objp);
 
 	// by object type
 	switch( objp->type )	{
@@ -1211,6 +1215,20 @@ void neb2_get_fog_values(float *fnear, float *ffar, object *objp)
 */	}
 }
 
+// This version of the function allows for global adjustment to fog values
+void neb2_get_adjusted_fog_values(float *fnear, float *ffar, object *objp)
+{
+	neb2_get_fog_values(fnear, ffar, objp);
+
+	// Multiply fog distances by mission multipliers
+	*fnear *= Neb2_fog_near_mult;
+	*ffar *= Neb2_fog_far_mult;
+
+	// Avoide divide-by-zero
+	if ((*fnear - *ffar) == 0)
+		*ffar = *fnear + 1.0f;
+}
+
 float nNf_near, nNf_far;
 // given a position in space, return a value from 0.0 to 1.0 representing the fog level 
 float neb2_get_fog_intensity(object *obj)
@@ -1218,7 +1236,7 @@ float neb2_get_fog_intensity(object *obj)
 	float pct;
 
 	// get near and far fog values based upon object type and rendering mode
-	neb2_get_fog_values(&nNf_near, &nNf_far, obj);
+	neb2_get_adjusted_fog_values(&nNf_near, &nNf_far, obj);
 
 	// get the fog pct
 	pct = vm_vec_dist_quick(&Eye_position, &obj->pos) / (nNf_far - nNf_near);
