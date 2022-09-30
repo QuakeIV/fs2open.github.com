@@ -585,6 +585,9 @@ if (UNIX)
     target_compile_definitions(code PUBLIC SCP_UNIX USE_OPENAL)
 endif (UNIX)
 
+# always do inferno build TODO: yeet macros for that entirely
+target_compile_definitions(code PUBLIC INF_BUILD)
+
 message(${LUA_INCLUDE_DIR})
 
 target_include_directories(code PUBLIC ${CMAKE_CURRENT_SOURCE_DIR} ${SDL2_INCLUDE_DIRS} ${LUA_INCLUDE_DIR})
