@@ -1676,7 +1676,7 @@ void unregister_malloc(char *filename, int size, void *ptr)
 #endif
 
 #ifndef NDEBUG
-void *_vm_malloc( int size, char *filename, int line, int quiet )
+void *_vm_malloc( int size, const char *filename, int line, int quiet )
 #else
 void *_vm_malloc( int size, int quiet )
 #endif
@@ -1743,7 +1743,7 @@ char *_vm_strndup( const char *ptr, int size )
 }
 
 #ifndef NDEBUG
-void _vm_free( void *ptr, char *filename, int line )
+void _vm_free( void *ptr, const char *filename, int line )
 #else
 void _vm_free( void *ptr )
 #endif

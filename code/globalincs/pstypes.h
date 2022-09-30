@@ -611,7 +611,7 @@ void vm_free_all();
 	// Debug versions
 
 	// Allocates some RAM.
-	void *_vm_malloc( int size, char *filename = NULL, int line = -1, int quiet = 0 );
+	void *_vm_malloc( int size, const char *filename = NULL, int line = -1, int quiet = 0 );
 
 	// allocates some RAM for a string
 	char *_vm_strdup( const char *ptr, char *filename, int line );
@@ -620,7 +620,7 @@ void vm_free_all();
 	char *_vm_strndup( const char *ptr, int size, char *filename, int line );
 
 	// Frees some RAM. 
-	void _vm_free( void *ptr, char *filename = NULL, int line= -1 );
+	void _vm_free( void *ptr, const char *filename = NULL, int line= -1 );
 
 	// reallocates some RAM
 	void *_vm_realloc( void *ptr, int size, char *filename = NULL, int line= -1, int quiet = 0 );
