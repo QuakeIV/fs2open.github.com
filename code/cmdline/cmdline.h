@@ -67,7 +67,6 @@ extern int Cmdline_decals;
 extern int Cmdline_env;
 extern int Cmdline_mipmap;
 extern int Cmdline_missile_lighting;
-extern int Cmdline_glow;
 extern int Cmdline_nomotiondebris;
 extern int Cmdline_noscalevid;	// disables fit-to-window for movies - taylor
 extern int Cmdline_spec;

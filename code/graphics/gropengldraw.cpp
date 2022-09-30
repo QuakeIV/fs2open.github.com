@@ -983,10 +983,10 @@ void opengl_tmapper_internal(int nv, vertex **verts, uint flags, int is_scaler =
 		stage++; // bump!
 
 		// glowmap
-		if ( Cmdline_glow && (GLOWMAP > -1) ) {
-			if ( !gr_opengl_tcache_set(GLOWMAP, tmap_type, &u_scale, &v_scale, stage) ) {
+		if (GLOWMAP > -1)
+		{
+		    if (!gr_opengl_tcache_set(GLOWMAP, tmap_type, &u_scale, &v_scale, stage))
 				return;
-			}
 
 			opengl_set_additive_tex_env();
 

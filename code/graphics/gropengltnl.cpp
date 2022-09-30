@@ -561,7 +561,7 @@ static void opengl_render_pipeline_fixed(int start, int n_prim, ushort *sbuffer,
 	int textured = ((flags & TMAP_FLAG_TEXTURED) && (vbp->flags & VERTEX_FLAG_UV1));
 
 	if (textured ) {
-		if ( Cmdline_glow && (GLOWMAP > 0) ) {
+		if (GLOWMAP > 0) {
 			using_glow = true;
 		}
 

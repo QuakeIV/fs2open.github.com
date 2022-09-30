@@ -781,9 +781,6 @@ void shader_manager::load_main_shaders() {
 		opengl_shader_file_t *shader_file = &GL_shader_file[i];
 
 		// omit shaders that surely won't be used
-		if (!config::is_enabled(config::glow) && (shader_file->flags & main_shader::flag_glow_map))
-			continue;
-
 		if (!config::is_enabled(config::specular) && (shader_file->flags & main_shader::flag_specular_map))
 			continue;
 

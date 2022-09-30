@@ -661,11 +661,11 @@ void print_family_tree( polymodel *obj, int modelnum, char * ident, int islast )
 		mprintf(( " %s", obj->submodel[modelnum].name ));
 		sprintf( temp, " " );
 	} else if ( islast ) 	{
-		mprintf(( "%sÀÄ%s", ident, obj->submodel[modelnum].name ));
+		mprintf(( "%s %s", ident, obj->submodel[modelnum].name ));
 		sprintf( temp, "%s  ", ident );
 	} else {
-		mprintf(( "%sÃÄ%s", ident, obj->submodel[modelnum].name ));
-		sprintf( temp, "%s³ ", ident );
+		mprintf(( "%s %s", ident, obj->submodel[modelnum].name ));
+		sprintf( temp, "%s ", ident );
 	}
 
 	mprintf(( "\n" ));
@@ -2277,7 +2277,7 @@ void model_load_texture(polymodel *pm, int i, char *file)
 
 	// glow maps ---------------------------------------------------------------
 	texture_info *tglow = &tmap->textures[TM_GLOW_TYPE];
-	if ( (!Cmdline_glow && !Fred_running) || (tbase->GetTexture() < 0))
+	if (tbase->GetTexture() < 0)
 	{
 		tglow->clear();
 	}

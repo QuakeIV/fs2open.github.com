@@ -1987,7 +1987,6 @@ void game_init()
 	if (Is_standalone) {
 		// force off some cmdlines if they are on
 		Cmdline_spec = 0;
-		Cmdline_glow = 0;
 		Cmdline_env = 0;
 		Cmdline_3dwarp = 0;
 		Cmdline_normal = 0;

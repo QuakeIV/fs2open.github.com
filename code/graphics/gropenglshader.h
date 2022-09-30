@@ -68,7 +68,6 @@ namespace opengl {
 			bloom_int,		// 1
 			env_map,
 			no_fbo,
-			glow,
 			glsl,			// 5
 			height_map,
 			normal_map,
@@ -85,8 +84,6 @@ namespace opengl {
 					return &Cmdline_env;
 				case no_fbo:
 					return &Cmdline_no_fbo;
-				case glow:
-					return &Cmdline_glow;
 				case glsl:
 					return &Use_GLSL;
 				case height_map:

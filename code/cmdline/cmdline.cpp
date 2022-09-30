@@ -111,7 +111,6 @@ typedef struct
 Flag exe_params[] = 
 {
 	{ "-spec",				"Enable specular",							true,	EASY_MEM_ALL_ON,	EASY_DEFAULT_MEM,	"Graphics",		"http://www.hard-light.net/wiki/index.php/Command-Line_Reference#-spec", },
-	{ "-glow",				"Enable glowmaps",							true,	EASY_MEM_ALL_ON,	EASY_DEFAULT_MEM,	"Graphics",		"http://www.hard-light.net/wiki/index.php/Command-Line_Reference#-glow", },
 	{ "-env",				"Enable environment maps",					true,	EASY_MEM_ALL_ON,	EASY_DEFAULT_MEM,	"Graphics",		"http://www.hard-light.net/wiki/index.php/Command-Line_Reference#-env", },
 	{ "-mipmap",			"Enable mipmapping",						true,	0,					EASY_DEFAULT_MEM,	"Graphics",		"http://www.hard-light.net/wiki/index.php/Command-Line_Reference#-mipmap", },
 	{ "-nomotiondebris",	"Disable motion debris",					true,	EASY_ALL_ON,		EASY_DEFAULT,		"Graphics",		"http://www.hard-light.net/wiki/index.php/Command-Line_Reference#-nomotiondebris",},
@@ -249,7 +248,6 @@ cmdline_parm decals("-decals", NULL);				// Cmdline_decals
 cmdline_parm env("-env", NULL);						// Cmdline_env
 cmdline_parm mipmap_arg("-mipmap", NULL);			// Cmdline_mipmap
 cmdline_parm missile_lighting_arg("-missile_lighting", NULL);	// Cmdline_missile_lighting
-cmdline_parm glow_arg("-glow", NULL); 				// Cmdline_glow  -- use Bobs glow code
 cmdline_parm nomotiondebris_arg("-nomotiondebris", NULL); // Cmdline_nomotiondebris  -- Removes those ugly floating rocks -C
 cmdline_parm noscalevid_arg("-noscalevid", NULL);	// Cmdline_noscalevid  -- disable video scaling that fits to window
 cmdline_parm spec_arg("-spec", NULL);				// Cmdline_spec  -- use specular highlighting -Sticks
@@ -269,7 +267,6 @@ int Cmdline_decals = 0;
 int Cmdline_env = 0;
 int Cmdline_mipmap = 0;
 int Cmdline_missile_lighting = 0;
-int Cmdline_glow = 0;
 int Cmdline_nomotiondebris = 0;
 int Cmdline_noscalevid = 0;
 int Cmdline_spec = 0;
@@ -1204,9 +1201,6 @@ bool SetCmdlineParams()
 
 	if ( img2dds_arg.found() )
 		Cmdline_img2dds = 1;
-
-	if ( glow_arg.found() )
-		Cmdline_glow = 1;
 
 	if ( query_speech_arg.found() )
 		Cmdline_query_speech = 1;

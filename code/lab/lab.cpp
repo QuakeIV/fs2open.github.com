@@ -1618,9 +1618,7 @@ void labviewer_make_render_options_window(Button *caller)
 	}
 	// map related flags
 	ADD_RENDER_BOOL("No Diffuse Map", Basemap_override);
-	if (Cmdline_glow) {
-		ADD_RENDER_FLAG("No Glow Map", Lab_model_flags, MR_NO_GLOWMAPS);
-	}
+	ADD_RENDER_FLAG("No Glow Map", Lab_model_flags, MR_NO_GLOWMAPS);
 	if (Cmdline_spec) {
 		ADD_RENDER_BOOL("No Specular Map", Specmap_override);
 	}
