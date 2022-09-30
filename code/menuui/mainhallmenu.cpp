@@ -566,10 +566,10 @@ void main_hall_init(int main_hall_num)
 
 	// load the background bitmap
 	Main_hall_bitmap = bm_load(Main_hall->bitmap);
-	bg_type = bm_get_type(Main_hall_bitmap);
 	if(Main_hall_bitmap < 0){
 		nprintf(("General","WARNING! Couldn't load main hall background bitmap %s\n", Main_hall->bitmap));
 	}
+	bg_type = bm_get_type(Main_hall_bitmap);
 
 	// set the interface palette 
 #ifndef HARDWARE_ONLY
