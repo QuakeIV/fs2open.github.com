@@ -110,13 +110,9 @@ typedef struct
 // Please group them by type, ie graphics, gameplay etc, maximum 20 different types
 Flag exe_params[] = 
 {
-	{ "-spec",				"Enable specular",							true,	EASY_MEM_ALL_ON,	EASY_DEFAULT_MEM,	"Graphics",		"http://www.hard-light.net/wiki/index.php/Command-Line_Reference#-spec", },
-	{ "-env",				"Enable environment maps",					true,	EASY_MEM_ALL_ON,	EASY_DEFAULT_MEM,	"Graphics",		"http://www.hard-light.net/wiki/index.php/Command-Line_Reference#-env", },
-	{ "-mipmap",			"Enable mipmapping",						true,	0,					EASY_DEFAULT_MEM,	"Graphics",		"http://www.hard-light.net/wiki/index.php/Command-Line_Reference#-mipmap", },
 	{ "-nomotiondebris",	"Disable motion debris",					true,	EASY_ALL_ON,		EASY_DEFAULT,		"Graphics",		"http://www.hard-light.net/wiki/index.php/Command-Line_Reference#-nomotiondebris",},
 	{ "-noscalevid",		"Disable scale-to-window for movies",		true,	0,					EASY_DEFAULT,		"Graphics",		"http://www.hard-light.net/wiki/index.php/Command-Line_Reference#-noscalevid", },
 	{ "-missile_lighting",	"Apply Lighting to Missiles"	,			true,	EASY_ALL_ON,		EASY_DEFAULT,		"Graphics",		"http://www.hard-light.net/wiki/index.php/Command-Line_Reference#-missile_lighting", },
-	{ "-normal",			"Enable normal maps",						true,	EASY_MEM_ALL_ON,	EASY_DEFAULT_MEM,	"Graphics",		"http://www.hard-light.net/wiki/index.php/Command-Line_Reference#-normal" },
 	{ "-3dshockwave",		"Enable 3D shockwaves",					true,	EASY_MEM_ALL_ON,	EASY_DEFAULT_MEM,	"Graphics",		"http://www.hard-light.net/wiki/index.php/Command-Line_Reference#-3dshockwave" },
 
 	{ "-img2dds",			"Compress non-compressed images",			true,	0,					EASY_DEFAULT,		"Game Speed",	"http://www.hard-light.net/wiki/index.php/Command-Line_Reference#-img2dds", },
@@ -156,7 +152,6 @@ Flag exe_params[] =
 	{ "-noibx",				"Don't use cached index buffers (IBX)",	true,	0,					EASY_DEFAULT,		"Troubleshoot",	"http://www.hard-light.net/wiki/index.php/Command-Line_Reference#-noibx",	},
 	{ "-loadallweps",		"Load all weapons, even those not used",	true,	0,					EASY_DEFAULT,		"Troubleshoot", "http://www.hard-light.net/wiki/index.php/Command-Line_Reference#-loadallweps", },
 	{ "-disable_fbo",		"Disable OpenGL RenderTargets",			true,	0,					EASY_DEFAULT,		"Troubleshoot",	"", },
-	{ "-no_glsl",			"Disable GLSL (shader) support",			true,	0,					EASY_DEFAULT,		"Troubleshoot", "", },
 	{ "-ati_swap",			"Fix Color issues on some ATI cards",		true,	0,					EASY_DEFAULT,		"Troubleshoot", "http://scp.indiegames.us/mantis/view.php?id=1669", },
 
 	{ "-ingame_join",		"Allows ingame joining",					true,	0,					EASY_DEFAULT,		"Experimental",	"http://www.hard-light.net/wiki/index.php/Command-Line_Reference#-ingame_join", },
@@ -243,17 +238,11 @@ cmdline_parm spec_static_arg("-spec_static", NULL);
 cmdline_parm spec_point_arg("-spec_point", NULL);
 cmdline_parm spec_tube_arg("-spec_tube", NULL);
 cmdline_parm ambient_factor_arg("-ambient_factor", NULL);	// Cmdline_ambient_factor
-cmdline_parm cell_arg("-cell", NULL);				// Cmdline_cell
 cmdline_parm decals("-decals", NULL);				// Cmdline_decals
-cmdline_parm env("-env", NULL);						// Cmdline_env
-cmdline_parm mipmap_arg("-mipmap", NULL);			// Cmdline_mipmap
 cmdline_parm missile_lighting_arg("-missile_lighting", NULL);	// Cmdline_missile_lighting
 cmdline_parm nomotiondebris_arg("-nomotiondebris", NULL); // Cmdline_nomotiondebris  -- Removes those ugly floating rocks -C
 cmdline_parm noscalevid_arg("-noscalevid", NULL);	// Cmdline_noscalevid  -- disable video scaling that fits to window
-cmdline_parm spec_arg("-spec", NULL);				// Cmdline_spec  -- use specular highlighting -Sticks
 cmdline_parm noemissive_arg("-no_emissive_light", NULL);		// Cmdline_no_emissive  -- don't use emissive light in OGL
-cmdline_parm normal_arg("-normal", NULL);				// Cmdline_normal  -- enable normal mapping
-cmdline_parm height_arg("-height", NULL);			// Cmdline_height  -- enable support for parallax mapping
 cmdline_parm enable_3d_shockwave_arg("-3dshockwave", NULL);
 cmdline_parm postprocess_arg("-post_process", NULL);
 cmdline_parm bloom_intensity_arg("-bloom_intensity", NULL);
@@ -262,17 +251,11 @@ float Cmdline_clip_dist = Default_min_draw_distance;
 float Cmdline_fov = 0.75f;
 float Cmdline_ogl_spec = 80.0f;
 int Cmdline_ambient_factor = 128;
-int Cmdline_cell = 0;
 int Cmdline_decals = 0;
-int Cmdline_env = 0;
-int Cmdline_mipmap = 0;
 int Cmdline_missile_lighting = 0;
 int Cmdline_nomotiondebris = 0;
 int Cmdline_noscalevid = 0;
-int Cmdline_spec = 0;
 int Cmdline_no_emissive = 0;
-int Cmdline_normal = 0;
-int Cmdline_height = 0;
 int Cmdline_enable_3d_shockwave = 0;
 int Cmdline_postprocess = 0;
 int Cmdline_bloom_intensity = 75;
@@ -349,7 +332,6 @@ cmdline_parm no_set_gamma_arg("-no_set_gamma", NULL);	// Cmdline_no_set_gamma
 cmdline_parm no_vbo_arg("-novbo", NULL);			// Cmdline_novbo
 cmdline_parm safeloading_arg("-safeloading", NULL);	// Cmdline_safeloading  -- Uses old loading method -C
 cmdline_parm no_fbo_arg("-disable_fbo", NULL);		// Cmdline_no_fbo
-cmdline_parm noglsl_arg("-no_glsl", NULL);			// Cmdline_noglsl  -- disable GLSL support in OpenGL
 cmdline_parm atiswap_arg("-ati_swap", NULL);        // Cmdline_atiswap - Fix ATI color swap issue for screenshots.
 
 int Cmdline_d3d_lesstmem = 0;
@@ -361,7 +343,6 @@ int Cmdline_no_set_gamma = 0;
 int Cmdline_novbo = 0; // turn off OGL VBO support, troubleshooting
 int Cmdline_safeloading = 0;
 int Cmdline_no_fbo = 0;
-int Cmdline_noglsl = 0;
 int Cmdline_ati_color_swap = 0;
 
 // Developer/Testing related
@@ -1101,10 +1082,6 @@ bool SetCmdlineParams()
 		Cmdline_nomotiondebris = 1;
 	}
 
-	if( mipmap_arg.found() ) {
-		Cmdline_mipmap = 1;
-	}
-
 	if( stats_arg.found() ) {
 		Cmdline_show_stats = 1;
 	}
@@ -1155,15 +1132,6 @@ bool SetCmdlineParams()
 		static_tube_factor = spec_tube_arg.get_float();
 	}
 
-	if ( cell_arg.found() ) {
-		Cmdline_cell = 1;
-	}
-
-	if ( spec_arg.found() )
-	{
-		Cmdline_spec = 1;
-	}
-
 	if ( htl_arg.found() ) 
 	{
 		Cmdline_nohtl = 1;
@@ -1185,19 +1153,6 @@ bool SetCmdlineParams()
 		Cmdline_no_grab = 1;
 	}
 #endif
-
-	if ( normal_arg.found() ) {
-		Cmdline_normal = 1;
-
-		// height maps are only used if normal maps are
-		if ( height_arg.found() ) {
-			Cmdline_height = 1;
-		}
-	}
-
-	if ( noglsl_arg.found() ) {
-		Cmdline_noglsl = 1;
-	}
 
 	if ( img2dds_arg.found() )
 		Cmdline_img2dds = 1;
@@ -1280,10 +1235,6 @@ bool SetCmdlineParams()
 	if ( snd_preload_arg.found() )
 	{
 		Cmdline_snd_preload = 1;
-	}
-
-	if ( env.found() ) {
-		Cmdline_env = 1;
 	}
 
 	if ( decals.found() ) {

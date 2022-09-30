@@ -1589,8 +1589,6 @@ void labviewer_close_render_options_window(GUIObject *caller)
 	y += cbp->GetHeight() + 1;	\
 }
 
-extern int Use_GLSL;
-
 void labviewer_make_render_options_window(Button *caller)
 {
 	Checkbox *cbp;
@@ -1613,24 +1611,14 @@ void labviewer_make_render_options_window(Button *caller)
 	ADD_RENDER_FLAG("Show Insignia", Lab_viewer_flags, LAB_FLAG_SHOW_INSIGNIA);
 	ADD_RENDER_FLAG("Show Damage Lightning", Lab_viewer_flags, LAB_FLAG_LIGHTNING_ARCS);
 	ADD_RENDER_FLAG("Rotate Subsystems", Lab_viewer_flags, LAB_FLAG_SUBMODEL_ROTATE);
-	if (Use_GLSL) {
-		ADD_RENDER_BOOL("Fixed Render Pipeline", GLSL_override);
-	}
+	ADD_RENDER_BOOL("Fixed Render Pipeline", GLSL_override);
 	// map related flags
 	ADD_RENDER_BOOL("No Diffuse Map", Basemap_override);
 	ADD_RENDER_FLAG("No Glow Map", Lab_model_flags, MR_NO_GLOWMAPS);
-	if (Cmdline_spec) {
-		ADD_RENDER_BOOL("No Specular Map", Specmap_override);
-	}
-	if (Cmdline_env) {
-		ADD_RENDER_BOOL("No Environment Map", Envmap_override);
-	}
-	if (Cmdline_normal) {
-		ADD_RENDER_BOOL("No Normal Map", Normalmap_override);
-	}
-	if (Cmdline_height) {
-		ADD_RENDER_BOOL("No Height Map", Heightmap_override);
-	}
+	ADD_RENDER_BOOL("No Specular Map", Specmap_override);
+	ADD_RENDER_BOOL("No Environment Map", Envmap_override);
+	ADD_RENDER_BOOL("No Normal Map", Normalmap_override);
+	ADD_RENDER_BOOL("No Height Map", Heightmap_override);
 	ADD_RENDER_BOOL("No Glow Points", Glowpoint_override);
 	// model flags
 	ADD_RENDER_FLAG("Wireframe", Lab_model_flags, ((Cmdline_nohtl) ? MR_SHOW_OUTLINE : MR_SHOW_OUTLINE_HTL) | MR_NO_POLYS);

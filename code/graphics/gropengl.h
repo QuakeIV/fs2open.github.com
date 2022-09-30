@@ -650,6 +650,5 @@ int opengl_check_for_errors(char *err_at = NULL);
 
 extern int Use_VBOs;
 extern int Use_PBOs;
-extern int Use_GLSL;
 
 #endif

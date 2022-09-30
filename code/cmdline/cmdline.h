@@ -62,16 +62,10 @@ extern float static_light_factor;
 extern float static_point_factor;
 extern float static_tube_factor;
 extern int Cmdline_ambient_factor;
-extern int Cmdline_cell;
 extern int Cmdline_decals;
-extern int Cmdline_env;
-extern int Cmdline_mipmap;
 extern int Cmdline_missile_lighting;
 extern int Cmdline_nomotiondebris;
 extern int Cmdline_noscalevid;	// disables fit-to-window for movies - taylor
-extern int Cmdline_spec;
-extern int Cmdline_normal;
-extern int Cmdline_height;
 extern int Cmdline_enable_3d_shockwave;
 extern int Cmdline_postprocess;
 extern int Cmdline_bloom_intensity;
@@ -119,7 +113,6 @@ extern int Cmdline_no_set_gamma;
 extern int Cmdline_novbo;
 extern int Cmdline_safeloading;
 extern int Cmdline_no_fbo;
-extern int Cmdline_noglsl;
 extern int Cmdline_ati_color_swap;
 
 // Developer/Testing related

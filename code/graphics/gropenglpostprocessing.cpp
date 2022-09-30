@@ -522,7 +522,7 @@ void gr_opengl_post_process_init() {
 		return;
 
 	// Check if we can use post processing
-	if (!opengl::config::is_enabled(opengl::config::glsl) || opengl::config::is_enabled(opengl::config::no_fbo)) {
+	if (opengl::config::is_enabled(opengl::config::no_fbo)) {
 		Cmdline_postprocess = 0;
 		return;
 	}

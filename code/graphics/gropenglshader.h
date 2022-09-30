@@ -65,14 +65,9 @@ namespace opengl {
 	class config {
 	public:
 		enum feature {
-			bloom_int,		// 1
-			env_map,
+			bloom_int,
 			no_fbo,
-			glsl,			// 5
-			height_map,
-			normal_map,
 			post_process,
-			specular
 		};
 	private:
 		/** Gets pointer to variable that denotes if specified feature is enabled. */
@@ -80,20 +75,10 @@ namespace opengl {
 			switch (fconf) {
 				case bloom_int:
 					return &Cmdline_bloom_intensity;
-				case env_map:
-					return &Cmdline_env;
 				case no_fbo:
 					return &Cmdline_no_fbo;
-				case glsl:
-					return &Use_GLSL;
-				case height_map:
-					return &Cmdline_height;
-				case normal_map:
-					return &Cmdline_normal;
 				case post_process:
 					return &Cmdline_postprocess;
-				case specular:
-					return &Cmdline_spec;
 				default:
 					mprintf(("ERROR: Unknown feature: 0x%x!\n", fconf));
 					Int3();
@@ -498,8 +483,7 @@ namespace opengl {
 
 		/** Initialize shader_manager. */
 		static void create() {
-			if (config::is_enabled(config::glsl))
-				instance = new shader_manager;
+			instance = new shader_manager;
 		}
 
 		/** Destroy shaders manager objects. */

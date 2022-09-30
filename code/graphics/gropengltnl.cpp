@@ -157,10 +157,9 @@ int gr_opengl_make_buffer(poly_list *list, uint flags)
 	}
 
 	// tangent space data for normal maps (shaders only)
-	if (flags & VERTEX_FLAG_TANGENT) {
+	if (flags & VERTEX_FLAG_TANGENT)
+	{
 		Verify( list->tsb != NULL );
-		Assert( Cmdline_normal );
-
 		vbuffer.stride += (4 * sizeof(GLfloat));
 	}
 
@@ -874,11 +873,10 @@ void gr_opengl_render_buffer(int start, int n_prim, ushort *sbuffer, uint *ibuff
 		GL_state.FrontFaceValue(GL_CW);
 	}
 
-	if ( Use_GLSL && !GLSL_override ) {
+	if (!GLSL_override)
 		opengl_render_pipeline_program(start, n_prim, sbuffer, ibuffer, flags);
-	} else {
+	else
 		opengl_render_pipeline_fixed(start, n_prim, sbuffer, ibuffer, flags);
-	}
 
 	GL_CHECK_FOR_ERRORS("end of render_buffer()");
 }
@@ -1097,33 +1095,29 @@ void gr_opengl_set_view_matrix(vec3d *pos, matrix *orient)
 	glTranslated(-eyex, -eyey, -eyez);
 	glScalef(1.0f, 1.0f, -1.0f);
 
+	GL_env_texture_matrix_set = true;
+	// if our view setup is the same as previous call then we can skip this
+	if ( !use_last_view ) {
+		// setup the texture matrix which will make the the envmap keep lined
+		// up properly with the environment
+		GLfloat mview[16];
 
-	if (Cmdline_env) {
-		GL_env_texture_matrix_set = true;
+		glGetFloatv(GL_MODELVIEW_MATRIX, mview);
 
-		// if our view setup is the same as previous call then we can skip this
-		if ( !use_last_view ) {
-			// setup the texture matrix which will make the the envmap keep lined
-			// up properly with the environment
-			GLfloat mview[16];
+		// r.xyz  <--  r.x, u.x, f.x
+		GL_env_texture_matrix[0]  =  mview[0];
+		GL_env_texture_matrix[1]  = -mview[4];
+		GL_env_texture_matrix[2]  =  mview[8];
+		// u.xyz  <--  r.y, u.y, f.y
+		GL_env_texture_matrix[4]  =  mview[1];
+		GL_env_texture_matrix[5]  = -mview[5];
+		GL_env_texture_matrix[6]  =  mview[9];
+		// f.xyz  <--  r.z, u.z, f.z
+		GL_env_texture_matrix[8]  =  mview[2];
+		GL_env_texture_matrix[9]  = -mview[6];
+		GL_env_texture_matrix[10] =  mview[10];
 
-			glGetFloatv(GL_MODELVIEW_MATRIX, mview);
-
-			// r.xyz  <--  r.x, u.x, f.x
-			GL_env_texture_matrix[0]  =  mview[0];
-			GL_env_texture_matrix[1]  = -mview[4];
-			GL_env_texture_matrix[2]  =  mview[8];
-			// u.xyz  <--  r.y, u.y, f.y
-			GL_env_texture_matrix[4]  =  mview[1];
-			GL_env_texture_matrix[5]  = -mview[5];
-			GL_env_texture_matrix[6]  =  mview[9];
-			// f.xyz  <--  r.z, u.z, f.z
-			GL_env_texture_matrix[8]  =  mview[2];
-			GL_env_texture_matrix[9]  = -mview[6];
-			GL_env_texture_matrix[10] =  mview[10];
-
-			GL_env_texture_matrix[15] = 1.0f;
-		}
+		GL_env_texture_matrix[15] = 1.0f;
 	}
 
 	GL_CHECK_FOR_ERRORS("end of set_view_matrix()");

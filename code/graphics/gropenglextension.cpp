@@ -369,12 +369,6 @@ void opengl_extensions_init()
 //		Use_PBOs = 1;
 //	}
 
-	if ( !Cmdline_noglsl && Is_Extension_Enabled(OGL_ARB_SHADER_OBJECTS) && Is_Extension_Enabled(OGL_ARB_FRAGMENT_SHADER)
-			&& Is_Extension_Enabled(OGL_ARB_VERTEX_SHADER) && Is_Extension_Enabled(OGL_SM30) )
-	{
-		Use_GLSL = 1;
-	}
-
 	// setup the best fog function found
 	if ( !Fred_running ) {
 		if ( Is_Extension_Enabled(OGL_EXT_FOG_COORD) ) {
@@ -384,35 +378,25 @@ void opengl_extensions_init()
 		}
 	}
 
-	// if we can't do cubemaps then turn off Cmdline_env
-	if ( !(Is_Extension_Enabled(OGL_ARB_TEXTURE_CUBE_MAP) && Is_Extension_Enabled(OGL_ARB_TEXTURE_ENV_COMBINE)) ) {
-		Cmdline_env = 0;
+	GLint max_texture_units;
+	glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS_ARB, &max_texture_units);
+
+	// we need enough texture slots for this stuff to work
+	if (max_texture_units < 4)
+	{
+		Int3();
+		return;
 	}
 
-	// can't have this stuff without GLSL support
-	if ( !Use_GLSL ) {
-		Cmdline_normal = 0;
-		Cmdline_height = 0;
+	if (max_texture_units < 5)
+	{
+		Int3();
+		return;
 	}
 
-	if (Use_GLSL) {
-		GLint max_texture_units;
-		glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS_ARB, &max_texture_units);
-
-		// we need enough texture slots for this stuff to work
-
-		if (max_texture_units < 4) {
-			Int3();
-			Use_GLSL = 0;
-		}
-
-		if (max_texture_units < 5) {
-			Cmdline_normal = 0;
-			Cmdline_height = 0;
-		}
-
-		if (max_texture_units < 6) {
-			Cmdline_height = 0;
-		}
+	if (max_texture_units < 6)
+	{
+		Int3();
+		return;
 	}
 }

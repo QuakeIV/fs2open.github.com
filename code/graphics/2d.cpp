@@ -1159,11 +1159,7 @@ void poly_list::allocate(int _verts)
 	if (_verts) {
 		vert = (vertex*)vm_malloc(sizeof(vertex) * _verts);
 		norm = (vec3d*)vm_malloc(sizeof(vec3d) * _verts);
-
-		if (Cmdline_normal) {
-			tsb = (tsb_t*)vm_malloc(sizeof(tsb_t) * _verts);
-		}
-
+		tsb = (tsb_t*)vm_malloc(sizeof(tsb_t) * _verts);
 	}
 
 	n_verts = 0;
@@ -1286,9 +1282,7 @@ void poly_list::make_index_buffer()
 	int j, z = 0;
 	ubyte *nverts_good = NULL;
 
-	if (Cmdline_normal) {
-		calculate_tangent();
-	}
+	calculate_tangent();
 
 	// using vm_malloc() here rather than 'new' so we get the extra out-of-memory check
 	nverts_good = (ubyte *) vm_malloc(n_verts);
@@ -1313,10 +1307,7 @@ void poly_list::make_index_buffer()
 
 		poly_list_index_buffer_internal_list.vert[z] = vert[j];
 		poly_list_index_buffer_internal_list.norm[z] = norm[j];
-
-		if (Cmdline_normal) {
-			poly_list_index_buffer_internal_list.tsb[z] = tsb[j];
-		}
+		poly_list_index_buffer_internal_list.tsb[z] = tsb[j];
 
 		poly_list_index_buffer_internal_list.n_verts++;
 
@@ -1339,10 +1330,7 @@ poly_list& poly_list::operator = (poly_list &other_list)
 
 	memcpy(norm, other_list.norm, sizeof(vec3d) * other_list.n_verts);
 	memcpy(vert, other_list.vert, sizeof(vertex) * other_list.n_verts);
-
-	if (Cmdline_normal) {
-		memcpy(tsb, other_list.tsb, sizeof(tsb_t) * other_list.n_verts);
-	}
+	memcpy(tsb, other_list.tsb, sizeof(tsb_t) * other_list.n_verts);
 
 	n_verts = other_list.n_verts;
 	n_prim = other_list.n_prim;

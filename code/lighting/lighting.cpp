@@ -20,8 +20,6 @@
 
 #define MAX_LIGHT_LEVELS 16
 
-
-int cell_shaded_lightmap = -1;
 /*typedef struct light {
 	int		type;							// What type of light this is
 	vec3d	vec;							// location in world space of a point light or the direction of a directional light or the first point on the tube for a tube light
@@ -789,13 +787,6 @@ void light_apply_specular(ubyte *param_r, ubyte *param_g, ubyte *param_b, vec3d 
 	light *l;
 	float rval = 0, gval = 0, bval = 0;
 	int idx;
-
-	if ( !Cmdline_spec ) {
-		*param_r = 0;
-		*param_g = 0;
-		*param_b = 0;
-		return;
-	}
 
 	if (Detail.lighting==0) {
 		*param_r = 0;

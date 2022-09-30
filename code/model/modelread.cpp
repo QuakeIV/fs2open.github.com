@@ -868,7 +868,8 @@ int read_model_file(polymodel * pm, char *filename, int n_subsystems, model_subs
 			ibuffer_info.read = NULL;
 		}
 
-		if ( Cmdline_normal && (ibuffer_info.read != NULL) ) {
+		if (ibuffer_info.read != NULL)
+		{
 			ibuffer_info.tsb_read = cfopen( ibuffer_info.tsb_name, "rb", CFILE_NORMAL, CF_TYPE_CACHE );
 
 			if ( (ibuffer_info.tsb_read == NULL) || !cfilelength(ibuffer_info.tsb_read) ) {
@@ -982,18 +983,16 @@ int read_model_file(polymodel * pm, char *filename, int n_subsystems, model_subs
 
 
 				// tangent space data
-				if (Cmdline_normal) {
-					ibuffer_info.tsb_write = cfopen( ibuffer_info.tsb_name, "wb", CFILE_NORMAL, CF_TYPE_CACHE );
+				ibuffer_info.tsb_write = cfopen( ibuffer_info.tsb_name, "wb", CFILE_NORMAL, CF_TYPE_CACHE );
 
-					if (ibuffer_info.tsb_write != NULL) {
-						mprintf(("IBX: Starting a new TSB for '%s'.\n", filename));
+				if (ibuffer_info.tsb_write != NULL) {
+					mprintf(("IBX: Starting a new TSB for '%s'.\n", filename));
 
-						// file id
-						cfwrite_int( 0x42535432, ibuffer_info.tsb_write );	// "BST2" - ("2TSB" in file)
+					// file id
+					cfwrite_int( 0x42535432, ibuffer_info.tsb_write );	// "BST2" - ("2TSB" in file)
 
-						// POF checksum (NOTE: This gets replaced by the IBX checksum after it's been created!)
-						cfwrite_uint( pof_checksum, ibuffer_info.tsb_write );
-					}
+					// POF checksum (NOTE: This gets replaced by the IBX checksum after it's been created!)
+					cfwrite_uint( pof_checksum, ibuffer_info.tsb_write );
 				}
 			}
 		}
@@ -2293,7 +2292,7 @@ void model_load_texture(polymodel *pm, int i, char *file)
 
 	// specular maps -----------------------------------------------------------
 	texture_info *tspec = &tmap->textures[TM_SPECULAR_TYPE];
-	if ( (!Cmdline_spec && !Fred_running) || (tbase->GetTexture() < 0))
+	if (tbase->GetTexture() < 0)
 	{
 		tspec->clear();
 	}
@@ -2311,10 +2310,13 @@ void model_load_texture(polymodel *pm, int i, char *file)
 	// bump maps ---------------------------------------------------------------
 	texture_info *tnorm = &tmap->textures[TM_NORMAL_TYPE];
 	texture_info *theight = &tmap->textures[TM_HEIGHT_TYPE];
-	if ( (!Cmdline_normal && !Fred_running) || (tbase->GetTexture() < 0) ) {
+	if (tbase->GetTexture() < 0)
+	{
 		tnorm->clear();
 		theight->clear();
-	} else {
+	}
+	else
+	{
 		strcpy_s(tmp_name, file);
 		strcat_s(tmp_name, "-normal");
 		strlwr(tmp_name);
@@ -2322,7 +2324,8 @@ void model_load_texture(polymodel *pm, int i, char *file)
 		tnorm->LoadTexture(tmp_name, pm->filename);
 
 		// try to get a height map too
-		if ( Cmdline_height && (tnorm->GetTexture() > 0) ) {
+		if (tnorm->GetTexture() > 0)
+		{
 			strcpy_s(tmp_name, file);
 			strcat_s(tmp_name, "-height");
 			strlwr(tmp_name);

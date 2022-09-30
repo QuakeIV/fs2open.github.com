@@ -85,6 +85,4 @@ int light_get_global_dir(vec3d *pos, int n);
 // Set to non-zero if we're in a shadow.
 void light_set_shadow( int state );
 
-extern int cell_shaded_lightmap;
-
 #endif

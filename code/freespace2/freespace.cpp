@@ -1986,10 +1986,7 @@ void game_init()
 
 	if (Is_standalone) {
 		// force off some cmdlines if they are on
-		Cmdline_spec = 0;
-		Cmdline_env = 0;
 		Cmdline_3dwarp = 0;
-		Cmdline_normal = 0;
 
 		// now init the standalone server code
 		std_init_standalone();
@@ -2297,15 +2294,9 @@ void game_init()
 	load_animating_pointer(NOX("cursor"), 0, 0);	
 
 	// initialize alpha colors
-	alpha_colors_init();	
+	alpha_colors_init();
 
-	if (Cmdline_cell) {
-		cell_shaded_lightmap = bm_load("cellmap");
-	}
-
-	if (Cmdline_env) {
-		ENVMAP = Default_env_map = bm_load("cubemap");
-	}
+	ENVMAP = Default_env_map = bm_load("cubemap");
 
 	Viewer_mode = 0;
 //	Game_music_paused = 0;
@@ -3497,10 +3488,6 @@ void game_environment_map_gen()
 	const int size = 512;
 	int gen_flags = (BMP_FLAG_RENDER_TARGET_STATIC | BMP_FLAG_CUBEMAP);
 
-	if ( !Cmdline_env ) {
-		return;
-	}
-
 	if (gr_screen.envmap_render_target >= 0) {
 		if ( !bm_release(gr_screen.envmap_render_target, 1) ) {
 			Warning(LOCATION, "Unable to release environment map render target.");
@@ -3903,12 +3890,12 @@ void game_render_frame( camid cid )
 	}
 
 	// this needs to happen after g3_start_frame() and before the primary projection and view matrix is setup
-	if ( Cmdline_env && !Env_cubemap_drawn ) {
+	if (!Env_cubemap_drawn)
+	{
 		setup_environment_mapping(cid);
 
-		if ( !Dynamic_environment ) {
+		if ( !Dynamic_environment )
 			Env_cubemap_drawn = true;
-		}
 	}
 	gr_zbuffer_clear(TRUE);
 

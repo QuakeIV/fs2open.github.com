@@ -1552,13 +1552,11 @@ int opengl_set_render_target( int slot, int face, int is_static )
 
 	if (slot < 0) {
 		if ( (render_target != NULL) && (render_target->working_slot >= 0) ) {
-		//	if (Cmdline_mipmap) {
 		//		ts = &Textures[render_target->working_slot];
 
 		//		glBindTexture(ts->texture_target, ts->texture_id);
 		//		vglGenerateMipmapEXT(ts->texture_target);
 		//		glBindTexture(ts->texture_target, 0);
-		//	}
 
 			if (render_target->is_static) {
 				extern void gr_opengl_bm_save_render_target(int slot);
@@ -1702,15 +1700,11 @@ int opengl_make_render_target( int handle, int slot, int *w, int *h, ubyte *bpp,
 			ts->texture_target = GL_state.Texture.GetTarget();
 		}
 
-	/*	if (Cmdline_mipmap) {
-			vglGenerateMipmapEXT(GL_state.Texture.GetTarget());
+	/*	vglGenerateMipmapEXT(GL_state.Texture.GetTarget());
 
 			extern int get_num_mipmap_levels(int w, int h);
-			ts->mipmap_levels = get_num_mipmap_levels(*w, *h);
-		} else */
-		{
-			ts->mipmap_levels = 1;
-		}
+			ts->mipmap_levels = get_num_mipmap_levels(*w, *h);*/
+		ts->mipmap_levels = 1;
 
 		GL_state.Texture.Disable();
 
@@ -1772,15 +1766,11 @@ int opengl_make_render_target( int handle, int slot, int *w, int *h, ubyte *bpp,
 		glTexImage2D(GL_state.Texture.GetTarget(), 0, GL_RGB8, *w, *h, 0, GL_BGR, GL_UNSIGNED_BYTE, NULL);
 	}
 
-/*	if (Cmdline_mipmap) {
-		vglGenerateMipmapEXT(GL_state.Texture.GetTarget());
+/*vglGenerateMipmapEXT(GL_state.Texture.GetTarget());
 
 		extern int get_num_mipmap_levels(int w, int h);
-		ts->mipmap_levels = get_num_mipmap_levels(*w, *h);
-	} else */
-	{
-		ts->mipmap_levels = 1;
-	}
+		ts->mipmap_levels = get_num_mipmap_levels(*w, *h);*/
+	ts->mipmap_levels = 1;
 
 	GL_state.Texture.Disable();
 

@@ -780,19 +780,6 @@ void shader_manager::load_main_shaders() {
 	for (int i = 0; i < Num_shader_files; i++) {
 		opengl_shader_file_t *shader_file = &GL_shader_file[i];
 
-		// omit shaders that surely won't be used
-		if (!config::is_enabled(config::specular) && (shader_file->flags & main_shader::flag_specular_map))
-			continue;
-
-		if (!config::is_enabled(config::env_map) && (shader_file->flags & main_shader::flag_env_map))
-			continue;
-
-		if (!config::is_enabled(config::normal_map) && (shader_file->flags & main_shader::flag_normal_map))
-			continue;
-
-		if (!config::is_enabled(config::height_map) && (shader_file->flags & main_shader::flag_height_map))
-			continue;
-
 		// choose appropiate shaders names
 		char *vert_name;
 		if (main_vert)
@@ -831,26 +818,22 @@ void shader_manager::load_main_shaders() {
 		else {
 			// if problem caused by height map - disable
 			if (shader_file->flags & main_shader::flag_height_map) {
-				mprintf(("      Shader in_error!  Disabling height maps!\n"));
-				config::disable(config::height_map);
+				mprintf(("      Shader in_error!  Height map failure!\n"));
+				Int3();
+				return;
 			}
 
 			// if problem caused by normal map - disable
 			if (shader_file->flags & main_shader::flag_normal_map) {
-				mprintf(("      Shader in_error!  Disabling normal maps and height maps!\n"));
-				config::disable(config::height_map);
-				config::disable(config::normal_map);
+				mprintf(("      Shader in_error!  Normap map failure!\n"));
+				Int3();
+				return;
 			}
 
 			// there is no way to use glsl
 			if (i == 0) {
-				mprintf(("      Shader in_error!  Disabling GLSL!\n"));
-
-				config::disable(config::glsl);
-				config::disable(config::height_map);
-				config::disable(config::normal_map);
-
-				destroy();
+				mprintf(("      Shader in_error!  GLSL failed!\n"));
+				Int3();
 				return;
 			}
 		}
@@ -889,6 +872,5 @@ opengl::post_shader *shader_manager::load_post_shader(int flags) {
 
 // C wrappers
 void gr_clear_shaders_cache() {
-	if (opengl::config::is_enabled(opengl::config::glsl))
-		opengl::shader_manager::get()->clear_cache();
+	opengl::shader_manager::get()->clear_cache();
 }

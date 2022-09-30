@@ -80,7 +80,6 @@ static ushort *GL_original_gamma_ramp = NULL;
 
 int Use_VBOs = 0;
 int Use_PBOs = 0;
-int Use_GLSL = 0;
 
 static int GL_dump_frames = 0;
 static ubyte *GL_dump_buffer = NULL;
@@ -1922,9 +1921,7 @@ bool gr_opengl_init()
 
 	GLint max_texture_units = GL_supported_texture_units;
 
-	if (Use_GLSL) {
-		glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS_ARB, &max_texture_units);
-	}
+	glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS_ARB, &max_texture_units);
 
 	GL_state.Texture.init(max_texture_units);
 
@@ -1979,10 +1976,8 @@ bool gr_opengl_init()
 	mprintf(( "  Texture compression available: %s\n", Texture_compression_available ? NOX("YES") : NOX("NO") ));
 	mprintf(( "  Using %s texture filter.\n", (GL_mipmap_filter) ? NOX("trilinear") : NOX("bilinear") ));
 
-	if (Use_GLSL) {
-		mprintf(( "  Using GLSL for model rendering.\n" ));
-		mprintf(( "  Shader Version: %s\n", glGetString(GL_SHADING_LANGUAGE_VERSION_ARB) ));
-	}
+	mprintf(( "  Using GLSL for model rendering.\n" ));
+	mprintf(( "  Shader Version: %s\n", glGetString(GL_SHADING_LANGUAGE_VERSION_ARB) ));
 
 	// This stops fred crashing if no textures are set
 	gr_screen.current_bitmap = -1;
