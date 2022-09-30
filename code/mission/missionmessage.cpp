@@ -1383,13 +1383,9 @@ void message_queue_process()
 	// distort the message if comms system is damaged
 	message_maybe_distort_text(buf);
 
-#ifndef NDEBUG
-	// debug only -- if the message is a builtin message, put in parens whether or not the voice played
-	if ( Sound_enabled && (Playing_messages[Num_messages_playing].wave == -1) ) {
-		strcat_s( buf, NOX("..(no wavefile for voice)"));
+    // if there is no sound for the message, play generic message beep
+	if (Playing_messages[Num_messages_playing].wave == -1)
 		snd_play(&Snds[SND_CUE_VOICE]);
-	}
-#endif
 	
 	strncpy (who_from, q->who_from, NAME_LENGTH);
 
