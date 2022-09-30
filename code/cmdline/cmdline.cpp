@@ -129,9 +129,6 @@ Flag exe_params[] =
 	{ "-orbradar",			"Enables 3d radar",							true,	0,					EASY_DEFAULT,		"HUD",			"http://www.hard-light.net/wiki/index.php/Command-Line_Reference#-orbradar", },
 	{ "-rearm_timer",		"Enable Rearm/Repair Completion Timer",	true,	0,					EASY_DEFAULT,		"HUD",			"http://www.hard-light.net/wiki/index.php/Command-Line_Reference#-rearm_timer", },
 	{ "-ballistic_gauge",	"Enable the analog ballistic ammo gauge",	true,	0,					EASY_DEFAULT,		"HUD",			"http://www.hard-light.net/wiki/index.php/Command-Line_Reference#-ballistic_gauge", },
-
-	{ "-ship_choice_3d",	"Use models for ship selection",			true,	0,					EASY_DEFAULT,		"Gameplay",		"http://www.hard-light.net/wiki/index.php/Command-Line_Reference#-ship_choice_3d", },
-    { "-weapon_choice_3d",	"Use models for weapon selection",		true,	0,					EASY_DEFAULT,		"Gameplay",		"http://www.hard-light.net/wiki/index.php/Command-Line_Reference#-weapon_choice_3d", },
 	{ "-3dwarp",			"Enable 3d warp",							true,	0,					EASY_DEFAULT,		"Gameplay",		"http://www.hard-light.net/wiki/index.php/Command-Line_Reference#-3dwarp", },
 	{ "-warp_flash",		"Enable flash upon warp",					true,	0,					EASY_DEFAULT,		"Gameplay",		"http://www.hard-light.net/wiki/index.php/Command-Line_Reference#-warp_flash", },
 	{ "-no_ap_interrupt",	"Disable interrupting autopilot",			true,	0,					EASY_DEFAULT,		"Gameplay",		"http://www.hard-light.net/wiki/index.php/Command-Line_Reference#-no_ap_interrupt", },
@@ -309,14 +306,10 @@ int Cmdline_targetinfo = 0;
 
 // Gameplay related
 cmdline_parm use_3dwarp("-3dwarp", NULL);			// Cmdline_3dwarp
-cmdline_parm ship_choice_3d_arg("-ship_choice_3d", NULL);	// Cmdline_ship_choice_3d
-cmdline_parm weapon_choice_3d_arg("-weapon_choice_3d", NULL);	// Cmdline_weapon_choice_3d
 cmdline_parm use_warp_flash("-warp_flash", NULL);	// Cmdline_warp_flash
 cmdline_parm allow_autpilot_interrupt("-no_ap_interrupt", NULL);	// Cmdline_warp_flash
 
 int Cmdline_3dwarp = 0;
-int Cmdline_ship_choice_3d = 0;
-int Cmdline_weapon_choice_3d = 0;
 int Cmdline_warp_flash = 0;
 int Cmdline_autopilot_interruptable = 1;
 
@@ -1254,12 +1247,6 @@ bool SetCmdlineParams()
 
 	if ( query_speech_arg.found() )
 		Cmdline_query_speech = 1;
-
-	if ( ship_choice_3d_arg.found() )
-		Cmdline_ship_choice_3d = 1;
-
-    if ( weapon_choice_3d_arg.found() )
-        Cmdline_weapon_choice_3d = 1;
 
 	if ( show_mem_usage_arg.found() )
 		Cmdline_show_mem_usage = 1;

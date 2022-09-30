@@ -1412,12 +1412,6 @@ void ship_select_do(float frametime)
 		ship_select_redraw_pressed_buttons();
 		common_render_selected_screen_button();
 	}
-	if(!Cmdline_ship_choice_3d)
-	{
-		if ( (Selected_ss_class >= 0) && (Ss_icons[Selected_ss_class].ss_anim.num_frames > 0) ) {
-			generic_anim_render(&Ss_icons[Selected_ss_class].ss_anim, (help_overlay_active(SS_OVERLAY)) ? 0 : frametime, Ship_anim_coords[gr_screen.res][0], Ship_anim_coords[gr_screen.res][1]);
-		}
-	}
 
 	// The background transition plays once. Display ship icons after Background done playing
 	if ( !Background_playing ) {
@@ -1481,7 +1475,7 @@ void ship_select_do(float frametime)
 	//////////////////////////////////
 	// Render and draw the 3D model //
 	//////////////////////////////////
-	if( Cmdline_ship_choice_3d || ( (Selected_ss_class >= 0) && (Ss_icons[Selected_ss_class].ss_anim.num_frames == 0)) )
+	if((Selected_ss_class >= 0) && (Ss_icons[Selected_ss_class].ss_anim.num_frames == 0))
 	{
 		// check we have a valid ship class selected
 		if ( (Selected_ss_class >= 0) && (ShipSelectModelNum >= 0) )
@@ -1706,7 +1700,7 @@ void start_ship_animation(int ship_class, int play_sound)
 	char *p;
 	char animation_filename[CF_MAX_FILENAME_LENGTH+4];
 
-	if ( Cmdline_ship_choice_3d || !strlen(sip->anim_filename) ) {
+	if ( !strlen(sip->anim_filename) ) {
 		if (ship_class < 0) {
 			mprintf(("No ship class passed in to start_ship_animation\n"));
 			ShipSelectModelNum = -1;
@@ -2724,27 +2718,8 @@ void ss_load_icons(int ship_class)
 	icon = &Ss_icons[ship_class];
 	ship_info *sip = &Ship_info[ship_class];
 
-	if(!Cmdline_ship_choice_3d && strlen(sip->icon_filename))
-	{
-		int				first_frame, num_frames, i;
-		first_frame = bm_load_animation(sip->icon_filename, &num_frames);
-		if ( first_frame == -1 ) {
-			Int3();	// Could not load in icon frames.. get Alan
-			return;
-		}
-
-		for ( i = 0; i < num_frames; i++ ) {
-			icon->icon_bmaps[i] = first_frame+i;
-		}
-
-		// set the current bitmap for the ship icon
-		icon->current_icon_bitmap = icon->icon_bmaps[ICON_FRAME_NORMAL];
-	}
-	else
-	{
-		icon->model_index = model_load(sip->pof_file, sip->n_subsystems, &sip->subsystems[0]);
-		model_page_in_textures(icon->model_index, ship_class);
-	}
+	icon->model_index = model_load(sip->pof_file, sip->n_subsystems, &sip->subsystems[0]);
+	model_page_in_textures(icon->model_index, ship_class);
 }
 
 // load all the icons for ships in the pool

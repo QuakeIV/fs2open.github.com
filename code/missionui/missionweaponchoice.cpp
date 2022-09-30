@@ -795,7 +795,7 @@ void wl_render_overhead_view(float frametime)
 	{
 		display_type = -1;
 
-		if(Cmdline_ship_choice_3d || !strlen(sip->overhead_filename))
+		if(!strlen(sip->overhead_filename))
 		{
 			if (wl_ship->model_num < 0)
 			{
@@ -805,14 +805,7 @@ void wl_render_overhead_view(float frametime)
 
 			if(wl_ship->model_num > -1)
 			{
-				if(Cmdline_ship_choice_3d)
-				{
-					display_type = 2;
-				}
-				else
-				{
-					display_type = 1;
-				}
+				display_type = 2;
 			}
 		}
 
@@ -882,40 +875,30 @@ void wl_render_overhead_view(float frametime)
 			angles rot_angles;
 			float zoom;
 			zoom = sip->closeup_zoom * 1.3f;
-
-			if(!Cmdline_ship_choice_3d)
-			{
-				rot_angles.p = -(3.14159f * 0.5f);
-				rot_angles.b = 0.0f;
-				rot_angles.h = 0.0f;
-				vm_angles_2_matrix(&object_orient, &rot_angles);
+			
+			float rev_rate;
+			rev_rate = REVOLUTION_RATE;
+			if (sip->flags & SIF_BIG_SHIP) {
+				rev_rate *= 1.7f;
 			}
-			else
-			{
-				float rev_rate;
-				rev_rate = REVOLUTION_RATE;
-				if (sip->flags & SIF_BIG_SHIP) {
-					rev_rate *= 1.7f;
-				}
-				if (sip->flags & SIF_HUGE_SHIP) {
-					rev_rate *= 3.0f;
-				}
-
-				WeapSelectScreenShipRot += PI2 * frametime / rev_rate;
-				while (WeapSelectScreenShipRot > PI2){
-					WeapSelectScreenShipRot -= PI2;	
-				}
-
-				rot_angles.p = -0.6f;
-				rot_angles.b = 0.0f;
-				rot_angles.h = 0.0f;
-				vm_angles_2_matrix(&object_orient, &rot_angles);
-
-				rot_angles.p = 0.0f;
-				rot_angles.b = 0.0f;
-				rot_angles.h = WeapSelectScreenShipRot;
-				vm_rotate_matrix_by_angles(&object_orient, &rot_angles);
+			if (sip->flags & SIF_HUGE_SHIP) {
+				rev_rate *= 3.0f;
 			}
+
+			WeapSelectScreenShipRot += PI2 * frametime / rev_rate;
+			while (WeapSelectScreenShipRot > PI2){
+				WeapSelectScreenShipRot -= PI2;	
+			}
+
+			rot_angles.p = -0.6f;
+			rot_angles.b = 0.0f;
+			rot_angles.h = 0.0f;
+			vm_angles_2_matrix(&object_orient, &rot_angles);
+
+			rot_angles.p = 0.0f;
+			rot_angles.b = 0.0f;
+			rot_angles.h = WeapSelectScreenShipRot;
+			vm_rotate_matrix_by_angles(&object_orient, &rot_angles);
 
 			gr_set_clip(Wl_overhead_coords[gr_screen.res][0], Wl_overhead_coords[gr_screen.res][1], gr_screen.res == 0 ? 291 : 467, gr_screen.res == 0 ? 226 : 362);
 			g3_start_frame(1);
@@ -1249,7 +1232,7 @@ void wl_load_icons(int weapon_class)
 
 	icon = &Wl_icons[weapon_class];
 
-	if(!Cmdline_weapon_choice_3d || (wip->render_type == WRT_LASER && !strlen(wip->tech_model)))
+	if((wip->render_type == WRT_LASER && !strlen(wip->tech_model)))
 	{
 		first_frame = bm_load_animation(Weapon_info[weapon_class].icon_filename, &num_frames);
 
