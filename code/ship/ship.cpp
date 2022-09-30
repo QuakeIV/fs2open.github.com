@@ -623,7 +623,7 @@ void init_ship_entry(ship_info *sip)
 	
 	sip->name[0] = '\0';
 	sip->alt_name[0] = '\0';
-	sprintf(sip->short_name, "ShipClass%d", (sip - Ship_info));
+	sprintf(sip->short_name, "ShipClass%ld", (sip - Ship_info));
 	sip->species = 0;
 	sip->class_type = -1;
 	

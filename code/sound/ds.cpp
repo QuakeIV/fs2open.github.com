@@ -1404,7 +1404,7 @@ int ds_init(int use_a3d, int use_eax, unsigned int sample_rate, unsigned short s
 {
 #ifdef USE_OPENAL
 //	NOTE: A3D and EAX are unused in OpenAL
-	int attr[] = { ALC_FREQUENCY, sample_rate, ALC_SYNC, AL_FALSE, 0 };
+	int attr[] = { ALC_FREQUENCY, (int)sample_rate, ALC_SYNC, AL_FALSE, 0 };
 	ALfloat list_orien[] = { 0.0f, 0.0f, -1.0f, 0.0f, 1.0f, 0.0f };
 
 	Ds_use_a3d = 0;

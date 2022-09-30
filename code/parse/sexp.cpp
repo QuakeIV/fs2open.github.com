@@ -22190,7 +22190,7 @@ sexp_help_struct Sexp_help[] = {
 		"If no input coordinates are specified, the coordinate returned is the coordinate of the object (or object's "
 		"subsystem) itself.  Takes 1 to 5 arguments...\r\n"
 		"\t1: The name of a ship, wing, or waypoint.\r\n"
-		"\t2: A ship subsystem (or \""SEXP_NONE_STRING"\" if the first argument is not a ship - optional).\r\n"
+		"\t2: A ship subsystem (or \"" SEXP_NONE_STRING "\" if the first argument is not a ship - optional).\r\n"
 		"\t3: The relative X coordinate (optional).\r\n"
 		"\t4: The relative Y coordinate (optional).\r\n"
 		"\t5: The relative Z coordinate (optional).\r\n" },
@@ -22202,7 +22202,7 @@ sexp_help_struct Sexp_help[] = {
 		"If no input coordinates are specified, the coordinate returned is the coordinate of the object (or object's "
 		"subsystem) itself.  Takes 1 to 5 arguments...\r\n"
 		"\t1: The name of a ship, wing, or waypoint.\r\n"
-		"\t2: A ship subsystem (or \""SEXP_NONE_STRING"\" if the first argument is not a ship - optional).\r\n"
+		"\t2: A ship subsystem (or \"" SEXP_NONE_STRING "\" if the first argument is not a ship - optional).\r\n"
 		"\t3: The relative X coordinate (optional).\r\n"
 		"\t4: The relative Y coordinate (optional).\r\n"
 		"\t5: The relative Z coordinate (optional).\r\n" },
@@ -22214,7 +22214,7 @@ sexp_help_struct Sexp_help[] = {
 		"If no input coordinates are specified, the coordinate returned is the coordinate of the object (or object's "
 		"subsystem) itself.  Takes 1 to 5 arguments...\r\n"
 		"\t1: The name of a ship, wing, or waypoint.\r\n"
-		"\t2: A ship subsystem (or \""SEXP_NONE_STRING"\" if the first argument is not a ship - optional).\r\n"
+		"\t2: A ship subsystem (or \"" SEXP_NONE_STRING "\" if the first argument is not a ship - optional).\r\n"
 		"\t3: The relative X coordinate (optional).\r\n"
 		"\t4: The relative Y coordinate (optional).\r\n"
 		"\t5: The relative Z coordinate (optional).\r\n" },

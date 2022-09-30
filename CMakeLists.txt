@@ -13,6 +13,7 @@ add_compile_options(
     -Wno-format-truncation
     -Wno-format-security
     -Wno-format-overflow
+    -Wno-pointer-arith
 )
 
 add_subdirectory(code)

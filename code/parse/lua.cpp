@@ -3913,7 +3913,7 @@ ADE_FUNC(__tostring, l_Object, NULL, "Returns name of object (if any)", "string"
 	//		sprintf(buf, "%s", objh->objp->jnp->get_name_ptr());
 	//		break;
 		default:
-			sprintf(buf, "Object %d [%d]", OBJ_INDEX(objh->objp), objh->sig);
+			sprintf(buf, "Object %ld [%d]", OBJ_INDEX(objh->objp), objh->sig);
 	}
 
 	return ade_set_args(L, "s", buf);
