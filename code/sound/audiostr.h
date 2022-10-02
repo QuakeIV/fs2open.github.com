@@ -23,8 +23,6 @@
 // NOTE: the only difference between EVENTMUSIC and everything else is that EVENTMUSIC
 //       will always respect the file type, everything else will load first available type
 
-
-#ifdef NEED_STRHDL
 #ifdef _WIN32
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
@@ -34,16 +32,18 @@
 #include "sound/ogg/ogg.h"
 
 // audio stream file handle information
-typedef struct {
-	HMMIO cfp;		// handle for mmio
+typedef struct
+{
+    SDL_RWops *cfp;
 
-	long true_offset;	// true offset of file into VP
-	uint size;			// total size of file being read
+	// for WAVs
+	SDL_AudioSpec wav_spec;
+	uint8_t *wav_buf;
+	uint32_t wav_len;
 
 	// for OGGs
 	OggVorbis_File vorbis_file;	// vorbis file info
-} STRHDL;
-#endif	// NEED_STRHDL
+} audio_spec_t;
 
 // Initializes the audio streaming library.  Called
 // automatically when the sound stuff is inited.

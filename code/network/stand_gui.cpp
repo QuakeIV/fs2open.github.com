@@ -462,7 +462,7 @@ int std_connect_lindex_to_npindex(int index)
 	ctrl = GetDlgItem(Page_handles[CONNECT_PAGE],(int)MAKEINTRESOURCE(IDC_CONPING));
 
 	// get the string contained at a given index	
-	SendMessage(ctrl,LB_GETTEXT,(WPARAM)index,(LPARAM)(LPSTR)list_text);
+	SendMessage(ctrl,LB_GETTEXT,(WPARAM)index,(LPARAM)(char *)list_text);
 
 	// look through the net players array and compare address strings (yuck)
 	ret = -1;

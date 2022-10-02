@@ -408,7 +408,7 @@ ushort psnet_calc_checksum( void * vptr, int len )
 
 uint psnet_set_socket_mode(SOCKET sock_id, int opt, BOOL toggle)
 {
-	return (setsockopt(sock_id, SOL_SOCKET, opt, (LPSTR)&toggle, sizeof(toggle)));
+	return (setsockopt(sock_id, SOL_SOCKET, opt, (char *)&toggle, sizeof(toggle)));
 }
 
 
@@ -433,7 +433,7 @@ uint sock_get_ip()
 	nRet = gethostname(LclHost, MAXHOSTNAME );
 	if (nRet != SOCKET_ERROR )	{
 		// Resolve host name for local address
-		Hostent = gethostbyname((LPSTR)LclHost);
+		Hostent = gethostbyname((char *)LclHost);
 		if ( Hostent )
 			LclAddr.sin_addr.s_addr = *((u_long FAR *)(Hostent->h_addr));
 	}
@@ -615,7 +615,7 @@ void psnet_socket_options( SOCKET sock )
 	// Set the mode of the socket to allow broadcasting.  We need to be able to broadcast
 	// when a game is searched for in IPX mode.
 	broadcast = 1;
-	if(setsockopt(sock, SOL_SOCKET, SO_BROADCAST, (LPSTR)&broadcast, sizeof(broadcast) )){
+	if(setsockopt(sock, SOL_SOCKET, SO_BROADCAST, (char *)&broadcast, sizeof(broadcast) )){
 		Can_broadcast = 0;
 	} else {
 		Can_broadcast = 1;
@@ -626,9 +626,9 @@ void psnet_socket_options( SOCKET sock )
 	
 	// set the current size of the receive buffer
 	cursizesize = sizeof(int);
-	getsockopt(sock, SOL_SOCKET, SO_RCVBUF, (LPSTR)&cursize, &cursizesize);
+	getsockopt(sock, SOL_SOCKET, SO_RCVBUF, (char *)&cursize, &cursizesize);
 	for ( trysize = bufsize; trysize >= cursize; trysize >>= 1 ) {
-		ret = setsockopt(sock, SOL_SOCKET, SO_RCVBUF, (LPSTR)&trysize, sizeof(trysize));
+		ret = setsockopt(sock, SOL_SOCKET, SO_RCVBUF, (char *)&trysize, sizeof(trysize));
 		if ( ret == SOCKET_ERROR ) {
 			int wserr;
 
@@ -638,14 +638,14 @@ void psnet_socket_options( SOCKET sock )
 		} else
 			break;
 	}
-	getsockopt(sock, SOL_SOCKET, SO_RCVBUF, (LPSTR)&cursize, &cursizesize);
+	getsockopt(sock, SOL_SOCKET, SO_RCVBUF, (char *)&cursize, &cursizesize);
 	nprintf(("Network", "Receive buffer set to %d\n", cursize));
 
 	// set the current size of the send buffer
 	cursizesize = sizeof(int);
-	getsockopt(sock, SOL_SOCKET, SO_SNDBUF, (LPSTR)&cursize, &cursizesize);
+	getsockopt(sock, SOL_SOCKET, SO_SNDBUF, (char *)&cursize, &cursizesize);
 	for ( trysize = bufsize; trysize >= cursize; trysize >>= 1 ) {
-		ret = setsockopt(sock, SOL_SOCKET, SO_SNDBUF, (LPSTR)&trysize, sizeof(trysize));
+		ret = setsockopt(sock, SOL_SOCKET, SO_SNDBUF, (char *)&trysize, sizeof(trysize));
 		if ( ret == SOCKET_ERROR ) {
 			int wserr;
 
@@ -655,7 +655,7 @@ void psnet_socket_options( SOCKET sock )
 		} else
 			break;
 	}
-	getsockopt(sock, SOL_SOCKET, SO_SNDBUF, (LPSTR)&cursize, &cursizesize);
+	getsockopt(sock, SOL_SOCKET, SO_SNDBUF, (char *)&cursize, &cursizesize);
 	nprintf(("Network", "Send buffer set to %d\n", cursize));
 }
 

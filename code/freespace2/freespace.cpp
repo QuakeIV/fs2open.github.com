@@ -7569,7 +7569,7 @@ int game_main(char *cmdline)
 
 #ifdef _WIN32
 // Windows Specific
-int PASCAL WinMain(HINSTANCE hInst, HINSTANCE hPrev, LPSTR szCmdLine, int nCmdShow)
+int PASCAL WinMain(HINSTANCE hInst, HINSTANCE hPrev, char * szCmdLine, int nCmdShow)
 {
 	int result = -1;
 

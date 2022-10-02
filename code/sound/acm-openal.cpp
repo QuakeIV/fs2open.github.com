@@ -80,54 +80,54 @@ static int ACM_inited = 0;
 
 
 // utility functions
-static int read_ushort(HMMIO rw, ushort *i)
+static int read_ushort(SDL_RWops * rw, ushort *i)
 {
-	int rc = mmioRead( rw, (char *)i, sizeof(ushort) );
+	int rc = SDL_RWread( rw, (char *)i, 1, sizeof(ushort) );
 	IF_ERR(rc != sizeof(ushort), 0);
 	*i = INTEL_SHORT(*i);
 	return 1;
 }
 
-static int read_word(HMMIO rw, WORD *i)
+static int read_word(SDL_RWops * rw, WORD *i)
 {
-	int rc = mmioRead( rw, (char *)i, sizeof(WORD) );
+	int rc = SDL_RWread( rw, (char *)i, 1, sizeof(WORD) );
 	IF_ERR(rc != sizeof(WORD), 0);
 	return 1;
 }
 
 // same as read_word() but swapped
-static int read_word_s(HMMIO rw, WORD *i)
+static int read_word_s(SDL_RWops * rw, WORD *i)
 {
-	int rc = mmioRead( rw, (char *)i, sizeof(WORD) );
+	int rc = SDL_RWread( rw, (char *)i, 1, sizeof(WORD) );
 	IF_ERR(rc != sizeof(WORD), 0);
 	*i = INTEL_SHORT(*i);
 	return 1;
 }
 
-static int read_short(HMMIO rw, short *i)
+static int read_short(SDL_RWops * rw, short *i)
 {
-	int rc = mmioRead( rw, (char *)i, sizeof(short) );
+	int rc = SDL_RWread( rw, (char *)i, 1, sizeof(short) );
 	IF_ERR(rc != sizeof(short), 0);
 	*i = INTEL_SHORT(*i);
 	return 1;
 }
 
-static int read_dword(HMMIO rw, DWORD *i)
+static int read_dword(SDL_RWops * rw, DWORD *i)
 {
-	int rc = mmioRead( rw, (char *)i, sizeof(DWORD) );
+	int rc = SDL_RWread( rw, (char *)i, 1, sizeof(DWORD) );
 	IF_ERR(rc != sizeof(DWORD), 0);
 	return 1;
 }
 
-static int read_ubyte(HMMIO rw, ubyte *i)
+static int read_ubyte(SDL_RWops * rw, ubyte *i)
 {
-	int rc = mmioRead( rw, (char *)i, sizeof(ubyte) );
+	int rc = SDL_RWread( rw, (char *)i, 1, sizeof(ubyte) );
 	IF_ERR(rc != sizeof(ubyte), 0);
 	return 1;
 }
 
 // decoding functions
-static int read_adpcm_block_headers(HMMIO rw, adpcm_fmt_t *fmt)
+static int read_adpcm_block_headers(SDL_RWops * rw, adpcm_fmt_t *fmt)
 {
 	int i;
 	int max = fmt->adpcm.wav.nChannels;
@@ -192,7 +192,7 @@ static void do_adpcm_nibble(ubyte nib, ADPCMBLOCKHEADER *header, int lPredSamp)
 	header->iSamp1 = lNewSamp;
 }
 
-static int decode_adpcm_sample_frame(HMMIO rw, adpcm_fmt_t *fmt)
+static int decode_adpcm_sample_frame(SDL_RWops * rw, adpcm_fmt_t *fmt)
 {
 	int i;
 	int max = fmt->adpcm.wav.nChannels;
@@ -238,7 +238,7 @@ static void put_adpcm_sample_frame2(ubyte *_buf, adpcm_fmt_t *fmt)
 		*buf++ = fmt->header[i].iSamp2;
 }
 
-static uint read_sample_fmt_adpcm(ubyte *data, HMMIO rw, adpcm_fmt_t *fmt)
+static uint read_sample_fmt_adpcm(ubyte *data, SDL_RWops * rw, adpcm_fmt_t *fmt)
 {
 	uint bw = 0;
 
@@ -339,8 +339,8 @@ int ACM_convert_ADPCM_to_PCM(WAVEFORMATEX *pwfxSrc, ubyte *src, int src_len, uby
 	IOrw.fccIOProc = FOURCC_MEM;
 	IOrw.cchBuffer = src_len;
 
-	HMMIO hdr = mmioOpen( NULL, &IOhdr, MMIO_READ );
-	HMMIO rw = mmioOpen( NULL, &IOrw, MMIO_READ );
+	SDL_RWops * hdr = mmioOpen( NULL, &IOhdr, MMIO_READ );
+	SDL_RWops * rw = mmioOpen( NULL, &IOrw, MMIO_READ );
 	uint rc;
 	uint new_size = 0;
 
@@ -407,9 +407,9 @@ int ACM_convert_ADPCM_to_PCM(WAVEFORMATEX *pwfxSrc, ubyte *src, int src_len, uby
 	if (fmt->adpcm.wav.wBitsPerSample != 4) {
 		adpcm_memory_free(fmt);
 
-		// cleanup mmio stuff
-		mmioClose( rw, 0 );
-		mmioClose( hdr, 0 );
+		// cleanup file stuff
+		SDL_RWclose(rw);
+		SDL_RWclose(hdr);
 
 		return -1;
 	}
@@ -442,8 +442,8 @@ int ACM_convert_ADPCM_to_PCM(WAVEFORMATEX *pwfxSrc, ubyte *src, int src_len, uby
 	adpcm_memory_free(fmt);
 
 	// cleanup mmio stuff
-	mmioClose( rw, 0 );
-	mmioClose( hdr, 0 );
+	SDL_RWclose(rw);
+	SDL_RWclose(hdr);
 
 	return 0;
 }
@@ -462,7 +462,7 @@ int ACM_stream_open(WAVEFORMATEX *pwfxSrc, WAVEFORMATEX *pwfxDest, void **stream
 	IOhdr.fccIOProc = FOURCC_MEM;
 	IOhdr.cchBuffer = (sizeof(WAVEFORMATEX) + pwfxSrc->cbSize);
 
-	HMMIO hdr = mmioOpen( NULL, &IOhdr, MMIO_READ );
+	SDL_RWops * hdr = mmioOpen( NULL, &IOhdr, MMIO_READ );
 	uint rc;
 
 	if ( ACM_inited == 0 ) {
@@ -503,7 +503,7 @@ int ACM_stream_open(WAVEFORMATEX *pwfxSrc, WAVEFORMATEX *pwfxDest, void **stream
 	// sanity check, should always be 4
 	if (fmt->adpcm.wav.wBitsPerSample != 4) {
 		adpcm_memory_free(fmt);
-		mmioClose( hdr, 0 );
+		SDL_RWclose(hdr);
 
 		return -1;
 	}
@@ -518,7 +518,7 @@ int ACM_stream_open(WAVEFORMATEX *pwfxSrc, WAVEFORMATEX *pwfxDest, void **stream
 	*stream = str;
 
 	// close the io stream
-	mmioClose( hdr, 0 );
+	SDL_RWclose(hdr);
 
 	return 0;
 }
@@ -572,7 +572,7 @@ int ACM_convert(void *stream, ubyte *src, int src_len, ubyte *dest, int max_dest
 	IOrw.fccIOProc = FOURCC_MEM;
 	IOrw.cchBuffer = src_len;
 
-	HMMIO rw = mmioOpen( NULL, &IOrw, MMIO_READ );
+	SDL_RWops * rw = mmioOpen( NULL, &IOrw, MMIO_READ );
 
 	// buffer to estimated size since we have to process the whole thing at once
 	str->fmt->buffer_size = max_dest_bytes;
@@ -586,7 +586,7 @@ int ACM_convert(void *stream, ubyte *src, int src_len, ubyte *dest, int max_dest
 	*dest_len = rc;
 	*src_bytes_used = str->fmt->bytes_processed;
 
-	mmioClose( rw, 0 );
+	SDL_RWclose(rw);
 
 	return 0;
 }

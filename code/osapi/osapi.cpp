@@ -704,7 +704,7 @@ void win32_create_window(int width, int height)
 								width + x_add,	// w
 								height + y_add,	// h
 								NULL, (HMENU)NULL, hInst,
-								(LPSTR)NULL );
+								(char *)NULL );
 
 	if ( !hwndApp ) {
 		Error( LOCATION, "FATAL ERROR:  Unable to create game window!!" );

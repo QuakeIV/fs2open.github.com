@@ -551,7 +551,7 @@ uint CFtpGet::ReadDataChannel()
    {
 		if(m_Aborting)
 			return 0;
-		nBytesRecv = recv(m_DataSock, (LPSTR)&sDataBuffer,sizeof(sDataBuffer), 0);
+		nBytesRecv = recv(m_DataSock, (char *)&sDataBuffer,sizeof(sDataBuffer), 0);
     					
 		m_iBytesIn += nBytesRecv;
 		if (nBytesRecv > 0 )

@@ -123,12 +123,12 @@ typedef struct _DSETUP_CB_FILECOPYERROR
 typedef struct _DIRECTXREGISTERAPPA {
     DWORD    dwSize;
     DWORD    dwFlags;
-    LPSTR    lpszApplicationName;
+    char *    lpszApplicationName;
     LPGUID   lpGUID;
-    LPSTR    lpszFilename;
-    LPSTR    lpszCommandLine;
-    LPSTR    lpszPath;
-    LPSTR    lpszCurrentDirectory;
+    char *    lpszFilename;
+    char *    lpszCommandLine;
+    char *    lpszPath;
+    char *    lpszCurrentDirectory;
 } DIRECTXREGISTERAPPA, *PDIRECTXREGISTERAPPA, *LPDIRECTXREGISTERAPPA;
 #endif //!UNICODE_ONLY
 #ifndef ANSI_ONLY
@@ -162,7 +162,7 @@ INT
 WINAPI
 DirectXSetupA(
     HWND  hWnd,
-    LPSTR lpszRootPath,
+    char * lpszRootPath,
     DWORD dwFlags
     );
 #endif //!UNICODE_ONLY
@@ -186,8 +186,8 @@ INT
 WINAPI
 DirectXDeviceDriverSetupA(
     HWND  hWnd,
-    LPSTR lpszDriverClass,
-    LPSTR lpszDriverPath,
+    char * lpszDriverClass,
+    char * lpszDriverPath,
     DWORD dwFlags
     );
 #endif //!UNICODE_ONLY
@@ -241,18 +241,18 @@ DirectXUnRegisterApplication(
 //
 #ifdef UNICODE
 typedef INT (WINAPI * LPDIRECTXSETUP)(HWND, LPWSTR, DWORD);
-typedef INT (WINAPI * LPDIRECTXDEVICEDRIVERSETUP)(HWND, LPWSTR, LPSTR, DWORD);
+typedef INT (WINAPI * LPDIRECTXDEVICEDRIVERSETUP)(HWND, LPWSTR, char *, DWORD);
 typedef INT (WINAPI * LPDIRECTXREGISTERAPPLICATION)(HWND, LPDIRECTXREGISTERAPPW);
 #else
-typedef INT (WINAPI * LPDIRECTXSETUP)(HWND, LPSTR, DWORD);
-typedef INT (WINAPI * LPDIRECTXDEVICEDRIVERSETUP)(HWND, LPSTR, LPSTR, DWORD);
+typedef INT (WINAPI * LPDIRECTXSETUP)(HWND, char *, DWORD);
+typedef INT (WINAPI * LPDIRECTXDEVICEDRIVERSETUP)(HWND, char *, char *, DWORD);
 typedef INT (WINAPI * LPDIRECTXREGISTERAPPLICATION)(HWND, LPDIRECTXREGISTERAPPA);
 #endif // UNICODE
 
 typedef DWORD (FAR PASCAL * DSETUP_CALLBACK)(DWORD Reason,
                                   DWORD MsgType,       /* Same as flags to MessageBox */
-                                  LPSTR szMessage,
-                                  LPSTR szName,
+                                  char * szMessage,
+                                  char * szName,
                                   void *pInfo);
 
 INT WINAPI DirectXSetupSetCallback(DSETUP_CALLBACK Callback);

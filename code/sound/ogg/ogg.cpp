@@ -6,8 +6,6 @@
 #include <Mmsystem.h>
 #endif
 
-#define NEED_STRHDL		// for STRHTL struct in audiostr.h
-
 #include "cfile/cfile.h"
 #include "sound/ogg/ogg.h"
 #include "sound/audiostr.h"
@@ -42,52 +40,51 @@ long ogg_cftell(void* cfile)
 
 size_t ogg_mmio_read(void *buf, size_t elsize, size_t elnem, void* mmfp)
 {
-	STRHDL *hdl = (STRHDL*)mmfp;
+	audio_spec_t *hdl = (audio_spec_t*)mmfp;
 
-	return mmioRead(hdl->cfp, (HPSTR) buf, elsize * elnem);
+	return SDL_RWread(hdl->cfp, (char *) buf, 1, elsize * elnem);
 }
 
 int ogg_mmio_seek(void* mmfp, ogg_int64_t offset, int where)
 {
-	STRHDL *hdl = (STRHDL*)mmfp;
+	audio_spec_t *hdl = (audio_spec_t*)mmfp;
 
 	long rc = 0, cur_offset = 0;
 
-	switch (where) {
+	switch (where)
+	{
 		case SEEK_CUR:
 		{
-			cur_offset = mmioSeek(hdl->cfp, 0, SEEK_CUR);
+			cur_offset = SDL_RWseek(hdl->cfp, 0, RW_SEEK_CUR);
 
-			if ( (cur_offset + offset) > (hdl->true_offset + hdl->size) )
+			if ((cur_offset + offset) > SDL_RWsize(hdl->cfp))
 				return -1;
 
-			rc = mmioSeek(hdl->cfp, cur_offset + (long)offset, SEEK_SET);
+			rc = SDL_RWseek(hdl->cfp, cur_offset + (long)offset, RW_SEEK_SET);
 
 			break;
 		}
 
 		case SEEK_SET:
 		{
-			if ( offset > hdl->size )
+			if (offset > SDL_RWsize(hdl->cfp))
 				return -1;
 
-			rc = mmioSeek(hdl->cfp, hdl->true_offset + (long)offset, SEEK_SET);
+			rc = SDL_RWseek(hdl->cfp, (long)offset, RW_SEEK_SET);
 
 			break;
 		}
 
 		case SEEK_END:
 		{
-			rc = mmioSeek(hdl->cfp, hdl->true_offset + hdl->size, SEEK_SET);
+			rc = SDL_RWseek(hdl->cfp,  SDL_RWsize(hdl->cfp), RW_SEEK_SET);
 
 			break;
 		}
 	}
 
-	if ( rc < 0 )
+	if (rc < 0)
 		return -1;
-
-	rc -= hdl->true_offset;
 
 	return (int)rc;
 }
@@ -100,9 +97,8 @@ int ogg_mmio_close(void* mmfp)
 
 long ogg_mmio_tell(void* mmfp)
 {
-	STRHDL *hdl = (STRHDL*)mmfp;
-
-	return (mmioSeek(hdl->cfp, 0, SEEK_CUR) - hdl->true_offset);
+	audio_spec_t *hdl = (audio_spec_t*)mmfp;
+	return SDL_RWtell(hdl->cfp);
 }
 
 int OGG_init()

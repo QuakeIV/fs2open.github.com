@@ -295,9 +295,7 @@ void event_music_init()
 
 	// Goober5000
 	for (i = 0; i < MAX_SPOOLED_MUSIC; i++)
-	{
 		memset(&Spooled_music[i], 0, sizeof(menu_music));
-	}
 
 	//Do teh parsing
 	event_music_parse_musictbl("music.tbl");
@@ -1685,12 +1683,10 @@ int hostile_ships_to_arrive()
 // NOTE: callers to this function are advised to allocate a 256 byte buffer
 void event_music_get_info(char *outbuf)
 {
-	if ( Event_music_enabled == FALSE || Event_music_level_inited == FALSE || Current_pattern == -1 ) {
+	if ( Event_music_enabled == FALSE || Event_music_level_inited == FALSE || Current_pattern == -1 )
 		sprintf(outbuf,XSTR( "Event music is not playing", 213));
-	}
-	else {	
+	else
 		sprintf(outbuf,XSTR( "soundtrack: %s [%s]", 214), Soundtracks[Current_soundtrack_num].name, Pattern_info[Current_pattern].pattern_desc);
-	}
 }
 
 // ----------------------------------------------------------------
@@ -1761,9 +1757,8 @@ void event_music_set_soundtrack(char *name)
 {
 	Current_soundtrack_num = event_music_get_soundtrack_index(name);
 
-	if ( Current_soundtrack_num == -1 ) {
-		mprintf(("Current soundtrack set to -1 in event_music_set_soundtrack\n"));
-	}
+	if ( Current_soundtrack_num == -1 )
+		mprintf(("Current soundtrack set to -1 in event_music_set_soundtrack, name: %s\n",name));
 }
 
 int event_music_get_soundtrack_index(char *name)
@@ -1786,6 +1781,8 @@ int event_music_get_spooled_music_index(char *name)
 			return i;
 		}
 	}
+	
+	mprintf(("Failed to find music index for name: %s\n",name));
 
 	return -1;
 }

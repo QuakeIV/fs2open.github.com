@@ -184,12 +184,12 @@ typedef struct
     union
     {                           // Name of the session
         LPWSTR  lpszSessionName;    // Unicode
-        LPSTR   lpszSessionNameA;   // ANSI
+        char *   lpszSessionNameA;   // ANSI
     };
     union
     {                           // Password of the session (optional)
         LPWSTR  lpszPassword;       // Unicode
-        LPSTR   lpszPasswordA;      // ANSI
+        char *   lpszPasswordA;      // ANSI
     };
     DWORD   dwReserved1;        // Reserved for future MS use.
     DWORD   dwReserved2;
@@ -285,12 +285,12 @@ typedef struct
     union
     {                           // The short or friendly name
         LPWSTR  lpszShortName;  // Unicode
-        LPSTR   lpszShortNameA; // ANSI
+        char *   lpszShortNameA; // ANSI
     };
     union
     {                           // The long or formal name
         LPWSTR  lpszLongName;   // Unicode
-        LPSTR   lpszLongNameA;  // ANSI
+        char *   lpszLongNameA;  // ANSI
     };
 
 } DPNAME, FAR *LPDPNAME;
@@ -312,17 +312,17 @@ typedef struct
     union
     {                           // User name of the account
         LPWSTR  lpszUsername;   // Unicode
-        LPSTR   lpszUsernameA;  // ANSI
+        char *   lpszUsernameA;  // ANSI
     };    
     union
     {                           // Password of the account
         LPWSTR  lpszPassword;   // Unicode
-        LPSTR   lpszPasswordA;  // ANSI
+        char *   lpszPasswordA;  // ANSI
     };    
     union
     {                           // Domain name of the account
         LPWSTR  lpszDomain;     // Unicode
-        LPSTR   lpszDomainA;    // ANSI
+        char *   lpszDomainA;    // ANSI
     };    
 } DPCREDENTIALS, FAR *LPDPCREDENTIALS;
 
@@ -340,12 +340,12 @@ typedef struct
     union
     {                               // SSPI provider name
         LPWSTR  lpszSSPIProvider;   // Unicode
-        LPSTR   lpszSSPIProviderA;  // ANSI
+        char *   lpszSSPIProviderA;  // ANSI
     };
     union
     {                               // CAPI provider name
         LPWSTR lpszCAPIProvider;    // Unicode
-        LPSTR  lpszCAPIProviderA;   // ANSI
+        char *  lpszCAPIProviderA;   // ANSI
     };
     DWORD dwCAPIProviderType;       // Crypto Service Provider type
     DWORD dwEncryptionAlgorithm;    // Encryption Algorithm type
@@ -364,7 +364,7 @@ typedef struct
     union
     {                               // Account identifier
         LPWSTR  lpszAccountID;      // Unicode
-        LPSTR   lpszAccountIDA;     // ANSI
+        char *   lpszAccountIDA;     // ANSI
     };
 } DPACCOUNTDESC, FAR *LPDPACCOUNTDESC;
 
@@ -409,7 +409,7 @@ typedef struct
     union
     {                          // Message string
         LPWSTR  lpszMessage;   // Unicode
-        LPSTR   lpszMessageA;  // ANSI
+        char *   lpszMessageA;  // ANSI
     };    
 } DPCHAT, FAR * LPDPCHAT;
 
@@ -471,7 +471,7 @@ typedef BOOL (FAR PASCAL * LPDPENUMDPCALLBACK)(
  */
 typedef BOOL (FAR PASCAL * LPDPENUMDPCALLBACKA)(
     LPGUID      lpguidSP,
-    LPSTR       lpSPName,
+    char *       lpSPName,
     DWORD       dwMajorVersion,     
     DWORD       dwMinorVersion,
     LPVOID      lpContext);
@@ -1555,8 +1555,8 @@ typedef struct
 
 typedef BOOL (PASCAL *LPDPENUMPLAYERSCALLBACK)(
     DPID    dpId,
-    LPSTR   lpFriendlyName,
-    LPSTR   lpFormalName,
+    char *   lpFriendlyName,
+    char *   lpFormalName,
     DWORD   dwFlags,
     LPVOID  lpContext );
 
@@ -1599,8 +1599,8 @@ DECLARE_INTERFACE_( IDirectPlay, IUnknown )
     /*** IDirectPlay methods ***/
     STDMETHOD(AddPlayerToGroup)     (THIS_ DPID, DPID) PURE;
     STDMETHOD(Close)                (THIS) PURE;
-    STDMETHOD(CreatePlayer)         (THIS_ LPDPID,LPSTR,LPSTR,LPHANDLE) PURE;
-    STDMETHOD(CreateGroup)          (THIS_ LPDPID,LPSTR,LPSTR) PURE;
+    STDMETHOD(CreatePlayer)         (THIS_ LPDPID,char *,char *,LPHANDLE) PURE;
+    STDMETHOD(CreateGroup)          (THIS_ LPDPID,char *,char *) PURE;
     STDMETHOD(DeletePlayerFromGroup)(THIS_ DPID,DPID) PURE;
     STDMETHOD(DestroyPlayer)        (THIS_ DPID) PURE;
     STDMETHOD(DestroyGroup)         (THIS_ DPID) PURE;
@@ -1612,13 +1612,13 @@ DECLARE_INTERFACE_( IDirectPlay, IUnknown )
     STDMETHOD(GetCaps)              (THIS_ LPDPCAPS) PURE;
     STDMETHOD(GetMessageCount)      (THIS_ DPID, LPDWORD) PURE;
     STDMETHOD(GetPlayerCaps)        (THIS_ DPID, LPDPCAPS) PURE;
-    STDMETHOD(GetPlayerName)        (THIS_ DPID,LPSTR,LPDWORD,LPSTR,LPDWORD) PURE;
+    STDMETHOD(GetPlayerName)        (THIS_ DPID,char *,LPDWORD,char *,LPDWORD) PURE;
     STDMETHOD(Initialize)           (THIS_ LPGUID) PURE;
     STDMETHOD(Open)                 (THIS_ LPDPSESSIONDESC) PURE;
     STDMETHOD(Receive)              (THIS_ LPDPID,LPDPID,DWORD,LPVOID,LPDWORD) PURE;
-    STDMETHOD(SaveSession)          (THIS_ LPSTR) PURE;
+    STDMETHOD(SaveSession)          (THIS_ char *) PURE;
     STDMETHOD(Send)                 (THIS_ DPID, DPID, DWORD, LPVOID, DWORD) PURE;
-    STDMETHOD(SetPlayerName)        (THIS_ DPID,LPSTR,LPSTR) PURE;
+    STDMETHOD(SetPlayerName)        (THIS_ DPID,char *,char *) PURE;
 };
 
 /****************************************************************************

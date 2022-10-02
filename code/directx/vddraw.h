@@ -88,7 +88,7 @@ typedef struct _DDCOLORCONTROL 		FAR *LPDDCOLORCONTROL;
  */
 #if (defined (WIN32) || defined( _WIN32 ) ) && !defined( _NO_COM )
 //#if defined( _WIN32 ) && !defined( _NO_ENUM )
-    typedef BOOL (FAR PASCAL * LPDDENUMCALLBACKA)(GUID FAR *, LPSTR, LPSTR, LPVOID);
+    typedef BOOL (FAR PASCAL * LPDDENUMCALLBACKA)(GUID FAR *, char *, char *, LPVOID);
     typedef BOOL (FAR PASCAL * LPDDENUMCALLBACKW)(GUID FAR *, LPWSTR, LPWSTR, LPVOID);
     extern HRESULT WINAPI DirectDrawEnumerateW( LPDDENUMCALLBACKW lpCallback, LPVOID lpContext );
     extern HRESULT WINAPI DirectDrawEnumerateA( LPDDENUMCALLBACKA lpCallback, LPVOID lpContext );

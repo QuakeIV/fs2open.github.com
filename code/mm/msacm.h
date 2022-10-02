@@ -1086,7 +1086,7 @@ typedef struct tACMFORMATCHOOSEA
     char            szFormatTag[ACMFORMATTAGDETAILS_FORMATTAG_CHARS];
     char            szFormat[ACMFORMATDETAILS_FORMAT_CHARS];    
 
-    LPSTR           pszName;            // custom name selection
+    char *           pszName;            // custom name selection
     DWORD           cchName;            // size in chars of mem buf for pszName
 
     DWORD           fdwEnum;            // format enumeration restrictions
@@ -1150,7 +1150,7 @@ typedef struct tACMFORMATCHOOSE
     char            szFormatTag[ACMFORMATTAGDETAILS_FORMATTAG_CHARS];
     char            szFormat[ACMFORMATDETAILS_FORMAT_CHARS];    
 
-    LPSTR           pszName;            // custom name selection
+    char *           pszName;            // custom name selection
     DWORD           cchName;            // size in chars of mem buf for pszName
 
     DWORD           fdwEnum;            // format enumeration restrictions
@@ -1605,7 +1605,7 @@ typedef struct tACMFILTERCHOOSEA
 
     char            szFilterTag[ACMFILTERTAGDETAILS_FILTERTAG_CHARS];
     char            szFilter[ACMFILTERDETAILS_FILTER_CHARS];
-    LPSTR           pszName;            // custom name selection
+    char *           pszName;            // custom name selection
     DWORD           cchName;            // size in chars of mem buf for pszName
 
     DWORD           fdwEnum;            // filter enumeration restrictions
@@ -1669,7 +1669,7 @@ typedef struct tACMFILTERCHOOSE
 
     char            szFilterTag[ACMFILTERTAGDETAILS_FILTERTAG_CHARS];
     char            szFilter[ACMFILTERDETAILS_FILTER_CHARS];
-    LPSTR           pszName;            // custom name selection
+    char *           pszName;            // custom name selection
     DWORD           cchName;            // size in chars of mem buf for pszName
 
     DWORD           fdwEnum;            // filter enumeration restrictions

@@ -59,7 +59,7 @@ typedef struct DPLAPPINFO
     GUID        guidApplication;    // GUID of the Application
     union
     {
-        LPSTR   lpszAppNameA;       // Pointer to the Application Name
+        char *   lpszAppNameA;       // Pointer to the Application Name
         LPWSTR  lpszAppName;
     };
 

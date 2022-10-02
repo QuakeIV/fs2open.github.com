@@ -498,7 +498,6 @@ add_library(code
     sound/ogg/ogg.cpp
     sound/ogg/ogg.h
     sound/audiostr-openal.cpp
-    sound/audiostr.cpp
     sound/audiostr.h
     sound/acm-openal.cpp
     sound/acm.h

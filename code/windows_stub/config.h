@@ -82,7 +82,6 @@ typedef unsigned long FOURCC;
 typedef unsigned long DWORD, *PDWORD, *LPDWORD;
 #endif
 //typedef void *HMMIO;
-typedef SDL_RWops *HMMIO;
 typedef void *HACMSTREAM;
 typedef long LONG;
 typedef long HRESULT;
@@ -96,8 +95,6 @@ typedef	unsigned int MMRESULT;
 typedef void *HWND;
 typedef void *HINSTANCE;
 typedef void *HANDLE;
-typedef char *LPSTR;
-typedef char *HPSTR;
 typedef void *LPMMIOPROC;
 #if __WORDSIZE == 64
 #define __int64 long int
@@ -223,19 +220,17 @@ typedef struct {
 	UINT		wErrorRet; 
 	HTASK		hTask; 
 	LONG		cchBuffer; 
-	HPSTR		pchBuffer; 
-	HPSTR		pchNext; 
-	HPSTR		pchEndRead; 
-	HPSTR		pchEndWrite; 
+	char *pchBuffer; 
+	char *pchNext; 
+	char *pchEndRead; 
+	char *pchEndWrite; 
 	LONG		lBufOffset; 
 	LONG		lDiskOffset; 
 	DWORD		adwInfo[4]; 
 	DWORD		dwReserved1; 
 	DWORD		dwReserved2; 
-	HMMIO		hmmio; 
+	SDL_RWops *hmmio; 
 } MMIOINFO;
-
-typedef MMIOINFO *LPMMIOINFO;
 
 #define FOURCC_MEM	0
 
@@ -246,11 +241,7 @@ typedef MMIOINFO *LPMMIOINFO;
 
 #define MMIOERR_CANNOTWRITE		1
 
-HMMIO mmioOpen(LPSTR szFilename, LPMMIOINFO lpmmioinfo, DWORD dwOpenFlags);
-long mmioSeek(HMMIO hmmio, long lOffset, int iOrigin);
-long mmioRead(HMMIO hmmio, HPSTR pch, long cch);
-MMRESULT mmioClose(HMMIO hmmio, uint wFlags);
-
+SDL_RWops * mmioOpen(char * szFilename, MMIOINFO *lpmmioinfo, DWORD dwOpenFlags);
 
 int filelength(int fd);
 int _chdir(const char *path);
