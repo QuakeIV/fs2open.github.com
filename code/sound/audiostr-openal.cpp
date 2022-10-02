@@ -15,7 +15,6 @@
 #include "globalincs/pstypes.h"
 #include "sound/audiostr.h"
 #include "sound/ds.h"
-#include "sound/acm.h"
 #include "cfile/cfile.h"
 #include "sound/sound.h"
 #include "sound/ogg/ogg.h"
@@ -217,7 +216,6 @@ protected:
 	audio_spec_t m_snd_info;
 
 	void			*m_hStream;
-	int				m_hStream_open;
 	WAVEFORMATEX	m_wfxDest;
 	char			m_wFilename[MAX_FILENAME_LEN];
 };
@@ -372,19 +370,12 @@ void WaveFile::Init(void)
 
 	memset(&m_wFilename, 0, MAX_FILENAME_LEN);
 
-	m_hStream_open = 0;
 	m_abort_next_read = false;
 }
 
 // Destructor
 void WaveFile::Close(void)
 {
-	if ( m_hStream_open )
-	{
-		ACM_stream_close((void*)m_hStream);
-		m_hStream_open = 0;
-	}
-
 	if (m_wave_format == OGG_FORMAT_VORBIS)
 		ov_clear(&m_snd_info.vorbis_file);
 	
@@ -1441,9 +1432,6 @@ void audiostream_init()
 	int i;
 
 	if ( Audiostream_inited == 1 )
-		return;
-
-	if ( !ACM_is_inited() )
 		return;
 
 	// Allocate memory for the buffer which holds the uncompressed wave data that is streamed from the

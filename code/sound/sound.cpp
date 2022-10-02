@@ -22,7 +22,6 @@
 
 #include "sound/ds.h"
 #include "sound/ds3d.h"
-#include "sound/acm.h"
 #include "sound/dscap.h"
 #include "sound/ogg/ogg.h"
 
@@ -150,13 +149,6 @@ int snd_init(int use_a3d, int use_eax, unsigned int sample_rate, unsigned short 
 				goto Failure;
 			}
 		}
-	}
-
-	// Init the Audio Compression Manager
-	if ( ACM_init() == -1 ) {
-		HWND hwnd = (HWND)os_get_window();
-		MessageBox(hwnd, XSTR("Could not properly initialize the Microsoft ADPCM codec.\n\nPlease see the readme.txt file for detailed instructions on installing the Microsoft ADPCM codec.",972), NULL, MB_OK);
-//		Warning(LOCATION, "Could not properly initialize the Microsoft ADPCM codec.\nPlease see the readme.txt file for detailed instructions on installing the Microsoft ADPCM codec.");
 	}
 
 	if ( OGG_init() == -1 ) {
@@ -467,7 +459,6 @@ void snd_close(void)
 	snd_stop_all();
 	if (!ds_initialized) return;
 	snd_unload_all();		// free the sound data stored in DirectSound secondary buffers
-	ACM_close();	// Close the Audio Compression Manager (ACM)
 	ds3d_close();	// Close DirectSound3D
 	dscap_close();	// Close DirectSoundCapture
 	ds_close();		// Close DirectSound off
