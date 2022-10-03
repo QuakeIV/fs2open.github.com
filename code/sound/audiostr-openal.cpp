@@ -1466,6 +1466,7 @@ void audiostream_init()
 	}
 
 	SDL_InitSubSystem(SDL_INIT_TIMER);
+	SDL_Init(SDL_INIT_AUDIO); // now interchangeable with initsubsystem
 
 	INITIALIZE_CRITICAL_SECTION( Global_service_lock );
 
