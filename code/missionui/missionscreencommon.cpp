@@ -1071,26 +1071,17 @@ void wss_restore_loadout()
 	Assert( (Ss_pool != NULL) && (Wl_pool != NULL) && (Wss_slots != NULL) );
 
 	// only restore if mission hasn't changed
-	if ( stricmp(Player_loadout.last_modified, The_mission.modified) ) {
+	if (stricmp(Player_loadout.last_modified, The_mission.modified))
 		return;
-	}
-
-	// restore the ship pool
-	for ( i = 0; i < MAX_SHIP_CLASSES; i++ ) {
-		Ss_pool[i] = Player_loadout.ship_pool[i]; 
-	}
-
-	// restore the weapons pool
-	for ( i = 0; i < MAX_WEAPON_TYPES; i++ ) {
-		Wl_pool[i] = Player_loadout.weapon_pool[i]; 
-	}
 
 	// restore the ship class / weapons for each slot
-	for ( i = 0; i < MAX_WSS_SLOTS; i++ ) {
+	for (i = 0; i < MAX_WSS_SLOTS; i++)
+	{
 		slot = &Player_loadout.unit_data[i];
 		Wss_slots[i].ship_class = slot->ship_class;
 
-		for ( j = 0; j < MAX_SHIP_WEAPONS; j++ ) {
+		for ( j = 0; j < MAX_SHIP_WEAPONS; j++ )
+		{
 			Wss_slots[i].wep[j]= slot->wep[j];
 			Wss_slots[i].wep_count[j] = slot->wep_count[j];
 		}
