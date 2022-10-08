@@ -689,11 +689,12 @@ void anim_read_header(anim *ptr, CFILE *fp)
 	int diff = ptr->height - floor_size;
 	float waste = 100.0f * float((floor_size - diff))/(2.0f *(float)floor_size);
 
-	if (diff != 0) {
-		if (ptr->height > 16) {
-			mprintf(("ANI %s with size %dx%d (%.1f%% wasted)\n", ptr->name, ptr->width, ptr->height, waste));
-		}
-	}
+// annoying ani % wasted message
+//	if (diff != 0) {
+//		if (ptr->height > 16) {
+//			mprintf(("ANI %s with size %dx%d (%.1f%% wasted)\n", ptr->name, ptr->width, ptr->height, waste));
+//		}
+//	}
 #endif
 
 	ptr->total_frames = cfread_short(fp);
