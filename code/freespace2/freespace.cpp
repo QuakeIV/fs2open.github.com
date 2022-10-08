@@ -7475,6 +7475,13 @@ int game_main(char *cmdline)
 		disableWindowsKey( );
 #endif
 
+	mprintf(("  Initializing SDL...\n"));
+	if (SDL_Init(SDL_INIT_EVERYTHING) < 0)
+	{
+		fprintf (stderr, "Couldn't init SDL: %s", SDL_GetError());
+		return 1;
+	}
+	atexit(SDL_Quit); // supposedly this ensures SDL_Quit is called when the application exits, not sure there is any real need however
 
 	init_cdrom();
 

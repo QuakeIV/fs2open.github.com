@@ -730,7 +730,7 @@ int WaveFile::Read(ubyte *pbDest, uint cbSize, int service)
 		// standard WAVE reading
 		else
 		{
-    		memcpy(dest_buf, m_snd_info.wav_buf + m_total_uncompressed_bytes_read, num_bytes_read);
+    		memcpy((char *)dest_buf, m_snd_info.wav_buf + m_total_uncompressed_bytes_read, num_bytes_read);
     		actual_read = num_bytes_read; // no way to really read less than was asked for
 		}
 
@@ -757,7 +757,7 @@ int WaveFile::Read(ubyte *pbDest, uint cbSize, int service)
 READ_ERROR:
 	num_bytes_read = 0;
 	uncompressed_bytes_written = 0;
-	mprintf(("Read error on wave file: %s\n", m_wFilename));
+	mprintf(("Read error on audio file: %s\n", m_wFilename));
 
 READ_DONE:
 	m_total_uncompressed_bytes_read += uncompressed_bytes_written;
@@ -1464,9 +1464,6 @@ void audiostream_init()
 		Audio_streams[i].status = ASF_FREE;
 		Audio_streams[i].type = ASF_NONE;
 	}
-
-	SDL_InitSubSystem(SDL_INIT_TIMER);
-	SDL_Init(SDL_INIT_AUDIO); // now interchangeable with initsubsystem
 
 	INITIALIZE_CRITICAL_SECTION( Global_service_lock );
 

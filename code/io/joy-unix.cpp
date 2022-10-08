@@ -62,8 +62,6 @@ void joy_close()
 		SDL_JoystickClose(sdljoy);
 
 	sdljoy = NULL;
-	
-	SDL_QuitSubSystem (SDL_INIT_JOYSTICK);
 }
 
 void joy_get_caps (int max)
@@ -470,15 +468,9 @@ int joy_init()
 	if (Joy_inited)
 		return 0;
 
-	if (SDL_InitSubSystem(SDL_INIT_JOYSTICK) < 0) {
-		mprintf(("Could not initialize joystick\n"));
-		return 0;
-	}
-
 	// enable event processing of the joystick
 	if ( (SDL_JoystickEventState(SDL_ENABLE)) != SDL_ENABLE ) {
 		mprintf(("ERROR: Unable to initialize joystick event processing!\n"));
-		SDL_QuitSubSystem(SDL_INIT_JOYSTICK);
 		return 0;
 	}
 
@@ -486,7 +478,6 @@ int joy_init()
 
 	if (n < 1) {
 		mprintf(("No joysticks found\n"));
-		SDL_QuitSubSystem(SDL_INIT_JOYSTICK);
 		return 0;
 	}
 
@@ -498,7 +489,6 @@ int joy_init()
 
 	if (sdljoy == NULL) {
 		mprintf(("Unable to init joystick %d\n", Cur_joystick));
-		SDL_QuitSubSystem(SDL_INIT_JOYSTICK);
 		return 0;
 	}
 

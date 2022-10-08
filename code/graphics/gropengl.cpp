@@ -1655,13 +1655,6 @@ int opengl_init_display_device()
 	int flags = SDL_WINDOW_OPENGL;
 	int r = 0, g = 0, b = 0, depth = 0, db = 1;
 
-	mprintf(("  Initializing SDL...\n"));
-
-	if (SDL_InitSubSystem(SDL_INIT_VIDEO) < 0) {
-		fprintf (stderr, "Couldn't init SDL: %s", SDL_GetError());
-		return 1;
-	}
-
 	// grab mouse/key unless told otherwise, ignore when we are going fullscreen
 	if ( (Cmdline_fullscreen_window|| Cmdline_window || os_config_read_uint(NULL, "Fullscreen", 1) == 0) && !Cmdline_no_grab ) {
 		SDL_SetRelativeMouseMode(SDL_TRUE);

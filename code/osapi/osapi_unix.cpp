@@ -237,8 +237,6 @@ DWORD unix_process(DWORD lparam)
 void os_deinit()
 {
 	DELETE_CRITICAL_SECTION( Os_lock );
-
-	SDL_Quit();
 }
 
 void os_poll()
