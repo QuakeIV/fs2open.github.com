@@ -1205,9 +1205,7 @@ bool SetCmdlineParams()
 
 			/* portej05 defined this always */
 			build_caps |= BUILD_CAP_NO_D3D;
-#ifdef USE_OPENAL
 			build_caps |= BUILD_CAP_OPENAL;
-#endif
 
 			fwrite(&build_caps, 1, 1, fp);
 		}

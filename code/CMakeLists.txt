@@ -579,7 +579,7 @@ if (UNIX)
     windows_stub/config.h
     )
     
-    target_compile_definitions(code PUBLIC SCP_UNIX USE_OPENAL)
+    target_compile_definitions(code PUBLIC SCP_UNIX)
 endif (UNIX)
 
 # always do inferno build TODO: yeet macros for that entirely

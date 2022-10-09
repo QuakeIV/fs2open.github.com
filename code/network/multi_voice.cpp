@@ -223,10 +223,6 @@ void multi_voice_alg_flush_old_stream(int stream_index);
 // is the given sound stream playing (compares uncompressed sound size with current playback position)
 int multi_voice_stream_playing(int stream_index);
 
-// tack on a post voice sound (pass -1 for none)
-// return final buffer size
-int multi_voice_mix(int post_sound,char *data,int cur_size,int max_size);
-
 // send a dummy packet in the place of a too-large data packet
 void multi_voice_send_dummy_packet();
 
@@ -314,20 +310,6 @@ void multi_voice_init()
 		if(Multi_voice_playback_buffer == NULL){
 			nprintf(("Network","MULTI VOICE : Error allocating playback buffer - playback will not be possible\n"));		
 			Multi_voice_can_play = 0;		
-		} 
-
-		// attempt to copy in the "pre" voice sound
-		pre_sound = snd_load(&Snds[MULTI_VOICE_PRE_SOUND], 0);
-		if(pre_sound != -1){
-			// get the pre-sound size
-			if((snd_size(pre_sound,&pre_size) != -1) && (pre_size < MULTI_VOICE_MAX_BUFFER_SIZE)){
-				snd_get_data(pre_sound,Multi_voice_playback_buffer);
-				Multi_voice_pre_sound_size = pre_size;
-			} else {
-				Multi_voice_pre_sound_size = 0;
-			}
-		} else {
-			Multi_voice_pre_sound_size = 0;
 		}
 	}
 
@@ -1396,48 +1378,6 @@ int multi_voice_stream_playing(int stream_index)
 	return 0;
 }
 
-// tack on pre and post sounds to a sound stream (pass -1 for either if no sound is wanted)
-// return final buffer size
-int multi_voice_mix(int post_sound,char *data,int cur_size,int max_size)
-{
-	int post_size;
-	
-	// if the user passed -1 for both pre and post sounds, don't do a thing
-	if(post_sound == -1){
-		return cur_size;
-	}
-
-	// get the sizes of the additional sounds
-	
-	// post sound
-	if(post_sound >= 0){
-		post_sound = snd_load(&Snds[post_sound], 0);
-		if(post_sound >= 0){
-			if(snd_size(post_sound,&post_size) == -1){
-				post_size = 0;
-			}
-		} else {
-			post_size = 0;
-		}
-	} else {
-		post_size = 0;
-	}
-			
-	// if we have a "post" sound to add
-	if(post_size > 0){
-		if((max_size - cur_size) > post_size){
-			// copy in the sound
-			snd_get_data(post_sound,data + cur_size);
-
-			// increment the cur_size
-			cur_size += post_size;
-		}
-	}
-
-	// return the size of the new buffer
-	return cur_size;
-}
-
 // max size of a sound chunk which we can fit into a packet
 int multi_voice_max_chunk_size(int msg_mode)
 {
@@ -1919,10 +1859,7 @@ void multi_voice_alg_play_window(int stream_index)
 		// decompress the whole shebang
 		rtvoice_uncompress((ubyte*)Multi_voice_unpack_buffer,buffer_offset,st->accum_buffer_gain[0],(ubyte*)Multi_voice_playback_buffer,st->accum_buffer_usize[0]);
 		buffer_offset = st->accum_buffer_usize[0];
-#endif		
-
-		// mix in the SND_CUE_VOICE and the SND_END_VOICE game sounds
-		buffer_offset = multi_voice_mix(MULTI_VOICE_POST_SOUND,Multi_voice_playback_buffer,buffer_offset,MULTI_VOICE_MAX_BUFFER_SIZE);
+#endif
 			
 		Assert(Multi_voice_stream[stream_index].stream_rtvoice_handle != -1);
 

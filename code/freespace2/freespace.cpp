@@ -2024,28 +2024,6 @@ void game_init()
 	int use_a3d = 0;
 	int use_eax = 0;
 
-#ifndef USE_OPENAL
-	ptr = os_config_read_string(NULL, NOX("Soundcard"), NULL);
-	mprintf(("soundcard = %s\n", ptr ? ptr : "<nothing>"));
-	if (ptr) {
-		if (!stricmp(ptr, NOX("no sound"))) {
-			Cmdline_freespace_no_sound = 1;
-			Cmdline_freespace_no_music = 1;
-
-		} else if (!stricmp(ptr, NOX("Aureal A3D"))) {
-			use_a3d = 1;
-		} else if (!stricmp(ptr, NOX("EAX"))) {
-			use_eax = 1;
-		}
-	}
-#ifndef SCP_UNIX
-	else
-	{
-		run_launcher();
-		exit(0);
-	}
-#endif
-#else // USE_OPENAL
 	ptr = os_config_read_string(NULL, NOX("SoundDeviceOAL"), NULL);
 	if (ptr) {
 		if ( !stricmp(ptr, NOX("no sound")) ) {
@@ -2055,7 +2033,6 @@ void game_init()
 			Cmdline_freespace_no_music = 1;
 		}
 	}
-#endif // !USE_OPENAL
 
 	if (!Is_standalone)
 	{
@@ -2542,10 +2519,6 @@ void game_show_framerate()
 
 		gr_printf( sx, sy, NOX("S-SRAM: %d KB\n"), Snd_sram/1024 );		// mem used to store game sound
 		sy += dy;
-#ifndef USE_OPENAL
-		gr_printf( sx, sy, NOX("S-HRAM: %d KB\n"), Snd_hram/1024 );		// mem used to store game sound
-		sy += dy;
-#endif
 
 		{
 			extern int GL_textures_in;
@@ -6659,7 +6632,6 @@ void mouse_force_pos(int x, int y);
 				}
 			}
 
-			sound_env_set(&Game_sound_env);
 			joy_ff_mission_init(Ship_info[Player_ship->ship_info_index].rotation_time);
 
 			// clear multiplayer button info			i

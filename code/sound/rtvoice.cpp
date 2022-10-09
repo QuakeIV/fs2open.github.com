@@ -593,11 +593,6 @@ int rtvoice_play_compressed(int index, unsigned char *data, int size, int uncomp
 		rtvoice_uncompress(data, size, gain, Rtv_playback_uncompressed_buffer, uncompressed_size);
 	}
 
-	// lock the data in
-	if ( ds_lock_data(ds_handle, Rtv_playback_uncompressed_buffer, uncompressed_size) ) {
-		return -1;
-	}
-
 	// play the voice
 	rval = ds_play(ds_handle, -1, -100, DS_MUST_PLAY, ds_convert_volume(Master_voice_volume), 0, 0);
 	return rval;
@@ -614,11 +609,6 @@ int rtvoice_play_uncompressed(int index, unsigned char *data, int size)
 
 	// Stop any currently playing voice output
 	ds_stop_easy(ds_handle);
-
-	// lock the data in
-	if ( ds_lock_data(ds_handle, data, size) ) {
-		return -1;
-	}
 
 	// play the voice
 	rval = ds_play(ds_handle, -1, -100, DS_MUST_PLAY, ds_convert_volume(Master_voice_volume), 0, 0);

@@ -12,10 +12,6 @@
 
 #ifndef SCP_UNIX
 
-#ifndef USE_OPENAL
-#error This code has been modified to work only with OpenAL builds!
-#endif
-
 #include "globalincs/pstypes.h"
 #include "sound/ds.h"
 #include "sound/dscap.h"

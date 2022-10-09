@@ -57,7 +57,6 @@ SCP_vector<sound_buffer> sound_buffers;
 
 extern int Snd_sram;					// mem (in bytes) used up by storing sounds in system memory
 
-static int Ds_use_ds3d = 0;
 static int Ds_use_a3d = 0;
 static int Ds_use_eax = 0;
 
@@ -101,20 +100,6 @@ const char* openal_error_string(int get_alc)
 
 int ds_vol_lookup[101];						// lookup table for direct sound volumes
 int ds_initialized = FALSE;
-
-//--------------------------------------------------------------------------
-// ds_is_3d_buffer()
-//
-// Determine if a secondary buffer is a 3d secondary buffer.
-//
-int ds_is_3d_buffer(int sid)
-{
-	// they are all 3d
-	if ( sid >= 0 ) {
-		return 1;
-	}
-	return 0;
-}
 
 //--------------------------------------------------------------------------
 //  ds_build_vol_lookup()
@@ -480,15 +465,6 @@ int ds_get_sid()
 }
 
 // ---------------------------------------------------------------------------------------
-// ds_get_hid()
-//
-//	
-int ds_get_hid()
-{
-	return -1;
-}
-
-// ---------------------------------------------------------------------------------------
 // Load a DirectSound secondary buffer with sound data.  The sounds data for
 // game sounds are stored in the DirectSound secondary buffers, and are 
 // duplicated as needed and placed in the Channels[] array to be played.
@@ -518,7 +494,8 @@ int ds_load_buffer(int *sid, int *hid, int *final_size, void *header, sound_info
 	// All sounds are required to have a software buffer
 
 	*sid = ds_get_sid();
-	if ( *sid == -1 ) {
+	if ( *sid == -1 )
+	{
 		nprintf(("Sound","SOUND ==> No more sound buffers available\n"));
 		return -1;
 	}
@@ -542,7 +519,8 @@ int ds_load_buffer(int *sid, int *hid, int *final_size, void *header, sound_info
 	WAVEFORMATEX *pwfx = (WAVEFORMATEX *)header;
 
 
-	switch (si->format) {
+	switch (si->format)
+	{
 		case WAVE_FORMAT_PCM:
 			Assert( si->data != NULL );
 			bits = si->bits;
@@ -596,6 +574,7 @@ int ds_load_buffer(int *sid, int *hid, int *final_size, void *header, sound_info
 			break;
 
 		default:
+		    mprintf(("ds_load_buffer unrecognized sound format: %d\n",si->format));
 			STUB_FUNCTION;
 			return -1;
 	}
@@ -722,47 +701,6 @@ void ds_init_software_buffers()
 }
 
 // ---------------------------------------------------------------------------------------
-// ds_init_hardware_buffers()
-//
-// init the hardware buffers
-//
-void ds_init_hardware_buffers()
-{
-	//	STUB_FUNCTION;	// not needed with openal (CM)
-	return;
-}
-
-// ---------------------------------------------------------------------------------------
-// ds_init_buffers()
-//
-// init the both the software and hardware buffers
-//
-void ds_init_buffers()
-{
-	ds_init_software_buffers();
-	ds_init_hardware_buffers();
-}
-
-// Load the dsound.dll, and get funtion pointers
-// exit:	0	->	dll loaded successfully
-//			!0	->	dll could not be loaded
-int ds_dll_load()
-{
-	return 0;
-}
-
-
-// Initialize the property set interface.
-//
-// returns: 0 if successful, otherwise -1.  If successful, the global pPropertySet will
-//          set to a non-NULL value.
-//
-int ds_init_property_set(DWORD sample_rate, WORD sample_bits)
-{
-	return 0;
-}
-
-// ---------------------------------------------------------------------------------------
 // ds_init()
 //
 // returns:     -1           => init failed
@@ -775,8 +713,6 @@ int ds_init(int use_a3d, int use_eax, unsigned int sample_rate, unsigned short s
 
 	Ds_use_a3d = 0;
 	Ds_use_eax = 0;
-//	Ds_use_ds3d = 1;
-	Ds_use_ds3d = 0;
 
 	mprintf(("Initializing OpenAL...\n"));
 
@@ -828,10 +764,6 @@ int ds_init(int use_a3d, int use_eax, unsigned int sample_rate, unsigned short s
 	if (AL_play_position)
 		mprintf(( "  Using extension \"AL_LOKI_play_position\".\n" ));
 
-	// not a big deal here, but for consitancy sake
-	if (Ds_use_ds3d && ds3d_init(0) != 0)
-		Ds_use_ds3d = 0;
-
 	// setup default listener position/orientation
 	// this is needed for 2D pan
 	OpenAL_ErrorPrint( alListener3f(AL_POSITION, 0.0, 0.0, 0.0) );
@@ -839,7 +771,7 @@ int ds_init(int use_a3d, int use_eax, unsigned int sample_rate, unsigned short s
 
 	ds_build_vol_lookup();
 	ds_init_channels();
-	ds_init_buffers();
+	ds_init_software_buffers();
 
 	// we need to clear out all errors before moving on
 	alcGetError(NULL);
@@ -957,32 +889,13 @@ void ds_close_software_buffers()
 }
 
 // ---------------------------------------------------------------------------------------
-// ds_close_hardware_buffers()
-//
-//
-void ds_close_hardware_buffers()
-{
-}
-
-// ---------------------------------------------------------------------------------------
-// ds_close_buffers()
-//
-// Free the channel buffers
-//
-void ds_close_buffers()
-{
-	ds_close_software_buffers();
-	ds_close_hardware_buffers();
-}
-
-// ---------------------------------------------------------------------------------------
 // ds_close()
 //
 // Close the DirectSound system
 //
 void ds_close()
 {
-	ds_close_buffers();
+	ds_close_software_buffers();
 	ds_close_all_channels();
 
 	// free the Channels[] array, since it was dynamically allocated
@@ -1151,43 +1064,6 @@ int ds_create_buffer(int frequency, int bits_per_sample, int nchannels, int nsec
 	return sid;
 }
 
-// Lock data into an existing buffer
-int ds_lock_data(int sid, unsigned char *data, int size)
-{
-	STUB_FUNCTION;
-/*
-	Assert(sid >= 0);
-
-	ALuint buf_id = sound_buffers[sid].buf_id;
-	ALenum format;
-
-	if (sound_buffers[sid].bits_per_sample == 16) {
-		if (sound_buffers[sid].nchannels == 2) {
-			format = AL_FORMAT_STEREO16;
-		} else if (sound_buffers[sid].nchannels == 1) {
-			format = AL_FORMAT_MONO16;
-		} else {
-			return -1;
-		}
-	} else if (sound_buffers[sid].bits_per_sample == 8) {
-		if (sound_buffers[sid].nchannels == 2) {
-			format = AL_FORMAT_STEREO8;
-		} else if (sound_buffers[sid].nchannels == 1) {
-			format = AL_FORMAT_MONO8;
-		} else {
-			return -1;
-		}
-	} else {
-		return -1;
-	}
-
-	sound_buffers[sid].nbytes = size;
-
-	OpenAL_ErrorCheck( alBufferData(buf_id, format, data, size, sound_buffers[sid].frequency), return -1 );
-*/
-	return 0;
-}
-
 // Stop a buffer from playing directly
 void ds_stop_easy(int sid)
 {
@@ -1278,8 +1154,6 @@ int ds_play(int sid, int hid, int snd_id, int priority, int volume, int pan, int
 
 	if (Channels[ch_idx].source_id == 0)
 		return -1;
-
-	if ( ds_using_ds3d() ) { }
 
 	// set new position for pan or zero out if none
 	ALfloat alpan = (float)pan / MAX_PAN;
@@ -1633,13 +1507,6 @@ DWORD ds_get_play_position(int channel)
 	return pos;
 }
 
-DWORD ds_get_write_position(int channel)
-{
-//	STUB_FUNCTION;
-
-	return 0;
-}
-
 int ds_get_channel_size(int channel)
 {
 	int buf_id = Channels[channel].buf_id;
@@ -1670,163 +1537,6 @@ int ds_get_number_channels()
 	}
 
 	return n;
-}
-
-// retreive raw data from a sound buffer
-int ds_get_data(int sid, char *data)
-{
-	STUB_FUNCTION;
-
-	return -1;
-}
-
-// return the size of the raw sound data
-int ds_get_size(int sid, int *size)
-{
-	Assert(sid >= 0);
-
-	STUB_FUNCTION;
-
-	return -1;
-}
-
-int ds_using_ds3d()
-{
-	return Ds_use_ds3d;
-}
-
-// Return the primary buffer interface.  Note that we cast to a uint to avoid
-// having to include dsound.h (and thus windows.h) in ds.h.
-//
-uint ds_get_primary_buffer_interface()
-{
-	// unused
-	return 0;
-}
-
-// Return the DirectSound Interface.
-//
-uint ds_get_dsound_interface()
-{
-	// unused
-	return 0;
-}
-
-uint ds_get_property_set_interface()
-{
-	return 0;
-}
-
-// --------------------
-//
-// EAX Functions below
-//
-// --------------------
-
-// Set the master volume for the reverb added to all sound sources.
-//
-// volume: volume, range from 0 to 1.0
-//
-// returns: 0 if the volume is set successfully, otherwise return -1
-//
-int ds_eax_set_volume(float volume)
-{
-	return -1;
-}
-
-// Set the decay time for the EAX environment (ie all sound sources)
-//
-// seconds: decay time in seconds
-//
-// returns: 0 if decay time is successfully set, otherwise return -1
-//
-int ds_eax_set_decay_time(float seconds)
-{
-	return -1;
-}
-
-// Set the damping value for the EAX environment (ie all sound sources)
-//
-// damp: damp value from 0 to 2.0
-//
-// returns: 0 if the damp value is successfully set, otherwise return -1
-//
-int ds_eax_set_damping(float damp)
-{
-	return -1;
-}
-
-// Set up the environment type for all sound sources.
-//
-// envid: value from the EAX_ENVIRONMENT_* enumeration in ds_eax.h
-//
-// returns: 0 if the environment is set successfully, otherwise return -1
-//
-int ds_eax_set_environment(unsigned long envid)
-{
-	return -1;
-}
-
-// Set up a predefined environment for EAX
-//
-// envid: value from teh EAX_ENVIRONMENT_* enumeration
-//
-// returns: 0 if successful, otherwise return -1
-//
-int ds_eax_set_preset(unsigned long envid)
-{
-	return -1;
-}
-
-
-// Set up all the parameters for an environment
-//
-// id: value from teh EAX_ENVIRONMENT_* enumeration
-// volume: volume for the environment (0 to 1.0)
-// damping: damp value for the environment (0 to 2.0)
-// decay: decay time in seconds (0.1 to 20.0)
-//
-// returns: 0 if successful, otherwise return -1
-//
-int ds_eax_set_all(unsigned long id, float vol, float damping, float decay)
-{
-	return -1;
-}
-
-// Get up the parameters for the current environment
-//
-// er: (output) hold environment parameters
-//
-// returns: 0 if successful, otherwise return -1
-//
-int ds_eax_get_all(EAX_REVERBPROPERTIES *er)
-{
-	return -1;
-}
-
-// Close down EAX, freeing any allocated resources
-//
-void ds_eax_close()
-{
-}
-
-// Initialize EAX
-//
-// returns: 0 if initialization is successful, otherwise return -1
-//
-int ds_eax_init()
-{
-	return -1;
-}
-
-int ds_eax_is_inited()
-{
-	return 0;
-}
-
-bool ds_using_a3d()
-{
-	return false;
 }
 
 // Called once per game frame to make sure voice messages aren't looping

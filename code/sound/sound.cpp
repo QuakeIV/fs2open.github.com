@@ -654,32 +654,18 @@ int snd_play_3d(game_snd *gs, vec3d *source_pos, vec3d *listen_pos, float radius
 	if ( (volume < MIN_SOUND_VOLUME) && !force) {
 		return -1;
 	}
-
-	int play_using_ds3d = 0;
-
-	if (ds_using_ds3d()) {
-		if ( ds_is_3d_buffer(snd->sid) ) {
-			play_using_ds3d = 1;
-		}
-	}
-
-	if ( play_using_ds3d ) {
-		// play through DirectSound3D
-		handle = ds3d_play( snd->sid, snd->hid, gs->id_sig, source_pos, source_vel, min_range, max_range, looping, ds_convert_volume(max_volume*Master_sound_volume), ds_convert_volume(volume), ds_priority(priority));
+	
+	// play sound as a fake 3D sound
+	if ( distance <= 0 ) {
+		pan = 0.0f;
 	}
 	else {
-		// play sound as a fake 3D sound
-		if ( distance <= 0 ) {
-			pan = 0.0f;
-		}
-		else {
-			pan = vm_vec_dot(&View_matrix.vec.rvec,&vector_to_sound);
-		}
-		if(looping){
-			handle = snd_play_looping( gs, pan, -1, -1, volume/gs->default_volume, priority, force );
-		} else {
-			handle = snd_play( gs, pan, volume/gs->default_volume, priority);
-		}
+		pan = vm_vec_dot(&View_matrix.vec.rvec,&vector_to_sound);
+	}
+	if(looping){
+		handle = snd_play_looping( gs, pan, -1, -1, volume/gs->default_volume, priority, force );
+	} else {
+		handle = snd_play( gs, pan, volume/gs->default_volume, priority);
 	}
 
 	return handle;
@@ -1050,12 +1036,8 @@ void snd_stop_all()
 //
 uint sound_get_ds()
 {
-#ifdef USE_OPENAL
 	// unused
 	return 0;
-#else
-	return (uint)pDirectSound;
-#endif
 }
 
 // ---------------------------------------------------------------------------------------
@@ -1196,34 +1178,6 @@ void snd_stop_any_sound()
 	}
 }
 
-// Return the raw sound data for a loaded sound
-//
-// input:	handle	=>	index into Sounds[] array
-//				data		=>	allocated mem to hold sound
-//
-// exit:		0	=>	success
-//				!0	=>	fail
-int snd_get_data(int handle, char *data)
-{
-	Assert(handle >= 0 && handle < Num_sounds);
-	if ( ds_get_data(Sounds[handle].sid, data) ) {
-		return -1;
-	}
-
-	return 0;
-}
-
-// return the size of the sound data associated with the sound handle
-int snd_size(int handle, int *size)
-{
-	Assert(handle >= 0 && handle < Num_sounds);
-	if ( ds_get_size(Sounds[handle].sid, size) ) {
-		return -1;
-	}
-
-	return 0;
-}
-
 // retrieve the bits per sample and frequency for a given sound
 void snd_get_format(int handle, int *bits_per_sample, int *frequency)
 {
@@ -1297,16 +1251,8 @@ int snd_time_remaining(int handle)
 	// handle ADPCM properly.  It's always 16bit for OpenAL but should be 8 or 16
 	// for Windows.  We can't leave it as 4 here (the ADPCM rate) because that is the
 	// compressed bps and the math is against the uncompressed bps.
-	if ( bits_per_sample == 4 ) {
-#ifdef USE_OPENAL
+	if (bits_per_sample == 4)
 		bits_per_sample = 16;
-#else
-		if ( UserSampleBits >= 16 )
-			bits_per_sample = 16;
-		else
-			bits_per_sample = 8;
-#endif
-	}
 
 	Assert( bits_per_sample >= 8 );
 
@@ -1331,38 +1277,6 @@ static float Sound_env_volume;
 static float Sound_env_damping;
 static float Sound_env_decay;
 
-// Set the sound environment
-//
-int sound_env_set(sound_env *se)
-{
-	if (ds_eax_set_all(se->id, se->volume, se->damping, se->decay) == 0) {
-		Sound_env_id = se->id;
-		Sound_env_volume = se->volume;
-		Sound_env_damping = se->damping;
-		Sound_env_decay = se->decay;
-		return 0;
-	} else {
-		return -1;
-	}
-}
-
-// Get the sound environment
-//
-int sound_env_get(sound_env *se)
-{
-	EAX_REVERBPROPERTIES er;
-
-	if (ds_eax_get_all(&er) == 0) {
-		se->id = er.environment;
-		se->volume = er.fVolume;
-		se->decay = er.fDecayTime_sec;
-		se->damping = er.fDamping;
-		return 0;
-	} else {
-		return -1;
-	}
-}
-
 // Turn off the sound environment
 //
 int sound_env_disable()
@@ -1372,15 +1286,7 @@ int sound_env_disable()
 	se.volume = 0.0f;
 	se.damping = 0.0f;
 	se.decay = 0.0f;
-	sound_env_set(&se);
 	return 0;
-}
-
-// Return 1 if EAX can used to set the sound environment, otherwise return 0
-//
-int sound_env_supported()
-{
-	return ds_eax_is_inited();
 }
 
 // Called once per game frame

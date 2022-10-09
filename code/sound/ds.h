@@ -19,9 +19,6 @@
 #include <mmsystem.h>
 #endif
 
-#ifndef USE_OPENAL
-#include "directx/vdsound.h"
-#else
 #if !(defined(__APPLE__) || defined(_WIN32))
 	#include <AL/al.h>
 	#include <AL/alc.h>
@@ -29,7 +26,6 @@
 	#include "al.h"
 	#include "alc.h"
 #endif // !__APPLE__ && !_WIN32
-#endif // USE_OPENAL
 
 #include "sound/ogg/ogg.h"
 #include "globalincs/pstypes.h"
@@ -67,7 +63,6 @@ typedef struct sound_info {
 } sound_info;
 
 
-#ifdef USE_OPENAL
 typedef struct channel
 { 
 	int	sig;			// uniquely identifies the sound playing on the channel
@@ -122,29 +117,6 @@ extern const char* openal_error_string(int get_alc = 0);
 		nprintf(("Sound", "OpenAL ERROR: \"%s\" in %s, line %i\n", error_text, __FILE__, __LINE__));	\
 	}	\
 } while (0);
-#else
-
-extern LPDIRECTSOUNDBUFFER		pPrimaryBuffer;
-extern LPDIRECTSOUND				pDirectSound;
-
-extern HRESULT (__stdcall *pfn_DirectSoundCaptureCreate)(LPGUID lpGUID, LPDIRECTSOUNDCAPTURE *lplpDSC, LPUNKNOWN pUnkOuter);
-
-
-// EAX buffer reverb property set {4a4e6fc0-c341-11d1-b73a-444553540000}
-DEFINE_GUID(DSPROPSETID_EAXBUFFER_ReverbProperties, 
-    0x4a4e6fc0,
-    0xc341,
-    0x11d1,
-    0xb7, 0x3a, 0x44, 0x45, 0x53, 0x54, 0x00, 0x00);
-
-// EAX (listener) reverb property set {4a4e6fc1-c341-11d1-b73a-444553540000}
-DEFINE_GUID(DSPROPSETID_EAX_ReverbProperties, 
-    0x4a4e6fc1,
-    0xc341,
-    0x11d1,
-    0xb7, 0x3a, 0x44, 0x45, 0x53, 0x54, 0x00, 0x00);
-
-#endif // USE_OPENAL
 
 
 extern int							ds_initialized;
@@ -170,24 +142,13 @@ void	ds_set_pitch(int channel, int pitch);
 void	ds_chg_loop_status(int channel, int loop);
 void  ds_set_position(int channel, DWORD offset);
 DWORD ds_get_play_position(int channel);
-DWORD ds_get_write_position(int channel);
-int	ds_get_data(int sid, char *data);
-int	ds_get_size(int sid, int *size);
 
 int	ds_create_buffer(int frequency, int bits_per_sample, int nchannels, int nseconds);
-int	ds_lock_data(int sid, unsigned char *data, int size);
 int	ds_play_easy(int sid, int volume);
 void	ds_stop_easy(int sid);
 int	ds_get_channel_size(int channel);
-int	ds_is_3d_buffer(int sid);
-int	ds_using_ds3d();
-bool	ds_using_a3d();
 
 int ds_get_sound_id(int channel);
-
-unsigned int ds_get_primary_buffer_interface();
-unsigned int ds_get_dsound_interface();
-unsigned int ds_get_property_set_interface();
 
 // Returns the number of channels that are actually playing
 int ds_get_number_channels();
@@ -276,20 +237,5 @@ typedef struct
                                          // signifies the reverb engine should
                                          // calculate it's own reverb mix value
                                          // based on distance
-
-// prototypes
-
-int ds_eax_init();
-void ds_eax_close();
-
-int ds_eax_set_preset(unsigned long envid);
-
-int ds_eax_set_volume(float volume);
-int ds_eax_set_decay_time(float seconds);
-int ds_eax_set_damping(float damp);
-int ds_eax_set_environment(unsigned long envid);
-int ds_eax_set_all(unsigned long id, float volume, float damping, float decay);
-int ds_eax_get_all(EAX_REVERBPROPERTIES *er);
-int ds_eax_is_inited();
 
 #endif /* __DS_H__ */

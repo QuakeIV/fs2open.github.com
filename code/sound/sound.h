@@ -138,8 +138,6 @@ void 	snd_use_lib(int lib_id);
 
 int snd_num_playing();
 
-int snd_get_data(int handle, char *data);
-int snd_size(int handle, int *size);
 void snd_do_frame();
 
 // repositioning of the sound buffer pointer
@@ -185,9 +183,6 @@ enum
     SND_ENV_PSYCHOTIC
 };
 
-int sound_env_set(sound_env *se);
-int sound_env_get(sound_env *se);
 int sound_env_disable();
-int sound_env_supported();
 
 #endif
