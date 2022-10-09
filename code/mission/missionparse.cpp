@@ -799,7 +799,10 @@ void parse_player_info2(mission *pm)
 			// pool if they are not allowed
 			if (Game_mode & GM_CAMPAIGN_MODE || ((Game_mode & GM_MULTIPLAYER) && !(Net_player->flags & NETINFO_FLAG_AM_MASTER))) {
 				if ( !Campaign.ships_allowed[list[i]] )
+				{
+				    mprintf(("Warning, mission specified ship not allowed in campaign!\n"));
 					continue;
+				}
 			}
 
 			ptr->ship_list[num_choices] = list[i];
@@ -813,15 +816,16 @@ void parse_player_info2(mission *pm)
 		ptr->num_ship_choices = num_choices;
 
 		ptr->default_ship = -1;
-		if (optional_string("+Default_ship:")) {
+		if (optional_string("+Default_ship:"))
+		{
 			stuff_string(str, F_NAME, NAME_LENGTH);
 			ptr->default_ship = ship_info_lookup(str);
-			if (-1 == ptr->default_ship) {
-				WarningEx(LOCATION, "Mission: %s\nUnknown default ship %s!  Defaulting to %s.", pm->name, str, Ship_info[ptr->ship_list[0]].name );
-			}
+			if (-1 == ptr->default_ship)
+				WarningEx(LOCATION, "Mission: %s\nUnknown default ship %s!  Defaulting to %s.", pm->name, str, Ship_info[ptr->ship_list[0]].name);
 			// see if the player's default ship is an allowable ship (campaign only). If not, then what
 			// do we do?  choose the first allowable one?
-			if (Game_mode & GM_CAMPAIGN_MODE || ((Game_mode & GM_MULTIPLAYER) && !(Net_player->flags & NETINFO_FLAG_AM_MASTER))) {
+			if (Game_mode & GM_CAMPAIGN_MODE || ((Game_mode & GM_MULTIPLAYER) && !(Net_player->flags & NETINFO_FLAG_AM_MASTER)))
+			{
 				if ( !(Campaign.ships_allowed[ptr->default_ship]) ) {
 					for (i = 0; i < MAX_SHIP_CLASSES; i++ ) {
 						if ( Campaign.ships_allowed[ptr->default_ship] ) {

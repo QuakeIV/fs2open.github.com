@@ -204,9 +204,8 @@ void gameseq_init()
 
 void gameseq_post_event( int event )
 {
-	if (state_processing_event_post) {
+	if (state_processing_event_post)
 		nprintf(("Warning", "Received post for event %s during state transtition. Find Allender if you are unsure if this is bad.\n", GS_event_text[event] ));
-	}
 
 	Assert(gs[gs_current_stack].queue_tail < MAX_GAMESEQ_EVENTS);
 	gs[gs_current_stack].event_queue[gs[gs_current_stack].queue_tail++] = event;

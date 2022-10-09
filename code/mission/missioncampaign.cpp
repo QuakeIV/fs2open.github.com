@@ -919,14 +919,12 @@ int mission_campaign_savefile_save()
 	cfwrite_string_len(Player_loadout.last_modified, fp);
 
 	// write ship pool
-	for ( i = 0; i < Num_ship_classes; i++ ) {
+	for ( i = 0; i < Num_ship_classes; i++ )
 		cfwrite_int(Player_loadout.ship_pool[i], fp);
-	}
 
 	// write weapons pool
-	for ( i = 0; i < Num_weapon_types; i++ ) {
+	for ( i = 0; i < Num_weapon_types; i++ )
 		cfwrite_int(Player_loadout.weapon_pool[i], fp);
-	}
 
 	// write ship loadouts
 	for ( i = 0; i < MAX_WSS_SLOTS; i++ ) {

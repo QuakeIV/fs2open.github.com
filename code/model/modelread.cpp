@@ -912,9 +912,10 @@ int read_model_file(polymodel * pm, char *filename, int n_subsystems, model_subs
 					break;
 			}
 
-			if (ibx_valid) {
+			if (ibx_valid)
+			{
 				// file is valid so grab the checksum out of the .ibx and verify it matches the POF
-				uint ibx_sum = cfread_uint( ibuffer_info.read );
+				uint ibx_sum = cfread_uint(ibuffer_info.read);
 				ibuffer_info.size -= sizeof(uint); // subtract
 
 				if (ibx_sum != pof_checksum) {
@@ -952,17 +953,21 @@ int read_model_file(polymodel * pm, char *filename, int n_subsystems, model_subs
 			}
 
 
-			if ( !ibx_valid || !tsb_valid ) {
-				cfclose( ibuffer_info.read );
+			if (!ibx_valid || !tsb_valid)
+			{
+				cfclose(ibuffer_info.read);
 				ibuffer_info.read = NULL;
 				ibuffer_info.size = 0;
 
-				if (ibuffer_info.tsb_read != NULL) {
+				if (ibuffer_info.tsb_read != NULL)
+				{
 					cfclose( ibuffer_info.tsb_read);
 					ibuffer_info.tsb_read = NULL;
 					ibuffer_info.tsb_size = 0;
 				}
-			} else {
+			}
+			else
+			{
 				mprintf(("IBX: Found a good %s to read for '%s'.\n", (ibuffer_info.tsb_read != NULL) ? "IBX/TSB" : "IBX", filename));
 				mprintf(("IBX-DEBUG => POF checksum: 0x%08x, IBX checksum: 0x%08x -- \"%s\"\n", pof_checksum, ibx_checksum, filename));
 			}
