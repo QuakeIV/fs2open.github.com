@@ -192,7 +192,7 @@ void outwnd_print(const char *id, char *tmp)
 		return;
 
   	if ( !outwnd_inited ) {
-  		fputs("outwnd not initialized yet...  ", stdout);
+  		fputs("outwnd not initialized yet...  \n", stdout);
 		fputs(tmp, stdout);
 		fflush(stdout);
 
