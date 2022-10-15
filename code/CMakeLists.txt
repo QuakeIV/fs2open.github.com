@@ -585,8 +585,6 @@ endif (UNIX)
 # always do inferno build TODO: yeet macros for that entirely
 target_compile_definitions(code PUBLIC INF_BUILD)
 
-message(${LUA_INCLUDE_DIR})
-
 target_include_directories(code PUBLIC ${CMAKE_CURRENT_SOURCE_DIR} ${SDL2_INCLUDE_DIRS} ${LUA_INCLUDE_DIR})
 
 target_link_libraries(code PUBLIC SDL2 ogg vorbis vorbisfile openal png lua5.1 GL jpeg theora GLU)
