@@ -795,18 +795,15 @@ void wl_render_overhead_view(float frametime)
 	{
 		display_type = -1;
 
-		if(!strlen(sip->overhead_filename))
+		if (wl_ship->model_num < 0)
 		{
-			if (wl_ship->model_num < 0)
-			{
-				wl_ship->model_num = model_load(sip->pof_file, sip->n_subsystems, &sip->subsystems[0]);
-				model_page_in_textures(wl_ship->model_num, ship_class);
-			}
+			wl_ship->model_num = model_load(sip->pof_file, sip->n_subsystems, &sip->subsystems[0]);
+			model_page_in_textures(wl_ship->model_num, ship_class);
+		}
 
-			if(wl_ship->model_num > -1)
-			{
-				display_type = 2;
-			}
+		if(wl_ship->model_num > -1)
+		{
+			display_type = 2;
 		}
 
 		if(display_type < 0)

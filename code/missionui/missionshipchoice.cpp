@@ -1475,29 +1475,27 @@ void ship_select_do(float frametime)
 	//////////////////////////////////
 	// Render and draw the 3D model //
 	//////////////////////////////////
-	if((Selected_ss_class >= 0) && (Ss_icons[Selected_ss_class].ss_anim.num_frames == 0))
+
+	// check we have a valid ship class selected
+	if ( (Selected_ss_class >= 0) && (ShipSelectModelNum >= 0) )
 	{
-		// check we have a valid ship class selected
-		if ( (Selected_ss_class >= 0) && (ShipSelectModelNum >= 0) )
-		{
-			ship_info *sip = &Ship_info[Selected_ss_class];
-			float rev_rate = REVOLUTION_RATE;
-			if (sip->flags & SIF_BIG_SHIP) {
-				rev_rate *= 1.7f;
-			}
-			if (sip->flags & SIF_HUGE_SHIP) {
-				rev_rate *= 3.0f;
-			}
-			draw_model_rotating(ShipSelectModelNum,
-				Ship_anim_coords[gr_screen.res][0],
-				Ship_anim_coords[gr_screen.res][1],
-				Tech_ship_display_coords[gr_screen.res][2],
-				Tech_ship_display_coords[gr_screen.res][3],
-				&ShipSelectScreenShipRot,
-				&sip->closeup_pos,
-				sip->closeup_zoom * 1.3f,
-				rev_rate);
+		ship_info *sip = &Ship_info[Selected_ss_class];
+		float rev_rate = REVOLUTION_RATE;
+		if (sip->flags & SIF_BIG_SHIP) {
+			rev_rate *= 1.7f;
 		}
+		if (sip->flags & SIF_HUGE_SHIP) {
+			rev_rate *= 3.0f;
+		}
+		draw_model_rotating(ShipSelectModelNum,
+			Ship_anim_coords[gr_screen.res][0],
+			Ship_anim_coords[gr_screen.res][1],
+			Tech_ship_display_coords[gr_screen.res][2],
+			Tech_ship_display_coords[gr_screen.res][3],
+			&ShipSelectScreenShipRot,
+			&sip->closeup_pos,
+			sip->closeup_zoom * 1.3f,
+			rev_rate);
 	}
 
 	gr_reset_clip();
@@ -1700,76 +1698,29 @@ void start_ship_animation(int ship_class, int play_sound)
 	char *p;
 	char animation_filename[CF_MAX_FILENAME_LENGTH+4];
 
-	if ( !strlen(sip->anim_filename) ) {
-		if (ship_class < 0) {
-			mprintf(("No ship class passed in to start_ship_animation\n"));
-			ShipSelectModelNum = -1;
-			return;
-		}
-
-		//Unload Anim if one was playing
-		if(Ship_anim_class > 0 && Ss_icons[Ship_anim_class].ss_anim.num_frames > 0) {
-			generic_anim_unload(&Ss_icons[Ship_anim_class].ss_anim);
-			Ship_anim_class = -1;
-		}
-
-		// Load the necessary model file
-		ShipSelectModelNum = model_load(sip->pof_file, sip->n_subsystems, &sip->subsystems[0]);
-		
-		// page in ship textures properly (takes care of nondimming pixels)
-		model_page_in_textures(ShipSelectModelNum, ship_class);
-		
-		if (sip->model_num < 0) {
-			mprintf(("Couldn't load model file in missionshipchoice.cpp\n"));
-		}
-	} else {
-		ss_icon_info *ss_icon;
-		Assert( ship_class >= 0 );
-		Assert( Ss_icons != NULL );
-		
-		if (Ship_anim_class == ship_class) {
-			return;
-		}
-
-		ss_icon = &Ss_icons[ship_class];
-
-		//If there was a model loaded for the previous ship, unload it
-		if (ShipSelectModelNum >= 0 ) {
-			model_unload(ShipSelectModelNum);
-			ShipSelectModelNum = -1;
-		}
-
-		//unload the previous anim
-		if(Ship_anim_class > 0 && Ss_icons[Ship_anim_class].ss_anim.num_frames > 0)
-			generic_anim_unload(&Ss_icons[Ship_anim_class].ss_anim);
-		//load animation here, we now only have one loaded
-		p = strchr(Ship_info[ship_class].anim_filename, '.' );
-		if(p)
-			*p = '\0';
-		if (gr_screen.res == GR_1024) {
-			strcpy_s(animation_filename, "2_");
-			strcat_s(animation_filename, Ship_info[ship_class].anim_filename);
-		}
-		else {
-			strcpy_s(animation_filename, Ship_info[ship_class].anim_filename);
-		}
-
-		generic_anim_init(&Ss_icons[ship_class].ss_anim, animation_filename);
-		Ss_icons[ship_class].ss_anim.ani.bg_type = bm_get_type(Ship_select_background_bitmap);
-		if(generic_anim_stream(&Ss_icons[ship_class].ss_anim) == -1) {
-			//we've failed to load an animation, load an image and treat it like a 1 frame animation
-			Ss_icons[ship_class].ss_anim.first_frame = bm_load(Ship_info[ship_class].anim_filename);	//if we fail here, the value is still -1
-			if(Ss_icons[ship_class].ss_anim.first_frame != -1) {
-				Ss_icons[ship_class].ss_anim.num_frames = 1;
-			}
-		}
-
-		Ship_anim_class = ship_class;
+	if (ship_class < 0) {
+		mprintf(("No ship class passed in to start_ship_animation\n"));
+		ShipSelectModelNum = -1;
+		return;
 	}
 
-//	if ( play_sound ) {
-		gamesnd_play_iface(SND_SHIP_ICON_CHANGE);
-//	}
+	//Unload Anim if one was playing
+	if(Ship_anim_class > 0 && Ss_icons[Ship_anim_class].ss_anim.num_frames > 0) {
+		generic_anim_unload(&Ss_icons[Ship_anim_class].ss_anim);
+		Ship_anim_class = -1;
+	}
+
+	// Load the necessary model file
+	ShipSelectModelNum = model_load(sip->pof_file, sip->n_subsystems, &sip->subsystems[0]);
+	
+	// page in ship textures properly (takes care of nondimming pixels)
+	model_page_in_textures(ShipSelectModelNum, ship_class);
+	
+	if (sip->model_num < 0) {
+		mprintf(("Couldn't load model file in missionshipchoice.cpp\n"));
+	}
+
+	gamesnd_play_iface(SND_SHIP_ICON_CHANGE);
 }
 
 void ss_unload_all_anims()
