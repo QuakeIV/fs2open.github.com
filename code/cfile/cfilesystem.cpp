@@ -371,59 +371,6 @@ void cf_build_root_list(char *cdrom_dir)
 	cf_root	*root;
 	char str_temp[CF_MAX_PATHNAME_LENGTH], *cur_pos;
 
-#ifdef SCP_UNIX
-	// =========================================================================
-	// now look for mods under the users HOME directory to use before system ones
-	if (Cmdline_mod) {
-		for (cur_pos=Cmdline_mod; strlen(cur_pos) != 0; cur_pos+= (strlen(cur_pos)+1))
-		{
-			memset(str_temp, 0, CF_MAX_PATHNAME_LENGTH);
-			strncpy(str_temp, cur_pos, CF_MAX_PATHNAME_LENGTH-1);
-
-			strncat(str_temp, DIR_SEPARATOR_STR, (CF_MAX_PATHNAME_LENGTH - strlen(str_temp) - 1));
-
-			// truncated string check
-			if ( (strlen(Cfile_user_dir) + strlen(str_temp) + 1) >= CF_MAX_PATHNAME_LENGTH ) {
-				Int3();
-			}
-
-			root = cf_create_root();
-
-			strncpy( root->path, Cfile_user_dir, CF_MAX_PATHNAME_LENGTH-1 );
-
-			// do we already have a slash? as in the case of a root directory install
-			if ( (strlen(root->path) < (CF_MAX_PATHNAME_LENGTH-1)) && (root->path[strlen(root->path)-1] != DIR_SEPARATOR_CHAR) ) {
-				strcat_s(root->path, DIR_SEPARATOR_STR);		// put trailing backslash on for easier path construction
-			}
-
-			strncat(root->path, str_temp, (CF_MAX_PATHNAME_LENGTH - strlen(root->path) - 1));
-
-			root->roottype = CF_ROOTTYPE_PATH;
-			cf_build_pack_list(root);
-		}
-	}
-	// =========================================================================
-
-	// =========================================================================
-	// set users HOME directory as default for loading and saving files
-	root = cf_create_root();
-	strncpy( root->path, Cfile_user_dir, CF_MAX_PATHNAME_LENGTH-1 );
-
-	// do we already have a slash? as in the case of a root directory install
-	if( (strlen(root->path) < (CF_MAX_PATHNAME_LENGTH-1)) && (root->path[strlen(root->path)-1] != DIR_SEPARATOR_CHAR) ) {
-		strcat_s(root->path, DIR_SEPARATOR_STR);		// put trailing backslash on for easier path construction
-	}
-	root->roottype = CF_ROOTTYPE_PATH;
-
-	// set the default player location to here
-	if ( Pilot_file_path == NULL )
-		Pilot_file_path = root->path;
-
-	// Next, check any VP files under the current directory.
-	cf_build_pack_list(root);
-	// =========================================================================
-#endif
-
 	if(Cmdline_mod) {
 		// stackable Mod support -- Kazan
 		//This for statement is a work of art :D
@@ -1107,6 +1054,8 @@ int cf_find_file_location_ext( char *filename, const int ext_num, const char **e
 			strcat_s( filespec, ext_list[cur_ext] );
  
 			cf_create_default_path_string( longname, sizeof(longname)-1, search_order[i], filespec, localize );
+			
+			//mprintf(("trying to open %s\n", longname));
 
 #if defined _WIN32
 			if (!Cmdline_safeloading) {
@@ -1837,12 +1786,8 @@ void cfile_spew_pack_file_crcs()
 	char datetime[45];
 	uint chksum = 0;
 	time_t my_time;
-	
-#ifdef SCP_UNIX
-	sprintf(out_path, "%s%svp_crcs.txt", Cfile_user_dir, DIR_SEPARATOR_STR);
-#else
+
 	sprintf(out_path, "%s%svp_crcs.txt", Cfile_root_dir, DIR_SEPARATOR_STR);
-#endif
 
 	FILE *out = fopen(out_path, "w");
 
