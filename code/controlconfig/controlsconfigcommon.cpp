@@ -15,10 +15,13 @@
 #include "localization/localize.h"
 
 
-#define TARGET_TAB			0
-#define SHIP_TAB				1
-#define WEAPON_TAB			2
-#define COMPUTER_TAB			3
+#define TARGET_TAB      0
+#define SHIP_TAB        1
+#define WEAPON_TAB      2
+#define COMPUTER_TAB    3
+
+// basically just take upper half of the positive side of joy_id (which is a short) for mice (copied this)
+#define MOUSE (1<<14)
 
 int Failed_key_index;
 
@@ -39,14 +42,14 @@ config_item Control_config[CCFG_MAX + 1] = {
 	// targeting a ship
 	{                           KEY_T,				-1, TARGET_TAB,	true, "Target Next Ship" },
 	{             KEY_SHIFTED | KEY_T,				-1, TARGET_TAB,	true, "Target Previous Ship" },
-	{                           KEY_H,				2,  TARGET_TAB,	true, "Target Next Closest Hostile Ship" },
-	{	           KEY_SHIFTED | KEY_H,				-1, TARGET_TAB,	true, "Target Previous Closest Hostile Ship" },
+	{                           KEY_H,				 2, TARGET_TAB,	true, "Target Next Closest Hostile Ship" },
+	{	          KEY_SHIFTED | KEY_H,				-1, TARGET_TAB,	true, "Target Previous Closest Hostile Ship" },
 	{ KEY_ALTED |               KEY_H,				-1, TARGET_TAB,	true, "Toggle Auto Targeting" },
 	{                           KEY_F,				-1, TARGET_TAB,	true, "Target Next Closest Friendly Ship" },
 	{             KEY_SHIFTED | KEY_F,				-1, TARGET_TAB,	true, "Target Previous Closest Friendly Ship" },
-	{                           KEY_Y,				4,  TARGET_TAB,	true, "Target Ship in Reticle" },
+	{                           KEY_Y,				 4, TARGET_TAB,	true, "Target Ship in Reticle" },
 	{                           KEY_G,				-1, TARGET_TAB,	true, "Target Target's Nearest Attacker" },
-	{ KEY_ALTED	|					 KEY_Y,			-1, TARGET_TAB,	true, "Target Last Ship to Send Transmission" },
+	{ KEY_ALTED	|				KEY_Y,			    -1, TARGET_TAB,	true, "Target Last Ship to Send Transmission" },
 	{ KEY_ALTED |               KEY_T,				-1, TARGET_TAB,	true, "Turn Off Targeting" },
 
 	// targeting a ship's subsystem
@@ -60,13 +63,13 @@ config_item Control_config[CCFG_MAX + 1] = {
 	{ KEY_ALTED |               KEY_M,				-1, COMPUTER_TAB,	true, "Toggle Auto Speed Matching" },
 
 	// weapons
-	{                           KEY_LCTRL,			0,	 WEAPON_TAB,	true, "Fire Primary Weapon", CC_TYPE_CONTINUOUS },
-	{                           KEY_SPACEBAR,		1,  WEAPON_TAB,	true, "Fire Secondary Weapon", CC_TYPE_CONTINUOUS },
+	{                           KEY_LCTRL,     MOUSE+0, WEAPON_TAB,	true, "Fire Primary Weapon", CC_TYPE_CONTINUOUS },
+	{                           -1,            MOUSE+1, WEAPON_TAB,	true, "Fire Secondary Weapon", CC_TYPE_CONTINUOUS },
 	{                           KEY_PERIOD,			-1, WEAPON_TAB,	true, "Cycle Forward Primary Weapon" },
 	{                           KEY_COMMA,			-1, WEAPON_TAB,	true, "Cycle Backward Primary Weapon" },
 	{                           KEY_DIVIDE,			-1, WEAPON_TAB,	true, "Cycle Secondary Weapon Bank" },
 	{             KEY_SHIFTED | KEY_DIVIDE,			-1, WEAPON_TAB,	true, "Cycle Secondary Weapon Firing Rate" },
-	{                           KEY_X,				3,	 WEAPON_TAB,	true, "Launch Countermeasure" },
+	{                           KEY_SPACEBAR,        3,	WEAPON_TAB,	true, "Launch Countermeasure" },
 
 	// controls
 	{                           KEY_A,				-1, SHIP_TAB,		true, "Forward Thrust", CC_TYPE_CONTINUOUS },
@@ -285,7 +288,7 @@ char *Joy_button_text_french[] = {
 	"Bouton 13",		"Bouton 14",		"Bouton 15",		"Bouton 16",		"Bouton 17",		"Bouton 18",
 	"Bouton 19",		"Bouton 20",		"Bouton 21",		"Bouton 22",		"Bouton 23",		"Bouton 24",
 	"Bouton 25",		"Bouton 26",		"Bouton 27",		"Bouton 28",		"Bouton 29",		"Bouton 30",
-	"Bouton 31",		"Bouton 32",		"Chapeau Arrière",		"Chapeau Avant",		"Chapeau Gauche",		"Chapeau Droite"
+	"Bouton 31",		"Bouton 32",		"Chapeau Arri\E8re",		"Chapeau Avant",		"Chapeau Gauche",		"Chapeau Droite"
 };
 
 //	This is the text that is displayed on the screen for the keys a player selects
