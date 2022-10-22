@@ -39,13 +39,13 @@
 typedef struct config_item {
 	short key_default;  // default key bound to action
 	short joy_default;  // default joystick button bound to action
-	char tab;				// what tab (category) it belongs in
-	bool hasXSTR;			// whether we should translate this with an XSTR
-	char *text;				// describes the action in the config screen
-	char type;				// manner control should be checked in
-	short key_id;  // actual key bound to action
-	short joy_id;  // joystick button bound to action
-	int used;				// has control been used yet in mission?  If so, this is the timestamp
+	char tab;           // what tab (category) it belongs in
+	bool hasXSTR;       // whether we should translate this with an XSTR
+	char *text;         // describes the action in the config screen
+	char type;          // manner control should be checked in
+	short key_id;       // actual key bound to action
+	short joy_id;       // joystick button bound to action
+	int used;           // has control been used yet in mission?  If so, this is the timestamp
 } config_item;
 
 // --------------------------------------------------

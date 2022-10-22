@@ -162,7 +162,8 @@ DWORD unix_process(DWORD lparam)
 {
 	SDL_Event event;
 
-	while( SDL_PollEvent(&event) ) {
+	while(SDL_PollEvent(&event))
+	{
 		switch(event.type) {
 			case SDL_WINDOWEVENT:
 				if ( event.window.event == SDL_WINDOWEVENT_FOCUS_LOST )
@@ -188,9 +189,8 @@ DWORD unix_process(DWORD lparam)
 				}*/
 
                 // switched to dict, this weird shit is checking if the key is in the map or not
-				if( SDLtoFS2.find(event.key.keysym.sym) != SDLtoFS2.end()) {
+				if(SDLtoFS2.find(event.key.keysym.sym) != SDLtoFS2.end())
 					key_mark( SDLtoFS2[event.key.keysym.sym], 1, 0 );
-				}
 				break;
 
 			case SDL_KEYUP:
@@ -200,20 +200,22 @@ DWORD unix_process(DWORD lparam)
 				}*/
 
                 // switched to dict, this weird shit is checking if the key is in the map or not
-				if (SDLtoFS2.find(event.key.keysym.sym) != SDLtoFS2.end()) {
+				if (SDLtoFS2.find(event.key.keysym.sym) != SDLtoFS2.end())
 					key_mark( SDLtoFS2[event.key.keysym.sym], 0, 0 );
-				}
 				break;
 
 			case SDL_MOUSEBUTTONDOWN:
 			case SDL_MOUSEBUTTONUP:
 				if (event.button.button == SDL_BUTTON_LEFT)
-					mouse_mark_button( MOUSE_LEFT_BUTTON, event.button.state );
+					mouse_mark_button(MOUSE_LEFT_BUTTON, event.button.state);
 				else if (event.button.button == SDL_BUTTON_MIDDLE)
-					mouse_mark_button( MOUSE_MIDDLE_BUTTON, event.button.state );
+					mouse_mark_button(MOUSE_MIDDLE_BUTTON, event.button.state);
 				else if (event.button.button == SDL_BUTTON_RIGHT)
-					mouse_mark_button( MOUSE_RIGHT_BUTTON, event.button.state );
-
+					mouse_mark_button(MOUSE_RIGHT_BUTTON, event.button.state);
+				else if (event.button.button == SDL_BUTTON_X1)
+				    mouse_mark_button(MOUSE_X1_BUTTON, event.button.state);
+				else if (event.button.button == SDL_BUTTON_X2)
+				    mouse_mark_button(MOUSE_X2_BUTTON, event.button.state);
 				break;
 
 			case SDL_JOYHATMOTION:
@@ -222,9 +224,8 @@ DWORD unix_process(DWORD lparam)
 
 			case SDL_JOYBUTTONDOWN:
 			case SDL_JOYBUTTONUP:
-				if (event.jbutton.button < JOY_NUM_BUTTONS) {
-					joy_set_button_state( event.jbutton.button, event.jbutton.state );
-				}
+				if (event.jbutton.button < JOY_NUM_BUTTONS)
+					joy_set_button_state(event.jbutton.button, event.jbutton.state);
 				break;
 		}
 	}

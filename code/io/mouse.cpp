@@ -53,9 +53,13 @@ int mouse_flags;
 int mouse_left_pressed = 0;
 int mouse_right_pressed = 0;
 int mouse_middle_pressed = 0;
+int mouse_x1_pressed = 0;
+int mouse_x2_pressed = 0;
 int mouse_left_up = 0;
 int mouse_right_up = 0;
 int mouse_middle_up = 0;
+int mouse_x1_up = 0;
+int mouse_x2_up = 0;
 int Mouse_dx = 0;
 int Mouse_dy = 0;
 int Mouse_dz = 0;
@@ -132,19 +136,17 @@ void mouse_init()
 	Mouse_mode = MOUSE_MODE_WIN;
 #endif
 
-#ifdef SCP_UNIX
 	// we poll for mouse motion events so be sure to skip those in normal event polling
 	SDL_EventState( SDL_MOUSEMOTION, SDL_IGNORE );
 
 	// we do want to make sure that button presses go through event polling though
 	// (should be on by default already, just here as a reminder)
-	SDL_EventState( SDL_MOUSEBUTTONDOWN, SDL_ENABLE );
-	SDL_EventState( SDL_MOUSEBUTTONUP, SDL_ENABLE );
-#endif
+	SDL_EventState(SDL_MOUSEBUTTONDOWN, SDL_ENABLE);
+	SDL_EventState(SDL_MOUSEBUTTONUP, SDL_ENABLE);
 
-	LEAVE_CRITICAL_SECTION( mouse_lock );	
+	LEAVE_CRITICAL_SECTION(mouse_lock);	
 
-	atexit( mouse_close );
+	atexit(mouse_close);
 }
 
 
@@ -159,13 +161,15 @@ void mouse_init()
 
 void mouse_mark_button( uint flags, int set)
 {
-	if ( !mouse_inited ) return;
+	if (!mouse_inited) return;
 
-	ENTER_CRITICAL_SECTION( mouse_lock );
+	ENTER_CRITICAL_SECTION(mouse_lock);
 
-	if ( !(mouse_flags & MOUSE_LEFT_BUTTON) )	{
+	if (!(mouse_flags & MOUSE_LEFT_BUTTON))
+	{
 
-		if ( (flags & MOUSE_LEFT_BUTTON) && (set == 1) ) {
+		if ((flags & MOUSE_LEFT_BUTTON) && (set == 1))
+		{
 			mouse_left_pressed++;
 
 ////////////////////////////
@@ -185,43 +189,51 @@ void mouse_mark_button( uint flags, int set)
 
 		}
 	}
-	else {
-		if ( (flags & MOUSE_LEFT_BUTTON) && (set == 0) ){
+	else
+	{
+		if ((flags & MOUSE_LEFT_BUTTON) && (set == 0))
 			mouse_left_up++;
-		}
 	}
 
-	if ( !(mouse_flags & MOUSE_RIGHT_BUTTON) )	{
-
-		if ( (flags & MOUSE_RIGHT_BUTTON) && (set == 1) ){
+	if (!(mouse_flags & MOUSE_RIGHT_BUTTON))
+	{
+		if ((flags & MOUSE_RIGHT_BUTTON) && (set == 1))
 			mouse_right_pressed++;
-		}
 	}
-	else {
-		if ( (flags & MOUSE_RIGHT_BUTTON) && (set == 0) ){
+	else
+	{
+		if ((flags & MOUSE_RIGHT_BUTTON) && (set == 0))
 			mouse_right_up++;
-		}
 	}
 
-	if ( !(mouse_flags & MOUSE_MIDDLE_BUTTON) )	{
-
-		if ( (flags & MOUSE_MIDDLE_BUTTON) && (set == 1) ){
+	if (!(mouse_flags & MOUSE_MIDDLE_BUTTON))
+	{
+		if ((flags & MOUSE_MIDDLE_BUTTON) && (set == 1))
 			mouse_middle_pressed++;
-		}
 	}
-	else {
-		if ( (flags & MOUSE_MIDDLE_BUTTON) && (set == 0) ){
+	else
+	{
+		if ((flags & MOUSE_MIDDLE_BUTTON) && (set == 0))
 			mouse_middle_up++;
-		}
 	}
+	
+	// prior are all gay, doing this one a bit more pithy
+	if (!(mouse_flags & MOUSE_X1_BUTTON) && flags & MOUSE_X1_BUTTON && set)
+        mouse_x1_pressed++;
+    if (mouse_flags & MOUSE_X1_BUTTON && !(flags & MOUSE_X1_BUTTON) && !set)
+        mouse_x1_up++;
 
-	if ( set ){
+	if (!(mouse_flags & MOUSE_X2_BUTTON) && flags & MOUSE_X2_BUTTON && set)
+        mouse_x2_pressed++;
+    if (mouse_flags & MOUSE_X2_BUTTON && !(flags & MOUSE_X2_BUTTON) && !set)
+        mouse_x2_up++;
+
+	if (set)
 		mouse_flags |= flags;
-	} else {
+	else
 		mouse_flags &= ~flags;
-	}
 
-	LEAVE_CRITICAL_SECTION( mouse_lock );	
+	LEAVE_CRITICAL_SECTION(mouse_lock);	
 
 	//WMC - On Mouse Pressed and On Mouse Released hooks
 	if(set == 1)
@@ -252,36 +264,46 @@ void mouse_flush()
 int mouse_down_count(int n, int reset_count)
 {
 	int tmp = 0;
-	if ( !mouse_inited ) return 0;
+	if (!mouse_inited) return 0;
 
-	if ( (n < LOWEST_MOUSE_BUTTON) || (n > HIGHEST_MOUSE_BUTTON)) return 0;
+	if ((n < LOWEST_MOUSE_BUTTON) || (n > HIGHEST_MOUSE_BUTTON)) return 0;
 
-	ENTER_CRITICAL_SECTION( mouse_lock );
+	ENTER_CRITICAL_SECTION(mouse_lock);
 
-	switch (n) {
+	switch (n)
+	{
 		case MOUSE_LEFT_BUTTON:
 			tmp = mouse_left_pressed;
-			if ( reset_count ) {
+			if (reset_count)
 				mouse_left_pressed = 0;
-			}
 			break;
 
 		case MOUSE_RIGHT_BUTTON:
 			tmp = mouse_right_pressed;
-			if ( reset_count ) {
+			if (reset_count)
 				mouse_right_pressed = 0;
-			}
 			break;
 
 		case MOUSE_MIDDLE_BUTTON:
 			tmp = mouse_middle_pressed;
-			if ( reset_count ) {
+			if (reset_count)
 				mouse_middle_pressed = 0;
-			}
+			break;
+
+		case MOUSE_X1_BUTTON:
+			tmp = mouse_x1_pressed;
+			if (reset_count)
+				mouse_x1_pressed = 0;
+			break;
+
+		case MOUSE_X2_BUTTON:
+			tmp = mouse_x2_pressed;
+			if (reset_count)
+				mouse_x2_pressed = 0;
 			break;
 	} // end switch
 
-	LEAVE_CRITICAL_SECTION( mouse_lock );	
+	LEAVE_CRITICAL_SECTION(mouse_lock);
 
 	return tmp;
 }
@@ -294,13 +316,14 @@ int mouse_down_count(int n, int reset_count)
 int mouse_up_count(int n)
 {
 	int tmp = 0;
-	if ( !mouse_inited ) return 0;
+	if (!mouse_inited) return 0;
 
-	if ( (n < LOWEST_MOUSE_BUTTON) || (n > HIGHEST_MOUSE_BUTTON)) return 0;
+	if ((n < LOWEST_MOUSE_BUTTON) || (n > HIGHEST_MOUSE_BUTTON)) return 0;
 
-	ENTER_CRITICAL_SECTION( mouse_lock );
+	ENTER_CRITICAL_SECTION(mouse_lock);
 
-	switch (n) {
+	switch (n)
+	{
 		case MOUSE_LEFT_BUTTON:
 			tmp = mouse_left_up;
 			mouse_left_up = 0;
@@ -316,12 +339,22 @@ int mouse_up_count(int n)
 			mouse_middle_up = 0;
 			break;
 
+		case MOUSE_X1_BUTTON:
+			tmp = mouse_x1_up;
+			mouse_x1_up = 0;
+			break;
+
+		case MOUSE_X2_BUTTON:
+			tmp = mouse_x2_up;
+			mouse_x2_up = 0;
+			break;
+
 		default:
 			Assert(0);	// can't happen
 			break;
 	} // end switch
 
-	LEAVE_CRITICAL_SECTION( mouse_lock );	
+	LEAVE_CRITICAL_SECTION(mouse_lock);
 
 	return tmp;
 }
@@ -331,20 +364,20 @@ int mouse_up_count(int n)
 int mouse_down(int btn)
 {
 	int tmp;
-	if ( !mouse_inited ) return 0;
+	if (!mouse_inited) return 0;
 
-	if ( (btn < LOWEST_MOUSE_BUTTON) || (btn > HIGHEST_MOUSE_BUTTON)) return 0;
-
-
-	ENTER_CRITICAL_SECTION( mouse_lock );
+	if ((btn < LOWEST_MOUSE_BUTTON) || (btn > HIGHEST_MOUSE_BUTTON)) return 0;
 
 
-	if ( mouse_flags & btn )
+	ENTER_CRITICAL_SECTION(mouse_lock);
+
+
+	if (mouse_flags & btn)
 		tmp = 1;
 	else
 		tmp = 0;
 
-	LEAVE_CRITICAL_SECTION( mouse_lock );	
+	LEAVE_CRITICAL_SECTION(mouse_lock);	
 
 	return tmp;
 }
@@ -355,18 +388,18 @@ int mouse_down(int btn)
 float mouse_down_time(int btn)
 {
 	float tmp;
-	if ( !mouse_inited ) return 0.0f;
+	if (!mouse_inited) return 0.0f;
 
-	if ( (btn < LOWEST_MOUSE_BUTTON) || (btn > HIGHEST_MOUSE_BUTTON)) return 0.0f;
+	if ((btn < LOWEST_MOUSE_BUTTON) || (btn > HIGHEST_MOUSE_BUTTON)) return 0.0f;
 
-	ENTER_CRITICAL_SECTION( mouse_lock );
+	ENTER_CRITICAL_SECTION(mouse_lock);
 
-	if ( mouse_flags & btn )
+	if (mouse_flags & btn)
 		tmp = 1.0f;
 	else
 		tmp = 0.0f;
 
-	LEAVE_CRITICAL_SECTION( mouse_lock );
+	LEAVE_CRITICAL_SECTION(mouse_lock);
 
 	return tmp;
 }
@@ -384,7 +417,8 @@ void mouse_get_delta(int *dx, int *dy, int *dz)
 // Forces the actual windows cursor to be at (x,y).  This may be independent of our tracked (x,y) mouse pos.
 void mouse_force_pos(int x, int y)
 {
-	if (os_foreground()) {  // only mess with windows's mouse if we are in control of it
+	if (os_foreground())
+	{  // only mess with windows's mouse if we are in control of it
 		POINT pnt;
 
 		pnt.x = x;
@@ -728,12 +762,7 @@ void getWindowMousePos(POINT * pt)
 {
 	Assert(pt != NULL);
 
-#ifdef _WIN32
-	GetCursorPos(pt);
-	ScreenToClient((HWND)os_get_window(), pt);
-#else
 	SDL_GetMouseState(&pt->x, &pt->y);
-#endif
 }
 
 
@@ -743,10 +772,5 @@ void setWindowMousePos(POINT * pt)
 {
 	Assert(pt != NULL);
 
-#ifdef _WIN32
-	ClientToScreen((HWND) os_get_window(), pt);
-	SetCursorPos(pt->x, pt->y);
-#else
 	SDL_WarpMouseInWindow(main_sdl_window, pt->x, pt->y);
-#endif
 }

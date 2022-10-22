@@ -40,15 +40,17 @@ extern void mouse_get_real_pos(int *mx, int *my);
 
 extern void mouse_set_pos(int xpos,int ypos);
 
-#define MOUSE_LEFT_BUTTON		(1<<0)
-#define MOUSE_RIGHT_BUTTON		(1<<1)
-#define MOUSE_MIDDLE_BUTTON	(1<<2)
+#define MOUSE_LEFT_BUTTON   (1<<0)
+#define MOUSE_RIGHT_BUTTON  (1<<1)
+#define MOUSE_MIDDLE_BUTTON (1<<2)
+#define MOUSE_X1_BUTTON     (1<<3)
+#define MOUSE_X2_BUTTON     (1<<4)
 
-#define MOUSE_NUM_BUTTONS		3
+#define MOUSE_NUM_BUTTONS		5
 
 // keep the following two #defines up to date with the #defines above
-#define LOWEST_MOUSE_BUTTON	(1<<0)
-#define HIGHEST_MOUSE_BUTTON	(1<<2)
+#define LOWEST_MOUSE_BUTTON     (1<<0)
+#define HIGHEST_MOUSE_BUTTON    (1<<4)
 
 // Returns the number of times button n went from up to down since last call
 int mouse_down_count(int n, int reset_count = 1);

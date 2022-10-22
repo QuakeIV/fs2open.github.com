@@ -64,9 +64,7 @@ CRITICAL_SECTION key_lock;
 								// when typing in your pilots callsign.  This global flag is checked before execution
 								// is stopped.
 
-#ifdef SCP_UNIX
-	std::map<SDL_Keycode,int> SDLtoFS2;
-#endif
+std::map<SDL_Keycode,int> SDLtoFS2;
 
 int ascii_table[128] = 
 { 255, 255, '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '-', '=',255,255,
@@ -101,7 +99,6 @@ static int Key_running_NT = 0;		// NT is the OS
 int Cheats_enabled = 0;
 int Key_normal_game = 0;
 
-#ifdef SCP_UNIX
 void FillSDLArray ()
 {
 	SDLtoFS2[SDLK_0] = KEY_0;
@@ -220,25 +217,15 @@ void FillSDLArray ()
 	SDLtoFS2[SDLK_PRINTSCREEN] = KEY_PRINT_SCRN;
 	SDLtoFS2[SDLK_PAUSE] = KEY_PAUSE;
 }
-#endif
 
 int key_numlock_is_on()
 {
-#ifdef _WIN32
-	unsigned char keys[256];
-	GetKeyboardState(keys);
-	if ( keys[VK_NUMLOCK]  ) {
-		return 1;
-	}
-	return 0;
-#else
 	int keys[SDL_NUM_SCANCODES];
 	SDL_GetKeyboardState(keys);
 	if ( keys[SDLK_NUMLOCKCLEAR] ) {
 		return 1;
 	}
 	return 0;
-#endif
 }
 
 void key_turn_off_numlock()

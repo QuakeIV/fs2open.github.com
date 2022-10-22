@@ -46,6 +46,9 @@
 #define CONTROL_W_COORD 2
 #define CONTROL_H_COORD 3
 
+// basically just take upper half of the positive side of joy_id (which is a short)
+#define MOUSE_JOY_ID_OFFSET  (1<<14)
+
 char* Conflict_background_bitmap_fname[GR_NUM_RESOLUTIONS] = {
 	"ControlConfig",		// GR_640
 	"2_ControlConfig"		// GR_1024
@@ -149,10 +152,10 @@ int Axis_map_to_defaults[] = { JOY_X_AXIS, JOY_Y_AXIS, JOY_RX_AXIS, -1, -1 };
 #endif
 
 // all this stuff is localized/externalized
-#define NUM_AXIS_TEXT			6
-#define NUM_MOUSE_TEXT			5
-#define NUM_MOUSE_AXIS_TEXT	2
-#define NUM_INVERT_TEXT			2	
+#define NUM_AXIS_TEXT       6
+#define NUM_MOUSE_TEXT      5
+#define NUM_MOUSE_AXIS_TEXT 2
+#define NUM_INVERT_TEXT     2	
 char *Joy_axis_action_text[NUM_JOY_AXIS_ACTIONS];
 char *Joy_axis_text[NUM_AXIS_TEXT];
 char *Mouse_button_text[NUM_MOUSE_TEXT];
@@ -1344,11 +1347,12 @@ void control_config_init()
 	Joy_axis_text[3] = vm_strdup(XSTR("Joystick rX Axis", 1024));
 	Joy_axis_text[4] = vm_strdup(XSTR("Joystick rY Axis", 1025));
 	Joy_axis_text[5] = vm_strdup(XSTR("Joystick rZ Axis", 1026));
-	Mouse_button_text[0] = vm_strdup("");
-	Mouse_button_text[1] = vm_strdup(XSTR("Left Button", 1027));
-	Mouse_button_text[2] = vm_strdup(XSTR("Right Button", 1028));
-	Mouse_button_text[3] = vm_strdup(XSTR("Mid Button", 1029));
-	Mouse_button_text[4] = vm_strdup("");
+	// TODO: bring back localization? did this XSTR wackyness even work in the first place?
+	Mouse_button_text[0] = vm_strdup("Left Button");
+	Mouse_button_text[1] = vm_strdup("Right Button");
+	Mouse_button_text[2] = vm_strdup("Mid Button");
+	Mouse_button_text[3] = vm_strdup("Mouse X1");
+	Mouse_button_text[4] = vm_strdup("Mouse X2");
 	Mouse_axis_text[0] = vm_strdup(XSTR("L/R", 1030));
 	Mouse_axis_text[1] = vm_strdup(XSTR("U/B", 1031));
 	Invert_text[0] = vm_strdup(XSTR("N", 1032));
@@ -1424,8 +1428,10 @@ void control_config_do_frame(float frametime)
 	
 	timer += frametime;
 
-	if (Binding_mode) {
-		if (Cc_lines[Selected_line].cc_index & JOY_AXIS) {
+	if (Binding_mode)
+	{
+		if (Cc_lines[Selected_line].cc_index & JOY_AXIS)
+		{
 			int bind = 0;
 
 			z = Cc_lines[Selected_line].cc_index & ~JOY_AXIS;
@@ -1468,8 +1474,11 @@ void control_config_do_frame(float frametime)
 				}
 			}
 
-		} else {
-			if (help_overlay_active(CONTROL_CONFIG_OVERLAY)) {
+		}
+		else
+		{
+			if (help_overlay_active(CONTROL_CONFIG_OVERLAY))
+			{
 				CC_Buttons[gr_screen.res][HELP_BUTTON].button.reset_status();
 				Ui_window.set_ignore_gadgets(1);
 			}
@@ -1478,25 +1487,30 @@ void control_config_do_frame(float frametime)
 			Ui_window.use_hack_to_get_around_stupid_problem_flag = 1;
 			Ui_window.process(0);
 
-			if ( (k > 0) || B1_JUST_RELEASED ) {
-				if (help_overlay_active(CONTROL_CONFIG_OVERLAY)) {
+			if ((k > 0) || B1_JUST_RELEASED)
+			{
+				if (help_overlay_active(CONTROL_CONFIG_OVERLAY))
+				{
 					help_overlay_set_state(CONTROL_CONFIG_OVERLAY, 0);
 					Ui_window.set_ignore_gadgets(0);
 					k = 0;
 				}
 			}
 
-			if ( !help_overlay_active(CONTROL_CONFIG_OVERLAY) ) {
+			if (!help_overlay_active(CONTROL_CONFIG_OVERLAY))
 				Ui_window.set_ignore_gadgets(0);
-			}
 
-			if (k == KEY_ESC) {
+			if (k == KEY_ESC)
+			{
 				strcpy_s(bound_string, XSTR( "Canceled", 206));
 				bound_timestamp = timestamp(2500);
 				control_config_do_cancel();
 
-			} else {
-				switch (k & KEY_MASK) {
+			}
+			else
+			{
+				switch (k & KEY_MASK)
+				{
 					case KEY_LSHIFT:
 					case KEY_RSHIFT:
 					case KEY_LALT:
@@ -1510,13 +1524,15 @@ void control_config_do_frame(float frametime)
 					if ( (Last_key >= 0) && (k <= 0) && !keyd_pressed[Last_key] )	//Backslash - ok it's not just for Mike K. any more :-P  but seriously, this is so we can bind such controls to Shift or Alt.  Does this actually get used?
 						k = Last_key;
 
-				if ((k > 0) && !Config_allowed[k & KEY_MASK]) {
+				if ((k > 0) && !Config_allowed[k & KEY_MASK])
+				{
 					popup(0, 1, POPUP_OK, XSTR( "That is a non-bindable key.  Please try again.", 207));
 					k = 0;
 				}
 
 				k &= (KEY_MASK | KEY_SHIFTED | KEY_ALTED);
-				if (k > 0) {
+				if (k > 0)
+				{
 					z = Cc_lines[Selected_line].cc_index;
 					Assert(!(z & JOY_AXIS));
 					control_config_bind_key(z, k);
@@ -1530,7 +1546,9 @@ void control_config_do_frame(float frametime)
 				}
 
 				for (i=0; i<JOY_TOTAL_BUTTONS; i++)
-					if (joy_down_count(i, 1)) {
+				{
+					if (joy_down_count(i, 1))
+					{
 						z = Cc_lines[Selected_line].cc_index;
 						Assert(!(z & JOY_AXIS));
 						control_config_bind_joy(z, i);
@@ -1543,33 +1561,37 @@ void control_config_do_frame(float frametime)
 						control_config_do_cancel();
 						break;
 					}
+				}
 
-				if (Bind_time + 375 < timer_get_milliseconds()) {
-					for (i=0; i<NUM_BUTTONS; i++){
-						if ( (CC_Buttons[gr_screen.res][i].button.is_mouse_on()) && (CC_Buttons[gr_screen.res][i].button.enabled()) ){
+				if (Bind_time + 375 < timer_get_milliseconds())
+				{
+					for (i=0; i<NUM_BUTTONS; i++)
+						if ((CC_Buttons[gr_screen.res][i].button.is_mouse_on()) && (CC_Buttons[gr_screen.res][i].button.enabled()))
 							break;
-						}
-					}
 
-					if (i == NUM_BUTTONS) {  // no buttons pressed
+                    // no buttons pressed
+					if (i == NUM_BUTTONS)
+					{
 						for (i=0; i<MOUSE_NUM_BUTTONS; i++)
-							if (mouse_down(1 << i)) {
+						{
+							if (mouse_down(1 << i))
+							{
 								z = Cc_lines[Selected_line].cc_index;
 								Assert(!(z & JOY_AXIS));
-								control_config_bind_joy(z, i);
+								control_config_bind_joy(z, MOUSE_JOY_ID_OFFSET + i);
 
-								strcpy_s(bound_string, Joy_button_text[i]);
+								strcpy_s(bound_string, Mouse_button_text[i]);
 								gr_force_fit_string(bound_string, 39, Conflict_wnd_coords[gr_screen.res][CONTROL_W_COORD]);
 								bound_timestamp = timestamp(2500);
 								control_config_conflict_check();
 								control_config_list_prepare();
 								control_config_do_cancel();
-								for (j=0; j<NUM_BUTTONS; j++){
+								for (j=0; j<NUM_BUTTONS; j++)
 									CC_Buttons[gr_screen.res][j].button.reset();
-								}
 
 								break;
 							}
+					    }
 					}
 				}
 			}
@@ -1633,20 +1655,27 @@ void control_config_do_frame(float frametime)
 				}
 			}
 
-			if (j == NUM_BUTTONS) {  // no buttons pressed
+            // no buttons pressed
+			if (j == NUM_BUTTONS)
+			{
 				for (j=0; j<MOUSE_NUM_BUTTONS; j++)
-					if (mouse_down(1 << j)) {
+				{
+					if (mouse_down(1 << j))
+					{
 						for (i=0; i<CCFG_MAX; i++)
-							if (Control_config[i].joy_id == j) {
+						{
+							if (Control_config[i].joy_id == j + MOUSE_JOY_ID_OFFSET)
+							{
 								z = i;
-								for (j=0; j<NUM_BUTTONS; j++){
+								for (j=0; j<NUM_BUTTONS; j++)
 									CC_Buttons[gr_screen.res][j].button.reset();
-								}
 								break;
 							}
+						}
 
 						break;
 					}
+				}
 			}
 
 			if (z >= 0) {
@@ -2000,8 +2029,12 @@ void control_config_do_frame(float frametime)
 					}
 				}
 
-				if (j >= 0) {
-					strcpy_s(buf, Joy_button_text[j]);
+				if (j >= 0)
+				{
+				    if (j < MOUSE_JOY_ID_OFFSET)
+					    strcpy_s(buf, Joy_button_text[j]);
+					else
+					    strcpy_s(buf, Mouse_button_text[j-MOUSE_JOY_ID_OFFSET]);
 					if (Conflicts[z].joy >= 0) {
 						if (c == &Color_text_normal)
 							gr_set_color_fast(&Color_text_error);
@@ -2138,11 +2171,14 @@ int check_control(int id, int key)
 			return 1;
 		}
 
-		if ((Control_config[id].joy_id >= 0) && (Control_config[id].joy_id < MOUSE_NUM_BUTTONS))
-			if (mouse_down(1 << Control_config[id].joy_id) || mouse_down_count(1 << Control_config[id].joy_id)) {
+		if ((Control_config[id].joy_id >= 0) && (Control_config[id].joy_id >= MOUSE_JOY_ID_OFFSET))
+		{
+			if (mouse_down(1 << (Control_config[id].joy_id - MOUSE_JOY_ID_OFFSET)) || mouse_down_count(1 << (Control_config[id].joy_id - MOUSE_JOY_ID_OFFSET)))
+			{
 				control_used(id);
 				return 1;
 			}
+		}
 
 		// check what current modifiers are pressed
 		mask = 0;
@@ -2173,7 +2209,8 @@ int check_control(int id, int key)
 		return 0;
 	}
 
-	if ((Control_config[id].key_id == key) || joy_down_count(Control_config[id].joy_id, 1) || mouse_down_count(1 << Control_config[id].joy_id)) {
+	if ((Control_config[id].key_id == key) || joy_down_count(Control_config[id].joy_id, 1) || (Control_config[id].joy_id >= MOUSE_JOY_ID_OFFSET && mouse_down_count(1 << (Control_config[id].joy_id - MOUSE_JOY_ID_OFFSET))))
+	{
 		//mprintf(("Key used %d", key));
 		control_used(id);
 		return 1;
