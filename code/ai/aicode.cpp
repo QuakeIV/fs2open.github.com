@@ -15074,6 +15074,15 @@ void ai_ship_hit(object *objp_ship, object *hit_objp, vec3d *hitpos, int shield_
 		//This is all copypasted from code below
 		if (hit_objp->type == OBJ_WEAPON) {
 			hitter_objnum = hit_objp->parent;
+			// TODO: diagnostic/patch code added for antagonist
+			if (hitter_objnum < 0)
+			{
+			    mprintf(("hitter object has vanished from existence, figure out how this code was called (last time this was from SSMs being recycled somehow\n"));
+			    return;
+			}
+			if (!((hitter_objnum >= 0) && (hitter_objnum < MAX_OBJECTS)))
+			    mprintf(("hitter objnum: %d\n", hitter_objnum));
+			// TODO: end diagnostic/patch code
 			Assert((hitter_objnum >= 0) && (hitter_objnum < MAX_OBJECTS));
 			objp_hitter = &Objects[hitter_objnum];
 		} else if (hit_objp->type == OBJ_SHIP) {

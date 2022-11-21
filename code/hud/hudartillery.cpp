@@ -64,7 +64,8 @@ void ssm_init()
 	ssm_info bogus, *s;
 	char weapon_name[NAME_LENGTH];
 
-	if ((rval = setjmp(parse_abort)) != 0) {
+	if ((rval = setjmp(parse_abort)) != 0)
+	{
 		mprintf(("TABLES: Unable to parse '%s'!  Error code = %i.\n", "ssm.tbl", rval));
 		return;
 	}
@@ -230,7 +231,7 @@ void ssm_delete(ssm_strike *ssm)
 	// decrement counter
 	Num_ssm_strikes--;
 
-	nprintf(("General", "Recycling SSM, %d left", Num_ssm_strikes));
+	nprintf(("General", "Recycling SSM, %d left\n", Num_ssm_strikes));
 }
 
 // process subspace missile stuff
@@ -243,7 +244,8 @@ void ssm_process()
 	
 	// process all strikes	
 	moveup=GET_FIRST(&Ssm_used_list);
-	while ( moveup!=END_OF_LIST(&Ssm_used_list) )	{		
+	while (moveup!=END_OF_LIST(&Ssm_used_list))
+	{
 		// get the type
 		if(moveup->sinfo.ssm_index < 0){
 			continue;
