@@ -22,6 +22,8 @@
  #include <sys/stat.h>
 #endif
 
+#include <libgen.h>
+
 #include "anim/animplay.h"
 #include "asteroid/asteroid.h"
 #include "autopilot/autopilot.h"
@@ -7628,6 +7630,13 @@ int main(int argc, char *argv[])
 	char *argptr = NULL;
 	int i, len = 0;
 	char userdir[MAX_PATH];
+
+    // set working directory to current directory
+    char dir[1000] = {0};
+    strncpy(dir, argv[0], sizeof(dir));
+    char *d = dirname(dir); // tends to modify the argument, hence making a copy above
+    mprintf(("Setting working dir to (%s)\n", d));
+    chdir(d);
 
 #ifdef APPLE_APP
 	// Finder sets the working directory to the root of the drive so we have to get a little creative
