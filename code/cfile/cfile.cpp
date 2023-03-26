@@ -171,7 +171,8 @@ int cfile_init(char *exe_dir, char *cdrom_dir)
 	// initialize encryption
 	encrypt_init();	
 
-	if ( !cfile_inited ) {
+	if ( !cfile_inited )
+	{
 		char buf[CFILE_ROOT_DIRECTORY_LEN];
 
 		cfile_inited = 1;
@@ -194,7 +195,7 @@ int cfile_init(char *exe_dir, char *cdrom_dir)
 
 		if (i >= 2) {					
 			buf[i] = 0;						
-			cfile_chdir(buf);
+			//cfile_chdir(buf);
 		} else {
 			MessageBox((HWND)NULL, "Error trying to determine executable root directory!", "Error", MB_OK);
 			return 1;

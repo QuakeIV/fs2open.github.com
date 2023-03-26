@@ -769,7 +769,8 @@ shader_manager::~shader_manager() {
 
 opengl::shader_manager *opengl::shader_manager::instance = NULL;
 
-void shader_manager::load_main_shaders() {
+void shader_manager::load_main_shaders()
+{
 	mprintf(("  Loading and compiling main shaders...\n"));
 
 	// check if we can use new main shaders
@@ -777,7 +778,8 @@ void shader_manager::load_main_shaders() {
 	bool main_frag = resources::text_file::file_exist("main-f.sdr", resources::text_file::shader_source) != 0;
 
 	// use legacy array with shaders names and flags
-	for (int i = 0; i < Num_shader_files; i++) {
+	for (int i = 1; i < Num_shader_files; i++)
+	{
 		opengl_shader_file_t *shader_file = &GL_shader_file[i];
 
 		// choose appropiate shaders names
