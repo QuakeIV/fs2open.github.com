@@ -2008,7 +2008,7 @@ void game_init()
 	Use_fullscreen_at_startup = os_config_read_uint( NULL, NOX("ForceFullscreen"), 1 );
 #endif
 
-	// change FPS cap if told to do so (for those who can't use vsync or where vsync isn't enough)
+	// change FPS cap if told to do so
 	uint max_fps = 0;
 	if ( (max_fps = os_config_read_uint(NULL, NOX("MaxFPS"), 0)) != 0 ) {
 		if ( (max_fps > 15) && (max_fps < 120) ) {

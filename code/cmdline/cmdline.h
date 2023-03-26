@@ -74,7 +74,6 @@ extern int Cmdline_bloom_intensity;
 extern int Cmdline_cache_bitmaps;
 extern int Cmdline_img2dds;
 extern int Cmdline_NoFPSCap;
-extern int Cmdline_no_vsync;
 
 // HUD related
 extern int Cmdline_ballistic_gauge;

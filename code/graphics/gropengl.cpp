@@ -1910,7 +1910,8 @@ bool gr_opengl_init()
 	opengl::shader_manager::create();
 
 	// must be called after extensions are setup
-	opengl_set_vsync( !Cmdline_no_vsync );
+	// with the advent of freesync/gsync i am declaring for my own purposes that this is a performance overhead with no benefits - QuakeIV
+	opengl_set_vsync(false);
 
 	GLint max_texture_units = GL_supported_texture_units;
 
