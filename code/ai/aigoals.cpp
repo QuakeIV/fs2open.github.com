@@ -527,7 +527,7 @@ int ai_goal_find_dockpoint(int shipnum, int dock_type)
 
 	// insanity?
 	if (loop_count >= 100)
-		Warning(LOCATION, "Too many iterations while looking for a dockpoint on %s.  Either there was a bug or this is an übership.\n", shipp->ship_name);
+		Warning(LOCATION, "Too many iterations while looking for a dockpoint on %s.  Either there was a bug or this is an ubership.\n", shipp->ship_name);
 
 	// if we're here, just return the first dockpoint
 	return model_find_dock_index(Ship_info[shipp->ship_info_index].model_num, dock_type);
@@ -1127,6 +1127,7 @@ int ai_remove_goal_sexp_sub( int sexp, ai_goal* aigp )
 		goalmode = AI_GOAL_IGNORE_NEW;
 		break;
 	default:
+	  mprintf(("Unrecognized AI Opcode: %d\n", op));
 		Int3( );
 		break;
 	};
@@ -1623,17 +1624,30 @@ int ai_mission_goal_achievable( int objnum, ai_goal *aigp )
 
 		if (!(aigp->flags & AIGF_DOCKEE_INDEX_VALID)) {
 			sindex = ship_name_lookup(aigp->ship_name);
-			if ( sindex != -1 ) {
+			if ( sindex != -1 )
+			{
 				modelnum = Ship_info[Ships[sindex].ship_info_index].model_num;
 				index = model_find_dock_name_index(modelnum, aigp->dockee.name);
 				aigp->dockee.index = index;
 				aigp->flags |= AIGF_DOCKEE_INDEX_VALID;
-			} else
-				aigp->dockee.index = -1;		// this will force code into if statement below making goal not achievable.
+			}
+			else
+			{
+				aigp->dockee.index = -1;
+		    mprintf(("Target of docking order shipname not found:%s\n", aigp->ship_name));
+  			return AI_GOAL_NOT_ACHIEVABLE;
+		  }
 		}
-
-		if ( (aigp->dockee.index == -1) || (aigp->docker.index == -1) ) {
-			Int3();			// for now, allender wants to know about these things!!!!
+		
+		if (aigp->dockee.index == -1)
+		{
+		  mprintf(("Target of docking order dockpoint invalid.  Dockee dockpoint: %.20s\n", aigp->dockee.name));
+			return AI_GOAL_NOT_ACHIEVABLE;
+    }
+		if (aigp->docker.index == -1)
+		{
+		  // TODO: printf of docker.name has been causing horrendous segfaults of doom, figure that out? it was the strlen somehow, even though earlier stuff appears able to assume the string is null terminated, wtf
+		  mprintf(("Docker for docking order dockpoint invalid.\n"));
 			return AI_GOAL_NOT_ACHIEVABLE;
 		}
 
