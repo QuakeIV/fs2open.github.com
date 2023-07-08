@@ -17,9 +17,9 @@ class VideoDecoder: public FFMPEGStreamDecoder<VideoFrame> {
 
 	virtual ~VideoDecoder();
 
-	virtual void decodePacket(AVPacket* packet) SCP_OVERRIDE;
+	virtual void decodePacket(AVPacket* packet) override;
 
-	virtual void finishDecoding() SCP_OVERRIDE;
+	virtual void finishDecoding() override;
 };
 }
 }

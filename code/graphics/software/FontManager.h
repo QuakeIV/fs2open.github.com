@@ -34,9 +34,9 @@ namespace font {
 		}
 
 	private:
-		TrueTypeFontData(const TrueTypeFontData &) SCP_DELETED_FUNCTION;
+		TrueTypeFontData(const TrueTypeFontData &) = delete;
 
-		TrueTypeFontData &operator=(const TrueTypeFontData &) SCP_DELETED_FUNCTION;
+		TrueTypeFontData &operator=(const TrueTypeFontData &) = delete;
 	};
 
 	// Forward declarations

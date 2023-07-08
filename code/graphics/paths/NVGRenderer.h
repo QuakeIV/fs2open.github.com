@@ -18,88 +18,88 @@ namespace graphics
 			NVGRenderer();
 			virtual ~NVGRenderer();
 
-			virtual void beginFrame() SCP_OVERRIDE;
+			virtual void beginFrame() override;
 
-			virtual void cancelFrame() SCP_OVERRIDE;
+			virtual void cancelFrame() override;
 
-			virtual void endFrame() SCP_OVERRIDE;
+			virtual void endFrame() override;
 
-			virtual void scissor(float x, float y, float w, float h) SCP_OVERRIDE;
+			virtual void scissor(float x, float y, float w, float h) override;
 
-			virtual void resetScissor() SCP_OVERRIDE;
+			virtual void resetScissor() override;
 
-			virtual void resetTransform() SCP_OVERRIDE;
+			virtual void resetTransform() override;
 
-			virtual void translate(float x, float y) SCP_OVERRIDE;
+			virtual void translate(float x, float y) override;
 
-			virtual void rotate(float rad) SCP_OVERRIDE;
+			virtual void rotate(float rad) override;
 
-			virtual void skewX(float rad) SCP_OVERRIDE;
+			virtual void skewX(float rad) override;
 
-			virtual void skewY(float rad) SCP_OVERRIDE;
+			virtual void skewY(float rad) override;
 
-			virtual void scale(float x, float y) SCP_OVERRIDE;
+			virtual void scale(float x, float y) override;
 
 			virtual DrawPaint createLinearGradient(float sx, float sy, float ex,
-				float ey, color* icol, color* ocol) SCP_OVERRIDE;
+				float ey, color* icol, color* ocol) override;
 
-			virtual void setAlpha(float alpha) SCP_OVERRIDE;
+			virtual void setAlpha(float alpha) override;
 
-			virtual void setFillColor(color* color) SCP_OVERRIDE;
+			virtual void setFillColor(color* color) override;
 
-			virtual void setFillPaint(const DrawPaint& paint) SCP_OVERRIDE;
+			virtual void setFillPaint(const DrawPaint& paint) override;
 
-			virtual void setStrokeColor(color* color) SCP_OVERRIDE;
+			virtual void setStrokeColor(color* color) override;
 
-			virtual void setStrokePaint(const DrawPaint& paint) SCP_OVERRIDE;
+			virtual void setStrokePaint(const DrawPaint& paint) override;
 
-			virtual void setStrokeWidth(float width) SCP_OVERRIDE;
+			virtual void setStrokeWidth(float width) override;
 
-			virtual void beginPath() SCP_OVERRIDE;
+			virtual void beginPath() override;
 
-			virtual void moveTo(float x, float y) SCP_OVERRIDE;
+			virtual void moveTo(float x, float y) override;
 
-			virtual void setSolidity(Solidity solid) SCP_OVERRIDE;
+			virtual void setSolidity(Solidity solid) override;
 
-			virtual void lineTo(float x, float y) SCP_OVERRIDE;
+			virtual void lineTo(float x, float y) override;
 
-			virtual void rectangle(float x, float y, float w, float h) SCP_OVERRIDE;
+			virtual void rectangle(float x, float y, float w, float h) override;
 
-			virtual void roundedRectangle(float x, float y, float w, float h, float radius) SCP_OVERRIDE;
+			virtual void roundedRectangle(float x, float y, float w, float h, float radius) override;
 
-			virtual void circle(float x, float y, float r) SCP_OVERRIDE;
+			virtual void circle(float x, float y, float r) override;
 
-			virtual void ellipse(float x, float y, float rx, float ry) SCP_OVERRIDE;
+			virtual void ellipse(float x, float y, float rx, float ry) override;
 
-			virtual void arc(float cx, float cy, float r, float a0, float a1, Direction dir) SCP_OVERRIDE;
+			virtual void arc(float cx, float cy, float r, float a0, float a1, Direction dir) override;
 
-			virtual void closePath() SCP_OVERRIDE;
+			virtual void closePath() override;
 
-			virtual int createFontMem(const char* name, unsigned char* data, int ndata, int freeData) SCP_OVERRIDE;
+			virtual int createFontMem(const char* name, unsigned char* data, int ndata, int freeData) override;
 
-			virtual void fontSize(float size) SCP_OVERRIDE;
+			virtual void fontSize(float size) override;
 
-			virtual void textLetterSpacing(float spacing) SCP_OVERRIDE;
+			virtual void textLetterSpacing(float spacing) override;
 
-			virtual void fontFaceId(int font) SCP_OVERRIDE;
+			virtual void fontFaceId(int font) override;
 
-			virtual float text(float x, float y, const char* string, const char* end) SCP_OVERRIDE;
+			virtual float text(float x, float y, const char* string, const char* end) override;
 
-			virtual float textBounds(float x, float y, const char* string, const char* end, float* bounds) SCP_OVERRIDE;
+			virtual float textBounds(float x, float y, const char* string, const char* end, float* bounds) override;
 
-			virtual void textMetrics(float* ascender, float* descender, float* lineh) SCP_OVERRIDE;
+			virtual void textMetrics(float* ascender, float* descender, float* lineh) override;
 
-			virtual void textAlign(TextAlign align) SCP_OVERRIDE;
+			virtual void textAlign(TextAlign align) override;
 
-			virtual void fill() SCP_OVERRIDE;
+			virtual void fill() override;
 
-			virtual void stroke() SCP_OVERRIDE;
+			virtual void stroke() override;
 
-			virtual void saveState() SCP_OVERRIDE;
+			virtual void saveState() override;
 
-			virtual void resetState() SCP_OVERRIDE;
+			virtual void resetState() override;
 
-			virtual void restoreState() SCP_OVERRIDE;
+			virtual void restoreState() override;
 		};
 	}
 }

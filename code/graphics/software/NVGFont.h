@@ -34,12 +34,12 @@ namespace font
 		void setTabWidth(float tabWidth);
 		void setSpecialCharacterFont(font* fontData);
 
-		virtual FontType getType() const SCP_OVERRIDE { return NVG_FONT; };
+		virtual FontType getType() const override { return NVG_FONT; };
 
-		virtual float getTextHeight() const SCP_OVERRIDE;
+		virtual float getTextHeight() const override;
 
 		virtual void getStringSize(const char *text, size_t textLen, int resize_mode,
-			float *width, float *height) const SCP_OVERRIDE;
+			float *width, float *height) const override;
 
 		void computeFontMetrics() override;
 

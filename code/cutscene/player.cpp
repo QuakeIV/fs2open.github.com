@@ -57,9 +57,9 @@ struct PlayerState {
 					videoInited(false), newFrameAdded(false) {}
 
  private:
-	PlayerState(const PlayerState&) SCP_DELETED_FUNCTION;
+	PlayerState(const PlayerState&) = delete;
 
-	PlayerState& operator=(const PlayerState&) SCP_DELETED_FUNCTION;
+	PlayerState& operator=(const PlayerState&) = delete;
 };
 }
 

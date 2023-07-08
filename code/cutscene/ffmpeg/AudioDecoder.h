@@ -27,9 +27,9 @@ class AudioDecoder: public FFMPEGStreamDecoder<AudioFrame> {
 
 	virtual ~AudioDecoder();
 
-	virtual void decodePacket(AVPacket* packet) SCP_OVERRIDE;
+	virtual void decodePacket(AVPacket* packet) override;
 
-	virtual void finishDecoding() SCP_OVERRIDE;
+	virtual void finishDecoding() override;
 };
 }
 }

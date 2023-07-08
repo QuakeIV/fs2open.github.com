@@ -44,7 +44,7 @@ namespace font
 		*
 		* @return	The type.
 		*/
-		virtual FontType getType() const SCP_OVERRIDE;
+		virtual FontType getType() const override;
 
 		/**
 		* @brief	Gets the height of this font
@@ -53,7 +53,7 @@ namespace font
 		*
 		* @return	The height.
 		*/
-		virtual float getTextHeight() const SCP_OVERRIDE;
+		virtual float getTextHeight() const override;
 
 		/**
 		* @brief	Gets the size of the specified string in pixels.
@@ -65,6 +65,6 @@ namespace font
 		* @param [out]	height	If non-null, the height.
 		*/
 		virtual void getStringSize(const char *text, size_t textLen,
-			int resize_mode, float *width, float *height) const SCP_OVERRIDE;
+			int resize_mode, float *width, float *height) const override;
 	};
 }

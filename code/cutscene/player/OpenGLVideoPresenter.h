@@ -27,9 +27,9 @@ class OpenGLVideoPresenter: public VideoPresenter {
 
 	virtual ~OpenGLVideoPresenter();
 
-	virtual void uploadVideoFrame(const VideoFramePtr& frame) SCP_OVERRIDE;
+	virtual void uploadVideoFrame(const VideoFramePtr& frame) override;
 
-	virtual void displayFrame() SCP_OVERRIDE;
+	virtual void displayFrame() override;
 };
 }
 }

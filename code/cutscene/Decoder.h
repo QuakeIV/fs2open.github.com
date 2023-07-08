@@ -72,9 +72,9 @@ class Decoder {
 	bool m_decoding;
 	size_t m_queueSize = 0;
 
-	Decoder(const Decoder&) SCP_DELETED_FUNCTION;
+	Decoder(const Decoder&) = delete;
 
-	Decoder& operator=(const Decoder&) SCP_DELETED_FUNCTION;
+	Decoder& operator=(const Decoder&) = delete;
  protected:
 	Decoder();
 
