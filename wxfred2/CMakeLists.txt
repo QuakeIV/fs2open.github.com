@@ -4,7 +4,7 @@ include(source_groups.cmake)
 SET(PNG_OUT_FILES)
 FOREACH(file ${file_root_res_pngs})
 	FILE(RELATIVE_PATH FILE_NAME ${CMAKE_CURRENT_SOURCE_DIR} ${file})
-	
+
 	SET(OUTPUT "${GENERATED_SOURCE_DIR}/wxfred2/${FILE_NAME}")
 
 	# For some reason this is needed...
@@ -16,14 +16,14 @@ FOREACH(file ${file_root_res_pngs})
 	STRING(REPLACE "-" "_" FILENAME ${FILENAME})
 	STRING(REPLACE "." "_" FILENAME ${FILENAME})
 	STRING(REPLACE "#" "_" FILENAME ${FILENAME})
-	
+
 	ADD_CUSTOM_COMMAND(
 		OUTPUT ${OUTPUT}.cpp
 		COMMAND embedfile -wx "${file}" "${OUTPUT}" "${FILENAME}"
 		DEPENDS ${file}
 		COMMENT "Generating png header for ${file}"
 		)
-	
+
 	LIST(APPEND PNG_OUT_FILES ${OUTPUT}.cpp)
 ENDFOREACH(file ${file_root_res_pngs})
 
@@ -43,6 +43,9 @@ find_package(wxWidgets COMPONENTS gl core base REQUIRED)
 include(${wxWidgets_USE_FILE})
 
 add_executable(wxfred2 ${EXE_GUI_TYPE} ${file_root} ${PNG_OUT_FILES})
+
+# set compile warning options
+target_compile_options(wxfred2 PRIVATE -Wno-write-strings) # TODO: ISO C++ forbids converting a string constant to ‘char*’, who cares?
 
 set_target_properties(wxfred2
 	PROPERTIES
@@ -80,7 +83,7 @@ elseif(MSVC)
 	IF(NOT MSVC_USE_RUNTIME_DLL)
 		STRING(REGEX REPLACE "/MT" "/MD" CMAKE_C_FLAGS_RELEASE ${CMAKE_C_FLAGS_RELEASE})
 		STRING(REGEX REPLACE "/MT" "/MD" CMAKE_CXX_FLAGS_RELEASE ${CMAKE_CXX_FLAGS_RELEASE})
-		
+
 		STRING(REGEX REPLACE "/MT" "/MD" CMAKE_C_FLAGS_DEBUG ${CMAKE_C_FLAGS_DEBUG})
 		STRING(REGEX REPLACE "/MT" "/MD" CMAKE_CXX_FLAGS_DEBUG ${CMAKE_CXX_FLAGS_DEBUG})
 	ENDIF(NOT MSVC_USE_RUNTIME_DLL)
@@ -92,7 +95,7 @@ elseif(MSVC)
 		/D_WINDOWS
 		/DWIN32
 	)
-	
+
 	TARGET_LINK_LIBRARIES(wxfred2
 		odbc32.lib
 		odbccp32.lib
@@ -101,7 +104,7 @@ elseif(MSVC)
 		wsock32.lib
 		winmm.lib
 	)
-	
+
 	set_target_properties(wxfred2 PROPERTIES
 		COMPILE_DEFINITIONS_DEBUG "PDB_DEBUGGING=1"
 	)

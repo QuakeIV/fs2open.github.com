@@ -5,6 +5,22 @@ INCLUDE(voice_rec.cmake)
 
 ADD_LIBRARY(code STATIC ${file_root} ${VOICE_REC_FILES})
 
+# clear certain warnings
+target_compile_options(code PRIVATE -Wno-parentheses) # was whining about unnecessary parenthesis, give me a break
+target_compile_options(code PRIVATE -Wno-sizeof-pointer-memaccess) # was complaining about using source rather than destination size for strncpy, except destination size is not knowable so shut up
+# TODO: following are temporary?
+target_compile_options(code PRIVATE -Wno-stringop-truncation) # TODO: this at least likely needs to be resolved at some point (file name length limit related to some extent)
+target_compile_options(code PRIVATE -Wno-stringop-overflow) # TODO: this at least likely needs to be resolved at some point (file name length limit related to some extent)
+target_compile_options(code PRIVATE -Wno-format-overflow) # TODO: this at least likely needs to be resolved at some point (file name length limit related to some extent)
+target_compile_options(code PRIVATE -Wno-format-truncation) # TODO: this at least likely needs to be resolved at some point (file name length limit related to some extent)
+target_compile_options(code PRIVATE -Wno-implicit-fallthrough) # TODO: many cases, needs triage
+target_compile_options(code PRIVATE -Wno-catch-value) # TODO: wtf? 'catching polymorphic type by value'
+target_compile_options(code PRIVATE -Wno-memset-elt-size) # TODO: this is most likely legitimate "‘memset’ used with length equal to number of elements without multiplication by element size"
+target_compile_options(code PRIVATE -Wno-deprecated-copy) # TODO: wtf? "implicitly-declared ‘luacpp::LuaValue& luacpp::LuaValue::operator=(const luacpp::LuaValue&)’ is deprecated", this may actually be the lua module itself complaining
+target_compile_options(code PRIVATE -Wno-deprecated-declarations) # TODO: "FFmpeg.cpp:56:18: warning: ‘void av_register_all()’ is deprecated"
+target_compile_options(code PRIVATE -Wno-shadow) # TODO: " warning: declaration of ‘Cutscenes’ shadows a global declaration", why are we doing so much weird C++ shit
+
+
 target_compile_features(code PUBLIC ${REQUIRED_CXX_FEATURES})
 
 INCLUDE(default_files.cmake)

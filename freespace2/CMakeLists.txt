@@ -21,6 +21,10 @@ ENDIF(MSVC60)
 
 ADD_EXECUTABLE(Freespace2 ${EXE_GUI_TYPE} ${FREESPACE_SRC})
 
+# set warning options
+# TODO: temporary
+target_compile_options(Freespace2 PRIVATE -Wno-shadow) # TODO: figure out weird C++isms
+
 include(resources.cmake)
 
 SET_TARGET_PROPERTIES(Freespace2 PROPERTIES OUTPUT_NAME "fs2_open_${FSO_BINARY_SUFFIX}")
