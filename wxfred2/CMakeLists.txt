@@ -44,8 +44,15 @@ include(${wxWidgets_USE_FILE})
 
 add_executable(wxfred2 ${EXE_GUI_TYPE} ${file_root} ${PNG_OUT_FILES})
 
+# SDL 2
+find_package(SDL2 REQUIRED)
+target_link_libraries(wxfred2 PUBLIC SDL2::SDL2)
+
 # set compile warning options
 target_compile_options(wxfred2 PRIVATE -Wno-write-strings) # TODO: ISO C++ forbids converting a string constant to ‘char*’, who cares?
+target_compile_options(wxfred2 PRIVATE -Wno-reorder) # TODO: "‘frmFRED2::fredName’ will be initialized after", this is some weird C++ object ism
+target_compile_options(wxfred2 PRIVATE -Wno-deprecated-declarations) # TODO: "warning: ‘void wxSplitterWindow::SetSashSize(int)’ is deprecated"
+target_compile_options(wxfred2 PRIVATE -Wno-unused-variable) # TODO: "warning: ‘fred_app_xpm’ defined but not used [-Wunused-variable]" why is a cpp with static shit being included?
 
 set_target_properties(wxfred2
 	PROPERTIES
@@ -70,8 +77,8 @@ INCLUDE_DIRECTORIES(${GENERATED_SOURCE_DIR}/code)
 INCLUDE_DIRECTORIES(${COMPILER_INCLUDES})
 INCLUDE_DIRECTORIES(${PLATFORM_INCLUDES})
 
-TARGET_LINK_LIBRARIES(wxfred2 ${wxWidgets_LIBRARIES})
-TARGET_LINK_LIBRARIES(wxfred2 ${SDL_LIBS})
+TARGET_LINK_LIBRARIES(wxfred2 PUBLIC ${wxWidgets_LIBRARIES})
+TARGET_LINK_LIBRARIES(wxfred2 PUBLIC ${SDL_LIBS})
 
 if(UNIX)
 	add_definitions(

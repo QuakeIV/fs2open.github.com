@@ -29,14 +29,13 @@ include(resources.cmake)
 
 SET_TARGET_PROPERTIES(Freespace2 PROPERTIES OUTPUT_NAME "fs2_open_${FSO_BINARY_SUFFIX}")
 
-TARGET_LINK_LIBRARIES(Freespace2 code)
-TARGET_LINK_LIBRARIES(Freespace2 platform)
-TARGET_LINK_LIBRARIES(Freespace2 compiler)
+# SDL 2
+find_package(SDL2 REQUIRED)
+target_link_libraries(Freespace2 PUBLIC SDL2::SDL2)
 
-IF(WIN32)
-	# Link sdl main only here as it interferes with fred
-	TARGET_LINK_LIBRARIES(Freespace2 sdlmain)
-ENDIF(WIN32)
+TARGET_LINK_LIBRARIES(Freespace2 PUBLIC code)
+TARGET_LINK_LIBRARIES(Freespace2 PUBLIC platform)
+TARGET_LINK_LIBRARIES(Freespace2 PUBLIC compiler)
 
 IF(FSO_USE_VOICEREC)
 	ADD_DEFINITIONS(-DFS2_VOICER)
