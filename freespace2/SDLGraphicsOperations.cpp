@@ -183,11 +183,11 @@ std::unique_ptr<os::Viewport> SDLGraphicsOperations::createViewport(const os::Vi
 	}
 
 	SDL_Window* window = SDL_CreateWindow(props.title.c_str(),
-										  x,
-										  y,
+										  SDL_WINDOWPOS_UNDEFINED,
+										  SDL_WINDOWPOS_UNDEFINED,
 										  props.width,
 										  props.height,
-										  windowflags);
+										  SDL_WINDOW_OPENGL | SDL_WINDOW_FULLSCREEN_DESKTOP);
 	if (window == nullptr) {
 		mprintf(("Failed to create SDL Window: %s\n", SDL_GetError()));
 		return nullptr;
