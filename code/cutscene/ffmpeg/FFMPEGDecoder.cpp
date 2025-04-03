@@ -9,6 +9,7 @@
 
 #include "cutscene/ffmpeg/AudioDecoder.h"
 #include "cutscene/ffmpeg/VideoDecoder.h"
+#include <libavformat/avformat.h>
 
 using namespace libs::ffmpeg;
 
@@ -37,7 +38,7 @@ const char* CHECKED_EXTENSIONS[] = {
 };
 
 double getFrameRate(AVStream* stream, AVCodecContext* codecCtx) {
-	auto fps = av_q2d(av_stream_get_r_frame_rate(stream));
+	auto fps = av_q2d(stream->r_frame_rate);
 
 	if (fps < 0.000001)
 	{
@@ -123,7 +124,7 @@ std::unique_ptr<DecoderStatus> initializeStatus(std::unique_ptr<InputStream>& st
 
 	auto ctx = stream->m_ctx->ctx();
 
-	auto videoStream = av_find_best_stream(ctx, AVMEDIA_TYPE_VIDEO, -1, -1, &status->videoCodec, 0);
+	auto videoStream = av_find_best_stream(ctx, AVMEDIA_TYPE_VIDEO, -1, -1, const_cast<const AVCodec**>(&status->videoCodec), 0);
 	if (videoStream < 0) {
 		if (videoStream == AVERROR_STREAM_NOT_FOUND) {
 			mprintf(("FFmpeg: No video stream found in file!\n"));
@@ -136,7 +137,7 @@ std::unique_ptr<DecoderStatus> initializeStatus(std::unique_ptr<InputStream>& st
 		return nullptr;
 	}
 
-	auto audioStream = av_find_best_stream(ctx, AVMEDIA_TYPE_AUDIO, -1, videoStream, &status->audioCodec, 0);
+	auto audioStream = av_find_best_stream(ctx, AVMEDIA_TYPE_AUDIO, -1, videoStream, const_cast<const AVCodec**>(&status->audioCodec), 0);
 	if (audioStream < 0) {
 		if (audioStream == AVERROR_STREAM_NOT_FOUND) {
 			mprintf(("FFmpeg: No audio stream found in file!\n"));

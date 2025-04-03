@@ -187,7 +187,7 @@ bool WaveFile::Open(const char* pszFilename, bool keep_ext) {
 		auto ctx = m_ctx->ctx();
 
 		AVCodec* audio_codec = nullptr;
-		m_audioStreamIndex = av_find_best_stream(ctx, AVMEDIA_TYPE_AUDIO, -1, -1, &audio_codec, 0);
+		m_audioStreamIndex = av_find_best_stream(ctx, AVMEDIA_TYPE_AUDIO, -1, -1, const_cast<const AVCodec**>(&audio_codec), 0);
 		if (m_audioStreamIndex < 0) {
 			throw FFmpegException("Failed to find audio stream in file.");
 		}

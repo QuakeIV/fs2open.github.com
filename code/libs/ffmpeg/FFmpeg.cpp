@@ -53,8 +53,6 @@ void initialize() {
 		return;
 	}
 
-	av_register_all();
-
 	check_version("libavcodec", avcodec_version(), LIBAVCODEC_VERSION_INT);
 	check_version("libavformat", avformat_version(), LIBAVFORMAT_VERSION_INT);
 	check_version("libavutil", avutil_version(), LIBAVUTIL_VERSION_INT);

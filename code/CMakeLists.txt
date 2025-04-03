@@ -17,7 +17,6 @@ target_compile_options(code PRIVATE -Wno-implicit-fallthrough) # TODO: many case
 target_compile_options(code PRIVATE -Wno-catch-value) # TODO: wtf? 'catching polymorphic type by value'
 target_compile_options(code PRIVATE -Wno-memset-elt-size) # TODO: this is most likely legitimate "‘memset’ used with length equal to number of elements without multiplication by element size"
 target_compile_options(code PRIVATE -Wno-deprecated-copy) # TODO: wtf? "implicitly-declared ‘luacpp::LuaValue& luacpp::LuaValue::operator=(const luacpp::LuaValue&)’ is deprecated", this may actually be the lua module itself complaining
-target_compile_options(code PRIVATE -Wno-deprecated-declarations) # TODO: "FFmpeg.cpp:56:18: warning: ‘void av_register_all()’ is deprecated"
 target_compile_options(code PRIVATE -Wno-shadow) # TODO: " warning: declaration of ‘Cutscenes’ shadows a global declaration", why are we doing so much weird C++ shit
 
 
