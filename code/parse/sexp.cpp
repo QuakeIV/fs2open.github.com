@@ -4791,7 +4791,6 @@ void sexp_get_object_ship_wing_point_team(object_ship_wing_point_team *oswpt, ch
 			{
 				oswpt->shipp = &Ships[wingp->ship_index[0]];
 				oswpt->objp = &Objects[oswpt->shipp->objnum];
-				Warning(LOCATION, "Substituting ship '%s' at index 0 for nonexistent wing leader at index %d!", oswpt->shipp->ship_name, oswpt->wingp->special_ship);
 			}
 		}
 		// it's still a valid wing even if nobody is here
@@ -13309,7 +13308,6 @@ void multi_sexp_alter_ship_flag()
 							} else {
 								oswpt.shipp = &Ships[oswpt.wingp->ship_index[0]];
 								oswpt.objp = &Objects[oswpt.shipp->objnum];
-								Warning(LOCATION, "Substituting ship '%s' at index 0 for nonexistent wing leader at index %d!", oswpt.shipp->ship_name, oswpt.wingp->special_ship);
 							}
 							break;
 						}
