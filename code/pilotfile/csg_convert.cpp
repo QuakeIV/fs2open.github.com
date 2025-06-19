@@ -540,46 +540,6 @@ void pilotfile_convert::csg_import_techroom()
 	}
 }
 
-void pilotfile_convert::csg_import_loadout()
-{
-	char t_string[50] = { '\0' };
-
-	// mission name/status
-	cfread_string_len(t_string, sizeof(t_string), cfp);
-	csg->loadout.filename = t_string;
-
-	cfread_string_len(t_string, sizeof(t_string), cfp);
-	csg->loadout.last_modified = t_string;
-
-	// ship pool
-	size_t list_size = csg->ship_list.size();
-	csg->loadout.ship_pool.reserve(list_size);
-
-	for (size_t idx = 0; idx < list_size; idx++) {
-		int count = cfread_int(cfp);
-		csg->loadout.ship_pool.push_back( count );
-	}
-
-	// weapon pool
-	list_size = csg->weapon_list.size();
-	csg->loadout.weapon_pool.reserve(list_size);
-
-	for (size_t idx = 0; idx < list_size; idx++) {
-		int count = cfread_int(cfp);
-		csg->loadout.weapon_pool.push_back( count );
-	}
-
-	// loadout info
-	for (size_t idx = 0; idx < MAX_WSS_SLOTS_CONV; idx++) {
-		csg->loadout.slot[idx].ship_index = cfread_int(cfp);
-
-		for (size_t j = 0; j < MAX_SHIP_WEAPONS_CONV; j++) {
-			csg->loadout.slot[idx].wep[j] = cfread_int(cfp);
-			csg->loadout.slot[idx].wep_count[j] = cfread_int(cfp);
-		}
-	}
-}
-
 void pilotfile_convert::csg_import_stats()
 {
 	int list_size = 0;
@@ -661,8 +621,6 @@ void pilotfile_convert::csg_import(bool inferno)
 	csg_import_red_alert();
 
 	csg_import_techroom();
-
-	csg_import_loadout();
 
 	csg_import_stats();
 
@@ -883,55 +841,6 @@ void pilotfile_convert::csg_export_techroom()
 	endSection();
 }
 
-void pilotfile_convert::csg_export_loadout()
-{
-	startSection(Section::Loadout);
-
-	// base info
-	cfwrite_string_len(csg->loadout.filename.c_str(), cfp);
-	cfwrite_string_len(csg->loadout.last_modified.c_str(), cfp);
-
-	// ship pool
-	size_t list_size = csg->loadout.ship_pool.size();
-
-	for (size_t idx = 0; idx < list_size; idx++) {
-		cfwrite_int(csg->loadout.ship_pool[idx], cfp);
-	}
-
-	// weapon pool
-	list_size = csg->loadout.weapon_pool.size();
-
-	for (size_t idx = 0; idx < list_size; idx++) {
-		cfwrite_int(csg->loadout.weapon_pool[idx], cfp);
-	}
-
-	// play ship loadout
-	cfwrite_ushort(12, cfp);
-
-	for (size_t idx = 0; idx < 12; idx++) {
-		// ship
-		cfwrite_int(csg->loadout.slot[idx].ship_index, cfp);
-
-		// primary weapons
-		cfwrite_int(3, cfp);
-
-		for (size_t j = 0; j < 3; j++) {
-			cfwrite_int(csg->loadout.slot[idx].wep[j], cfp);
-			cfwrite_int(csg->loadout.slot[idx].wep_count[j], cfp);
-		}
-
-		// secondary weapons
-		cfwrite_int(4, cfp);
-
-		for (size_t j = 0; j < 4; j++) {
-			cfwrite_int(csg->loadout.slot[idx].wep[j+3], cfp);
-			cfwrite_int(csg->loadout.slot[idx].wep_count[j+3], cfp);
-		}
-	}
-
-	endSection();
-}
-
 void pilotfile_convert::csg_export_stats()
 {
 	startSection(Section::Scoring);
@@ -1138,7 +1047,6 @@ void pilotfile_convert::csg_export()
 	// everything else is next, not order specific
 	csg_export_missions();
 	csg_export_techroom();
-	csg_export_loadout();
 	csg_export_stats();
 	csg_export_redalert();
 	csg_export_hud();

@@ -16,7 +16,6 @@ const SCP_vector<std::pair<Section, const char*>> SectionMapping {
 	std::pair<Section, const char*>(Section::Unnamed, nullptr),
 	std::pair<Section, const char*>(Section::Flags, "flags"),
 	std::pair<Section, const char*>(Section::Info, "info"),
-	std::pair<Section, const char*>(Section::Loadout, "loadout"),
 	std::pair<Section, const char*>(Section::Controls, "controls"),
 	std::pair<Section, const char*>(Section::Multiplayer, "multiplayer"),
 	std::pair<Section, const char*>(Section::Scoring, "scoring"),

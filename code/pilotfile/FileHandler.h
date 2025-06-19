@@ -18,7 +18,6 @@ enum class Section {
 	Unnamed = 0, //!< Special unnamed section
 	Flags = 0x0001,
 	Info = 0x0002,
-	Loadout = 0x0003,
 	Controls = 0x0004,
 	Multiplayer = 0x0005,
 	Scoring = 0x0006,

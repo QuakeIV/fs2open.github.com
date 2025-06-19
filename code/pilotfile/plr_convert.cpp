@@ -276,49 +276,6 @@ void pilotfile_convert::plr_import_stats()
 	cfread_uint(cfp);	// bonehead_kills
 }
 
-void pilotfile_convert::plr_import_loadout()
-{
-	int idx, j;
-	int s_count, w_count;
-	char name[52];
-
-	if (fver >= 242) {
-		return;
-	}
-
-	// have to read it, but don't need any of it ...
-
-	cfread_string_len(name, sizeof(name), cfp);	// filename
-	cfread_string_len(name, sizeof(name), cfp);	// last_modified
-
-	s_count = cfread_int(cfp);	// num ships
-	w_count = cfread_int(cfp);	// num weapons
-
-	// ships
-	for (idx = 0; idx < s_count; idx++) {
-		cfread_int(cfp);	// count
-		cfread_string_len(name, sizeof(name), cfp);	// name
-	}
-
-	// weapons
-	for (idx = 0; idx < w_count; idx++) {
-		cfread_int(cfp);	// count
-		cfread_string_len(name, sizeof(name), cfp);	// name
-	}
-
-	// loadout info
-	for (idx = 0; idx < 12; idx++) {
-		cfread_int(cfp);	// ship class
-		cfread_string_len(name, sizeof(name), cfp);	// ship name
-
-		for (j = 0; j < 12; j++) {
-			cfread_int(cfp);	// weapon type
-			cfread_int(cfp);	// weapon count
-			cfread_string_len(name, sizeof(name), cfp);	// weapon name
-		}
-	}
-}
-
 void pilotfile_convert::plr_import_multiplayer()
 {
 	plr->multi_squad_set = cfread_ubyte(cfp);
@@ -487,9 +444,6 @@ void pilotfile_convert::plr_import()
 
 	// flags
 	plr->save_flags = cfread_int(cfp);
-
-	// loadout, will skip if fver < 242
-	plr_import_loadout();
 
 	// multiplayer
 	plr_import_multiplayer();

@@ -518,168 +518,6 @@ void pilotfile::csg_write_techroom()
 	endSection();
 }
 
-void pilotfile::csg_read_loadout()
-{
-	int j, count, ship_idx = -1, wep_idx = -1;
-	size_t idx, list_size = 0;
-
-	if ( !m_have_info ) {
-		throw "Loadout before Info!";
-	}
-
-	// base info
-	cfread_string_len(Player_loadout.filename, MAX_FILENAME_LEN, cfp);
-	cfread_string_len(Player_loadout.last_modified, DATE_TIME_LENGTH, cfp);
-
-	// ship pool
-	list_size = ship_list.size();
-	for (idx = 0; idx < list_size; idx++) {
-		count = cfread_int(cfp);
-
-		if (ship_list[idx].index >= 0) {
-			Player_loadout.ship_pool[ship_list[idx].index] = count;
-		}
-	}
-
-	// weapon pool
-	list_size = weapon_list.size();
-	for (idx = 0; idx < list_size; idx++) {
-		count = cfread_int(cfp);
-
-		if (weapon_list[idx].index >= 0) {
-			Player_loadout.weapon_pool[weapon_list[idx].index] = count;
-		}
-	}
-
-	// player ship loadout
-	list_size = (uint)cfread_ushort(cfp);
-	for (uint i = 0; i < list_size; i++) {
-		wss_unit *slot = NULL;
-
-		if (i < MAX_WSS_SLOTS) {
-			slot = &Player_loadout.unit_data[i];
-		}
-
-		// ship
-		ship_idx = cfread_int(cfp);
-
-		if ( (ship_idx >= (int)ship_list.size()) || (ship_idx < -1) ) { // on the casts, assume that ship & weapon lists will never exceed ~2 billion
-			mprintf(("CSG => Parse Warning: Invalid value for ship index (%d), emptying slot.\n", ship_idx));
-			ship_idx = -1;
-		}
-
-		if (slot) {
-			if (ship_idx == -1) { // -1 means no ship in this slot
-				slot->ship_class = -1;
-			} else {
-				slot->ship_class = ship_list[ship_idx].index;
-			}
-		}
-
-		// primary weapons
-		count = cfread_int(cfp);
-
-		for (j = 0; j < count; j++) {
-			wep_idx = cfread_int(cfp);
-
-			if ( (wep_idx >= (int)weapon_list.size()) || (wep_idx < -1) ) {
-				mprintf(("CSG => Parse Warning: Invalid value for primary weapon index (%d), emptying slot.\n", wep_idx));
-				wep_idx = -1;
-			}
-
-
-			if ( slot && (j < MAX_SHIP_PRIMARY_BANKS) ) {
-				if (wep_idx == -1) { // -1 means no weapon in this slot
-					slot->wep[j] = -1;
-				} else {
-					slot->wep[j] = weapon_list[wep_idx].index;
-				}
-			}
-
-			int read_idx = cfread_int(cfp);
-
-			if ( slot && (j < MAX_SHIP_PRIMARY_BANKS) ) {
-				slot->wep_count[j] = read_idx;
-			}
-		}
-
-		// secondary weapons
-		count = cfread_int(cfp);
-
-		for (j = 0; j < count; j++) {
-			wep_idx = cfread_int(cfp);
-
-			if ( (wep_idx >= (int)weapon_list.size()) || (wep_idx < -1) ) {
-				mprintf(("CSG => Parse Warning: Invalid value for secondary weapon index (%d), emptying slot.\n", wep_idx));
-				wep_idx = -1;
-			}
-
-			if ( slot && (j < MAX_SHIP_SECONDARY_BANKS) ) {
-				if (wep_idx == -1) { // -1 means no weapon in this slot
-					slot->wep[j+MAX_SHIP_PRIMARY_BANKS] = -1;
-				} else {
-					slot->wep[j+MAX_SHIP_PRIMARY_BANKS] = weapon_list[wep_idx].index;
-				}
-			}
-
-			int read_idx = cfread_int(cfp);
-
-			if ( slot && (j < MAX_SHIP_SECONDARY_BANKS) ) {
-				slot->wep_count[j+MAX_SHIP_PRIMARY_BANKS] = read_idx;
-			}
-		}
-	}	
-}
-
-void pilotfile::csg_write_loadout()
-{
-	int idx, j;
-
-	startSection(Section::Loadout);
-
-	// base info
-	cfwrite_string_len(Player_loadout.filename, cfp);
-	cfwrite_string_len(Player_loadout.last_modified, cfp);
-
-	// ship pool
-	for (idx = 0; idx < static_cast<int>(Ship_info.size()); idx++) {
-		cfwrite_int(Player_loadout.ship_pool[idx], cfp);
-	}
-
-	// weapon pool
-	for (idx = 0; idx < Num_weapon_types; idx++) {
-		cfwrite_int(Player_loadout.weapon_pool[idx], cfp);
-	}
-
-	// play ship loadout
-	cfwrite_ushort(MAX_WSS_SLOTS, cfp);
-
-	for (idx = 0; idx < MAX_WSS_SLOTS; idx++) {
-		wss_unit *slot = &Player_loadout.unit_data[idx];
-
-		// ship
-		cfwrite_int(slot->ship_class, cfp);
-
-		// primary weapons
-		cfwrite_int(MAX_SHIP_PRIMARY_BANKS, cfp);
-
-		for (j = 0; j < MAX_SHIP_PRIMARY_BANKS; j++) {
-			cfwrite_int(slot->wep[j], cfp);
-			cfwrite_int(slot->wep_count[j], cfp);
-		}
-
-		// secondary weapons
-		cfwrite_int(MAX_SHIP_SECONDARY_BANKS, cfp);
-
-		for (j = 0; j < MAX_SHIP_SECONDARY_BANKS; j++) {
-			cfwrite_int(slot->wep[j+MAX_SHIP_PRIMARY_BANKS], cfp);
-			cfwrite_int(slot->wep_count[j+MAX_SHIP_PRIMARY_BANKS], cfp);
-		}
-	}
-
-	endSection();
-}
-
 void pilotfile::csg_read_stats()
 {
 	int idx, list_size = 0;
@@ -1450,11 +1288,6 @@ bool pilotfile::load_savefile(const char *campaign)
 					csg_read_stats();
 					break;
 
-				case Section::Loadout:
-					mprintf(("CSG => Parsing:  Loadout...\n"));
-					csg_read_loadout();
-					break;
-
 				case Section::Techroom:
 					mprintf(("CSG => Parsing:  Techroom...\n"));
 					csg_read_techroom();
@@ -1586,8 +1419,6 @@ bool pilotfile::save_savefile()
 	csg_write_missions();
 	mprintf(("CSG => Saving:  Techroom...\n"));
 	csg_write_techroom();
-	mprintf(("CSG => Saving:  Loadout...\n"));
-	csg_write_loadout();
 	mprintf(("CSG => Saving:  Scoring...\n"));
 	csg_write_stats();
 	mprintf(("CSG => Saving:  RedAlert...\n"));

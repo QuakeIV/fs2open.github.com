@@ -175,7 +175,6 @@ class pilotfile {
 		void csg_read_info();
 		void csg_read_missions();
 		void csg_read_techroom();
-		void csg_read_loadout();
 		void csg_read_stats();
 		void csg_read_redalert();
 		void csg_read_hud();
@@ -189,7 +188,6 @@ class pilotfile {
 		void csg_write_info();
 		void csg_write_missions();
 		void csg_write_techroom();
-		void csg_write_loadout();
 		void csg_write_stats();
 		void csg_write_redalert();
 		void csg_write_hud();

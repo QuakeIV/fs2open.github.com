@@ -101,17 +101,6 @@ typedef struct wss_unit_conv_t {
 	}
 } wss_unit_conv_t;
 
-typedef struct loadout_conv_t {
-	SCP_string filename;
-	SCP_string last_modified;
-
-	wss_unit_conv_t slot[MAX_WSS_SLOTS_CONV];
-
-	SCP_vector<int> weapon_pool;
-	SCP_vector<int> ship_pool;
-} loadout_conv_t;
-
-
 struct plr_data {
 	plr_data();
 	~plr_data();
@@ -242,8 +231,6 @@ struct csg_data {
 
 	SCP_vector<sexp_variable> variables;
 
-	loadout_conv_t loadout;
-
 	scoring_special_t stats;
 
 	SCP_vector<red_alert_ship_status> wingman_status;
@@ -273,7 +260,6 @@ class pilotfile_convert {
 			enum id {
 				Flags			= 0x0001,
 				Info			= 0x0002,
-				Loadout			= 0x0003,
 				Controls		= 0x0004,
 				Multiplayer		= 0x0005,
 				Scoring			= 0x0006,
@@ -305,7 +291,6 @@ class pilotfile_convert {
 		void plr_import_hud();
 		void plr_import_detail();
 		void plr_import_stats();
-		void plr_import_loadout();
 		void plr_import_multiplayer();
 		void plr_import_red_alert();
 		void plr_import_variables();
@@ -327,7 +312,6 @@ class pilotfile_convert {
 		csg_data *csg;
 
 		void csg_import(bool inferno);
-		void csg_import_loadout();
 		void csg_import_stats();
 		void csg_import_techroom();
 		void csg_import_red_alert();
@@ -339,7 +323,6 @@ class pilotfile_convert {
 		void csg_export_info();
 		void csg_export_missions();
 		void csg_export_techroom();
-		void csg_export_loadout();
 		void csg_export_stats();
 		void csg_export_redalert();
 		void csg_export_hud();
