@@ -109,8 +109,6 @@ enum BuildCaps
 	BUILD_CAPS_SDL = (1<<3)
 };
 
-#define PARSE_COMMAND_LINE_STRING	"-parse_cmdline_only"
-
 typedef struct
 {
 	// DO NOT CHANGE THE SIZE OF THIS AT_STRING!
@@ -181,8 +179,6 @@ Flag exe_params[] =
 	{ "-nosound",			"Disable all sound",						false,	0,					EASY_DEFAULT,		"Audio",		"http://www.hard-light.net/wiki/index.php/Command-Line_Reference#-nosound", },
 	{ "-nomusic",			"Disable music",							false,	0,					EASY_DEFAULT,		"Audio",		"http://www.hard-light.net/wiki/index.php/Command-Line_Reference#-nomusic", },
 	{ "-no_enhanced_sound",	"Disable enhanced sound",					false,	0,					EASY_DEFAULT,		"Audio",		"http://www.hard-light.net/wiki/index.php/Command-Line_Reference#-no_enhanced_sound", },
-
-	{ "-portable_mode",		"Store config in portable location",		false,	0,					EASY_DEFAULT,		"Launcher",		"http://www.hard-light.net/wiki/index.php/Command-Line_Reference#-portable_mode", },
 
 	{ "-standalone",		"Run as standalone server",					false,	0,					EASY_DEFAULT,		"Multiplayer",	"http://www.hard-light.net/wiki/index.php/Command-Line_Reference#-standalone", },
 	{ "-startgame",			"Skip mainhall and start hosting",			false,	0,					EASY_DEFAULT,		"Multiplayer",	"http://www.hard-light.net/wiki/index.php/Command-Line_Reference#-startgame", },
@@ -421,11 +417,6 @@ char *Cmdline_spew_mission_crcs = NULL;
 char *Cmdline_spew_table_crcs = NULL;
 int Cmdline_objupd = 3;		// client object updates on LAN by default
 
-// Launcher related options
-cmdline_parm portable_mode("-portable_mode", NULL, AT_NONE);
-
-bool Cmdline_portable_mode = false;
-
 // Troubleshooting
 cmdline_parm loadallweapons_arg("-loadallweps", NULL, AT_NONE);	// Cmdline_load_all_weapons
 cmdline_parm nomovies_arg("-nomovies", NULL, AT_NONE);		// Cmdline_nomovies  -- Allows video streaming
@@ -480,7 +471,6 @@ cmdline_parm fullscreen_window_arg("-fullscreen_window", "Fullscreen/borderless 
 cmdline_parm res_arg("-res", "Resolution, formatted like 1600x900", AT_STRING);
 cmdline_parm center_res_arg("-center_res", "Resolution of center monitor, formatted like 1600x900", AT_STRING);
 cmdline_parm verify_vps_arg("-verify_vps", NULL, AT_NONE);	// Cmdline_verify_vps  -- spew VP crcs to vp_crcs.txt
-cmdline_parm parse_cmdline_only(PARSE_COMMAND_LINE_STRING, "Ignore any cmdline_fso.cfg files", AT_NONE);
 cmdline_parm reparse_mainhall_arg("-reparse_mainhall", NULL, AT_NONE); //Cmdline_reparse_mainhall
 cmdline_parm frame_profile_write_file("-profile_write_file", NULL, AT_NONE); // Cmdline_profile_write_file
 cmdline_parm no_unfocused_pause_arg("-no_unfocused_pause", NULL, AT_NONE); //Cmdline_no_unfocus_pause
@@ -913,19 +903,6 @@ void os_process_cmdline(char* cmdline)
 	delete[] argv;
 }
 
-bool has_cmdline_only_flag(int argc, char *argv[])
-{
-	for (int i = 0; i < argc; ++i)
-	{
-		if (!strcmp(argv[i], PARSE_COMMAND_LINE_STRING))
-		{
-			return true;
-		}
-	}
-
-	return false;
-}
-
 // remove old parms - needed for tests
 static void reset_cmdline_parms()
 {
@@ -946,75 +923,6 @@ void os_init_cmdline(int argc, char *argv[])
 	// Tests call this multiple times, so reset the params here.
 	// Otherwise e.g. the modlist just grows and grows...
 	reset_cmdline_parms();
-
-	FILE *fp;
-
-	if (!has_cmdline_only_flag(argc, argv)) {
-		// Only parse the config file in the current directory if we are in legacy config mode
-		if (os_is_legacy_mode()) {
-			// read the cmdline_fso.cfg file from the data folder, and pass the command line arguments to
-			// the the parse_parms and validate_parms line.  Read these first so anything actually on
-			// the command line will take precedence
-#ifdef APPLE_APP
-			char resolved_path[MAX_PATH], data_path[MAX_PATH_LEN];
-
-			getcwd(data_path, sizeof(data_path));
-			snprintf(resolved_path, MAX_PATH, "%s/data/cmdline_fso.cfg", data_path);
-
-			fp = fopen(resolved_path, "rt");
-#else
-			fp = fopen("data" DIR_SEPARATOR_STR "cmdline_fso.cfg", "rt");
-#endif
-			// if the file exists, get a single line, and deal with it
-			if (fp) {
-				char *buf, *p;
-
-				auto len = static_cast<int>(filelength(fileno(fp))) + 2;
-				buf = new char[len];
-
-				if (fgets(buf, len - 1, fp) != nullptr)
-				{
-					// replace the newline character with a NULL
-					if ((p = strrchr(buf, '\n')) != NULL) {
-						*p = '\0';
-					}
-#ifdef SCP_UNIX
-					// append a space for the os_parse_parms() check
-					strcat_s(buf, len, " ");
-#endif
-					os_process_cmdline(buf);
-				}
-				delete[] buf;
-				fclose(fp);
-			}
-		} else {
-			// parse user specific cmdline_fso config file (will supersede options in global file)
-			fp = fopen(os_get_config_path("data/cmdline_fso.cfg").c_str(), "rt");
-
-			// if the file exists, get a single line, and deal with it
-			if ( fp ) {
-				char *buf, *p;
-
-				auto len = static_cast<int>(filelength( fileno(fp) )) + 2;
-				buf = new char [len];
-
-				if (fgets(buf, len-1, fp) != nullptr)
-				{
-					// replace the newline character with a NULL
-					if ( (p = strrchr(buf, '\n')) != NULL ) {
-						*p = '\0';
-					}
-
-					// append a space for the os_parse_parms() check
-					strcat_s(buf, len, " ");
-
-					os_process_cmdline(buf);
-				}
-				delete [] buf;
-				fclose(fp);
-			}
-		}
-	} // If cmdline included PARSE_COMMAND_LINE_STRING
 
 	// By parsing cmdline last, anything actually on the command line will take precedence.
 	os_parse_parms(argc, argv);
@@ -1069,9 +977,8 @@ bool cmdline_parm::check_if_args_is_valid() {
 	if ( args == NULL ) {
 		Error(__FILE__, __LINE__, 
 			"Command line flag passed that requires an argument, but the argument is missing!\r\n"
-			"The flag is '%s', make sure that you have an argument that follows it.\r\n"
-			"You may need to close your launcher and remove the flag manually from %s/data/cmdline_fso.cfg\r\n",
-			name, "<Freespace directory>");
+			"The flag is '%s', make sure that you have an argument that follows it.\r\n",
+			name);
 		return false;
 	} else {
 		return true;
@@ -1708,11 +1615,6 @@ bool SetCmdlineParams()
 	if (noshadercache_arg.found())
 	{
 		Cmdline_noshadercache = true;
-	}
-
-	if (portable_mode.found())
-	{
-		Cmdline_portable_mode = true;
 	}
 	
 #ifdef WIN32

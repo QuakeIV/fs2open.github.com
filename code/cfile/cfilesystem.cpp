@@ -414,59 +414,6 @@ void cf_build_root_list(const char *cdrom_dir)
 
 	cf_root	*root = nullptr;
 
-	if (os_is_legacy_mode())
-	{
-		// =========================================================================
-#ifdef WIN32
-		// Nothing to do here, Windows uses the current directory as the base
-#else
-		cf_add_mod_roots(Cfile_user_dir_legacy);
-
-		root = cf_create_root();
-		strncpy(root->path, Cfile_user_dir_legacy, CF_MAX_PATHNAME_LENGTH - 1);
-
-		// do we already have a slash? as in the case of a root directory install
-		if ((strlen(root->path) < (CF_MAX_PATHNAME_LENGTH - 1)) && (root->path[strlen(root->path) - 1] != DIR_SEPARATOR_CHAR)) {
-			strcat_s(root->path, DIR_SEPARATOR_STR);		// put trailing backslash on for easier path construction
-		}
-		root->roottype = CF_ROOTTYPE_PATH;
-
-		// If it wasn't set before, set the pilot path
-		if (Pilot_file_path.empty())
-			Pilot_file_path = root->path;
-
-		// Next, check any VP files under the current directory.
-		cf_build_pack_list(root);
-#endif
-		// =========================================================================
-	}
-	else if (!Cmdline_portable_mode)
-	{
-		// =========================================================================
-		// now look for mods under the users HOME directory to use before system ones
-		cf_add_mod_roots(Cfile_user_dir);
-		// =========================================================================
-
-		// =========================================================================
-		// set users HOME directory as default for loading and saving files
-		root = cf_create_root();
-		strncpy(root->path, Cfile_user_dir, CF_MAX_PATHNAME_LENGTH - 1);
-
-		// do we already have a slash? as in the case of a root directory install
-		if ((strlen(root->path) < (CF_MAX_PATHNAME_LENGTH - 1)) && (root->path[strlen(root->path) - 1] != DIR_SEPARATOR_CHAR)) {
-			strcat_s(root->path, DIR_SEPARATOR_STR);		// put trailing backslash on for easier path construction
-		}
-		root->roottype = CF_ROOTTYPE_PATH;
-
-		// set the default player location to here
-		if (Pilot_file_path.empty())
-			Pilot_file_path = root->path;
-
-		// Next, check any VP files under the current directory.
-		cf_build_pack_list(root);
-		// =========================================================================
-	}
-
 	char working_directory[CF_MAX_PATHNAME_LENGTH];
 	
 	if ( !_getcwd(working_directory, CF_MAX_PATHNAME_LENGTH ) ) {

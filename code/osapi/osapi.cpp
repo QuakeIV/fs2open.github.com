@@ -180,8 +180,6 @@ void os_set_process_affinity()
 //
 
 // os-wide globals
-static char			szWinTitle[128];
-static char			szWinClass[128];
 static int			Os_inited = 0;
 
 static SCP_vector<SDL_Event> buffered_events;
@@ -201,13 +199,8 @@ void os_deinit();
 
 // If app_name is NULL or ommited, then TITLE is used
 // for the app name, which is where registry keys are stored.
-void os_init(const char * wclass, const char * title, const char *app_name, const char *version_string )
+void os_init(void)
 {
-	os_init_registry_stuff(Osreg_company_name, title, version_string);
-
-	strcpy_s( szWinTitle, title );
-	strcpy_s( szWinClass, wclass );
-
 	mprintf(("  Initializing SDL...\n"));
 
 	if (SDL_Init(SDL_INIT_EVENTS) < 0)
@@ -245,9 +238,8 @@ void os_init(const char * wclass, const char * title, const char *app_name, cons
 void os_set_title( const char * title )
 {
 	Assertion(mainSDLWindow != nullptr, "This function may only be called with a valid SDL Window.");
-	strcpy_s( szWinTitle, title );
 
-	SDL_SetWindowTitle(mainSDLWindow, szWinTitle);
+	SDL_SetWindowTitle(mainSDLWindow, title);
 }
 
 // call at program end
@@ -290,58 +282,6 @@ static bool file_exists(const SCP_string& path) {
 	return str.good();
 }
 
-bool os_is_legacy_mode()
-{
-	// Make this check a little faster by caching the result
-	if (checkedLegacyMode)
-	{
-		return legacyMode;
-	}
-
-	if (Cmdline_portable_mode) {
-		// When the portable mode option is given, non-legacy is implied
-		legacyMode = false;
-		checkedLegacyMode = true;
-	}
-	else {
-		bool old_config_exists = false;
-		bool new_config_exists = false;
-
-		SCP_stringstream path_stream;
-		path_stream << getPreferencesPath() << DIR_SEPARATOR_CHAR << Osreg_config_file_name;
-
-		new_config_exists = file_exists(path_stream.str());
-#ifdef SCP_UNIX
-        path_stream.str("");
-		path_stream << Cfile_user_dir_legacy << DIR_SEPARATOR_CHAR << Osreg_config_file_name;
-
-		old_config_exists = file_exists(path_stream.str());
-#else
-		// At this point we can't determine if the old config exists so just assume that it does
-		old_config_exists = true;
-#endif
-
-		if (new_config_exists) {
-			// If the new config exists then we never use the lagacy mode
-			legacyMode = false;
-		} else if (old_config_exists) {
-			// Old config exists but new doesn't -> use legacy mode
-			legacyMode = true;
-		} else {
-			// Neither old nor new config exists -> this is a new install
-			legacyMode = false;
-		}
-	}
-
-	if (legacyMode) {
-		// Print a message for the people running it from the terminal
-		fprintf(stdout, "FSO is running in legacy config mode. Please either update your launcher or"
-			" copy the configuration and pilot files to '%s' for better future compatibility.\n", getPreferencesPath());
-	}
-
-	checkedLegacyMode = true;
-	return legacyMode;
-}
 
 // ----------------------------------------------------------------------------------------------------
 // OSAPI FORWARD DECLARATIONS
@@ -550,29 +490,8 @@ SCP_string os_get_config_path(const SCP_string& subpath)
 
 	SCP_stringstream ss;
 
-	if (Cmdline_portable_mode) {
-		// Use the current directory
-		ss << "." << DIR_SEPARATOR_CHAR << compatiblePath;
-		return ss.str();
-	}
-
-	// Avoid infinite recursion when checking legacy mode
-	if (os_is_legacy_mode()) {
-#ifdef WIN32
-		// Use the current directory
-		ss << ".";
-#else
-		extern const char* Osreg_user_dir_legacy;
-		// Use the home directory
-		ss << getenv("HOME") << DIR_SEPARATOR_CHAR << Osreg_user_dir_legacy;
-#endif
-
-		ss << DIR_SEPARATOR_CHAR << compatiblePath;
-		return ss.str();
-	}
-
-	ss << getPreferencesPath() << compatiblePath;
-
+	// Use the current directory
+	ss << "." << DIR_SEPARATOR_CHAR << compatiblePath;
 	return ss.str();
 }
 

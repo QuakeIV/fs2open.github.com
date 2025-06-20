@@ -290,9 +290,6 @@ bool fred_init(std::unique_ptr<os::GraphicsOperations>&& graphicsOps)
 
 	Assert(strlen(Fred_base_dir) > 0); //-V805
 
-	// sigh... this should enable proper reading of cmdline_fso.cfg - Goober5000
-	cfile_chdir(Fred_base_dir);
-
 	// this should enable mods - Kazan
 	parse_cmdline(__argc, __argv);
 

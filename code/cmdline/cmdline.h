@@ -118,9 +118,6 @@ extern char *Cmdline_spew_mission_crcs;
 extern char *Cmdline_spew_table_crcs;
 extern int Cmdline_objupd;
 
-// Launcher related options
-extern bool Cmdline_portable_mode;
-
 // Troubleshooting
 extern int Cmdline_load_all_weapons;
 extern int Cmdline_nomovies;	// WMC Toggles movie playing support

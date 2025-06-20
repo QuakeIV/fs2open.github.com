@@ -1682,7 +1682,7 @@ void game_init()
 
 	// init os stuff next
 	if ( !Is_standalone ) {
-		os_init( Osreg_class_name, Osreg_app_name );
+		os_init( );
 	}
 	else {
 		std_init_os();

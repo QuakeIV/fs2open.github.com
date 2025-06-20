@@ -13,7 +13,6 @@
 test::FSTestFixture::FSTestFixture(uint64_t init_flags) : testing::Test(), _initFlags(init_flags) {
 	addCommandlineArg("-parse_cmdline_only");
 	addCommandlineArg("-standalone");
-	addCommandlineArg("-portable_mode");
 }
 void test::FSTestFixture::SetUp() {
 	auto currentTest = ::testing::UnitTest::GetInstance()->current_test_info();
