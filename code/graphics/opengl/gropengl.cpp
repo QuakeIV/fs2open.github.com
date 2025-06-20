@@ -1363,6 +1363,7 @@ static void APIENTRY debug_callback(GLenum source, GLenum type, GLuint id, GLenu
 			severityStr = "Low";
 			break;
 		default:
+      return; // who cares tbh
 			severityStr = "Unknown";
 			break;
 	}
