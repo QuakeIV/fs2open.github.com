@@ -24,9 +24,6 @@
 
 namespace
 {
-	const char* ORGANIZATION_NAME = "HardLightProductions";
-	const char* APPLICATION_NAME = "FreeSpaceOpen";
-
 	char* preferencesPath = nullptr;
 
 	bool checkedLegacyMode = false;
@@ -38,22 +35,8 @@ namespace
 
 	const char* getPreferencesPath()
 	{
-		// Lazily initialize the preferences path
-		if (!preferencesPath) {
-			preferencesPath = SDL_GetPrefPath(ORGANIZATION_NAME, APPLICATION_NAME);
-			if (!preferencesPath) {
-				mprintf(("Failed to get preferences path from SDL: %s\n", SDL_GetError()));
-			}
-		}
-
-		if (preferencesPath) {
-			return preferencesPath;
-		}
-		else {
 			// No preferences path, try current directory
 			return "." DIR_SEPARATOR_STR;
-		}
-
 	}
 	
 	bool fAppActive = false;
