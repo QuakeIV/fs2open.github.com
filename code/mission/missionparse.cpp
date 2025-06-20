@@ -2747,6 +2747,7 @@ int parse_object(mission *pm, int flag, p_object *p_objp)
 		} 
 		else {
 			mprintf(("MISSIONS: Ship \"%s\" has an invalid ship type (ships.tbl probably changed).  Making it type 0\n", p_objp->name));
+			printf("MISSIONS: Ship \"%s\" has an invalid ship type\n", p_objp->name);
 		}
 
 		p_objp->ship_class = 0;
@@ -3350,6 +3351,7 @@ int parse_object(mission *pm, int flag, p_object *p_objp)
 		if (tr->new_texture_id < 0)
 		{
 			mprintf(("Could not load replacement texture %s for ship %s\n", tr->new_texture, p_objp->name));
+  		printf("Could not load replacement texture %s for ship %s\n", tr->new_texture, p_objp->name);
 		}
 
 		// account for FRED
