@@ -226,6 +226,7 @@ bool WaveFile::Open(const char* pszFilename, bool keep_ext) {
 		nprintf(("SOUND", "SOUND => %s => Using codec %s (%s)\n", filename, audio_codec->long_name, audio_codec->name));
 	} catch (const FFmpegException& e) {
 		mprintf(("SOUND ==> Could not open wave file %s for streaming. Reason: %s\n", filename, e.what()));
+  	printf("SOUND ==> Could not open wave file %s for streaming. Reason: %s\n", filename, e.what());
 		return false;
 	}
 
