@@ -3628,7 +3628,7 @@ void weapon_delete(object *obj)
  */
 void weapon_maybe_play_warning(weapon *wp)
 {
-	if ( wp->homing_object == Player_obj ) {
+	if ( wp->homing_object == Player_obj && Player_obj->type == OBJ_SHIP) {
 		if ( !(wp->weapon_flags[Weapon::Weapon_Flags::Lock_warning_played]) ) {
             wp->weapon_flags.set(Weapon::Weapon_Flags::Lock_warning_played);
 			// Use heatlock-warning sound for Heat and Javelin for now
