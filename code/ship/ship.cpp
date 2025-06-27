@@ -10358,30 +10358,38 @@ int ship_launch_countermeasure(object *objp, int rand_val)
 		return 0;
 	}
 
-	cmeasure_count = shipp->cmeasure_count;
-	shipp->cmeasure_count--;
-
 	vm_vec_scale_add(&pos, &objp->pos, &objp->orient.vec.fvec, -objp->radius/2.0f);
 
-	cobjnum = weapon_create(&pos, &objp->orient, shipp->current_cmeasure, OBJ_INDEX(objp));
-	if (cobjnum >= 0)
-	{
-		cmeasure_set_ship_launch_vel(&Objects[cobjnum], objp, arand);
-		nprintf(("Network", "Cmeasure created by %s\n", shipp->ship_name));
+  Assert(shipp->current_cmeasure > 0 && shipp->current_cmeasure < Num_weapon_types);
 
-		// Play sound effect for counter measure launch
-		Assert(shipp->current_cmeasure < Num_weapon_types);
-		if ( Weapon_info[shipp->current_cmeasure].launch_snd >= 0 ) {
-			snd_play_3d( &Snds[Weapon_info[shipp->current_cmeasure].launch_snd], &pos, &View_position );
-		}
+  int shots = Weapon_info[shipp->current_cmeasure].shots;
+  if (shots < 1)
+    shots = 1;
 
-		// the new way of doing things
-		if(Game_mode & GM_MULTIPLAYER){
-			send_NEW_countermeasure_fired_packet(objp, cmeasure_count, Objects[cobjnum].net_signature);
-		}
-	}
+  int to_fire = shots;
+  if (to_fire >	shipp->cmeasure_count)
+    to_fire = shipp->cmeasure_count;
 
-	return (cobjnum >= 0);		// return 0 if not fired, 1 otherwise
+  for (int i = 0; i < to_fire; i++)
+  {
+  	cobjnum = weapon_create(&pos, &objp->orient, shipp->current_cmeasure, OBJ_INDEX(objp));
+  	if (cobjnum >= 0)
+    {
+      shipp->cmeasure_count--;
+
+		  nprintf(("Network", "Cmeasure created by %s\n", shipp->ship_name));
+		  // the new way of doing things
+		  if(Game_mode & GM_MULTIPLAYER){
+			  send_NEW_countermeasure_fired_packet(objp, shipp->cmeasure_count, Objects[cobjnum].net_signature);
+		  }
+    }
+  }
+
+  // Play sound effect for counter measure launch
+  if ( to_fire > 0 && Weapon_info[shipp->current_cmeasure].launch_snd >= 0 )
+    snd_play_3d( &Snds[Weapon_info[shipp->current_cmeasure].launch_snd], &pos, &View_position );
+
+	return (to_fire > 0);		// return 0 if not fired, 1 otherwise
 }
 
 /**
