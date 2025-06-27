@@ -14,23 +14,13 @@ using namespace ffmpeg;
 AudioProperties getAudioProps(AVStream* stream) {
 	AudioProperties props;
 
-	int channels;
-#if LIBAVCODEC_VERSION_INT > AV_VERSION_INT(57, 24, 255)
-    channels = stream->codecpar->channels;
-    props.channel_layout = stream->codecpar->channel_layout;
-    props.sample_rate = stream->codecpar->sample_rate;
-    props.format = (AVSampleFormat)stream->codecpar->format;
-#else
-	channels = stream->codec->channels;
-	props.channel_layout = stream->codec->channel_layout;
-	props.sample_rate = stream->codec->sample_rate;
-	props.format = stream->codec->sample_fmt;
-#endif
+  if (av_channel_layout_copy(&props.ch_layout, &stream->codecpar->ch_layout) != 0)
+  {
+     av_channel_layout_default(&props.ch_layout, 1);
+  }
 
-	if (props.channel_layout == 0) {
-		// Use a default channel layout value
-		props.channel_layout = av_get_default_channel_layout(channels);
-	}
+  props.sample_rate = stream->codecpar->sample_rate;
+  props.format = (AVSampleFormat)stream->codecpar->format;
 
 	return props;
 }
@@ -39,9 +29,9 @@ AudioProperties getAdjustedAudioProps(const AudioProperties& baseProps) {
 	AudioProperties adjusted;
 	adjusted.sample_rate = baseProps.sample_rate; // Don't adjust sample rate
 
-	adjusted.channel_layout = baseProps.channel_layout;
-	if (av_get_channel_layout_nb_channels(baseProps.channel_layout) > 2) {
-		adjusted.channel_layout = AV_CH_LAYOUT_STEREO;
+  av_channel_layout_copy(&adjusted.ch_layout, &baseProps.ch_layout);
+	if (baseProps.ch_layout.nb_channels > 2) {
+		adjusted.ch_layout = AV_CHANNEL_LAYOUT_STEREO;
 	}
 
 	int max_bytes_per_sample;
@@ -81,10 +71,11 @@ AudioProperties getAdjustedAudioProps(const AudioProperties& baseProps) {
 	return adjusted;
 }
 
-SwrContext* getSWRContext(const AudioProperties& base, const AudioProperties& adjusted) {
+SwrContext* getSWRContext(AudioProperties& base, AudioProperties& adjusted) {
 	SwrContext* swr = nullptr;
-	swr = swr_alloc_set_opts(swr, adjusted.channel_layout, adjusted.format, adjusted.sample_rate,
-							 base.channel_layout, base.format, base.sample_rate, 0, nullptr);
+	if (swr_alloc_set_opts2(&swr, &adjusted.ch_layout, adjusted.format, adjusted.sample_rate,
+							 &base.ch_layout, base.format, base.sample_rate, 0, nullptr) != 0)
+    return nullptr;
 
 	if (swr_init(swr) < 0) {
 		return nullptr;
@@ -348,7 +339,7 @@ int WaveFile::getTotalSamples() const {
 }
 
 int WaveFile::getNumChannels() const {
-	return av_get_channel_layout_nb_channels(m_audioProps.channel_layout);
+	return m_audioProps.ch_layout.nb_channels;
 }
 ALenum WaveFile::getALFormat() const {
 	return openal_get_format(av_get_bytes_per_sample(m_audioProps.format) * 8, getNumChannels());;

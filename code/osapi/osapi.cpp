@@ -26,9 +26,6 @@ namespace
 {
 	char* preferencesPath = nullptr;
 
-	bool checkedLegacyMode = false;
-	bool legacyMode = false;
-
 	SCP_vector<std::unique_ptr<os::Viewport>> viewports;
 	os::Viewport* mainViewPort = nullptr;
 	SDL_Window* mainSDLWindow = nullptr;

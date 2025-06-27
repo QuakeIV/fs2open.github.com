@@ -55,23 +55,18 @@ double getFrameRate(AVStream* stream, AVCodecContext* codecCtx) {
 
 CodecContextParameters getCodecParameters(AVStream* stream) {
 	CodecContextParameters paras;
-#if LIBAVCODEC_VERSION_INT > AV_VERSION_INT(57, 24, 255)
+
 	paras.width = stream->codecpar->width;
 	paras.height = stream->codecpar->height;
 	paras.pixel_format = (AVPixelFormat)stream->codecpar->format;
 
-	paras.channel_layout = stream->codecpar->channel_layout;
+  if (av_channel_layout_copy(&paras.ch_layout, &stream->codecpar->ch_layout) != 0)
+  {
+     av_channel_layout_default(&paras.ch_layout, 1);
+  }
 	paras.sample_rate = stream->codecpar->sample_rate;
 	paras.audio_format = (AVSampleFormat)stream->codecpar->format;
-#else
-    paras.width = stream->codec->width;
-	paras.height = stream->codec->height;
-	paras.pixel_format = stream->codec->pix_fmt;
 
-	paras.channel_layout = stream->codec->channel_layout;
-	paras.sample_rate = stream->codec->sample_rate;
-	paras.audio_format = stream->codec->sample_fmt;
-#endif
     return paras;
 }
 }

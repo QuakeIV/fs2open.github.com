@@ -331,7 +331,7 @@ int snd_load( game_snd *gs, int allow_hardware_load )
 		if (audio_file->getNumChannels() > 1) {
 			// We need to resample the audio down to one channel
 			auto current = audio_file->getAudioProperties();
-			current.channel_layout = AV_CH_LAYOUT_MONO;
+			current.ch_layout = AV_CHANNEL_LAYOUT_MONO;
 
 			audio_file->setAdjustedAudioProperties(current);
 

@@ -8,6 +8,8 @@ ADD_LIBRARY(code STATIC ${file_root} ${VOICE_REC_FILES})
 # clear certain warnings
 target_compile_options(code PRIVATE -Wno-parentheses) # was whining about unnecessary parenthesis, give me a break
 target_compile_options(code PRIVATE -Wno-sizeof-pointer-memaccess) # was complaining about using source rather than destination size for strncpy, except destination size is not knowable so shut up
+target_compile_options(code PRIVATE -Wno-array-compare) # didn't ask, sometimes this is legitimate
+target_compile_options(code PRIVATE -Wno-unused-result) # who cares
 # TODO: following are temporary?
 target_compile_options(code PRIVATE -Wno-stringop-truncation) # TODO: this at least likely needs to be resolved at some point (file name length limit related to some extent)
 target_compile_options(code PRIVATE -Wno-stringop-overflow) # TODO: this at least likely needs to be resolved at some point (file name length limit related to some extent)

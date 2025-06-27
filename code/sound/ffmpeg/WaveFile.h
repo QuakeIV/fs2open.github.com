@@ -19,7 +19,7 @@ namespace ffmpeg {
 struct AudioProperties
 {
 	int sample_rate = -1;
-	int64_t channel_layout = -1;
+	AVChannelLayout ch_layout;
 	AVSampleFormat format = AV_SAMPLE_FMT_NONE;
 };
 

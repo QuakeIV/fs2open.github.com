@@ -10299,13 +10299,6 @@ int ship_launch_countermeasure(object *objp, int rand_val)
 	shipp = &Ships[objp->instance];
 	sip = &Ship_info[shipp->ship_info_index];
 
-	int arand;
-	if(rand_val < 0) {
-		arand = myrand();
-	} else {
-		arand = rand_val;
-	}
-
 	// in the case where the server is an observer, he can launch countermeasures unless we do this.
 	if( objp->type == OBJ_OBSERVER){
 		return 0;

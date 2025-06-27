@@ -13,7 +13,7 @@ struct CodecContextParameters {
 	int height = -1;
 	AVPixelFormat pixel_format = AV_PIX_FMT_NONE;
 
-	uint64_t channel_layout = 0;
+	AVChannelLayout ch_layout;
 	int sample_rate = -1;
 	AVSampleFormat audio_format = AV_SAMPLE_FMT_NONE;
 };

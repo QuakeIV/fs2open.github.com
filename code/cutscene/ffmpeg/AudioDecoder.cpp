@@ -3,10 +3,9 @@
 #include "tracing/tracing.h"
 
 namespace {
-const int OUT_CH_LAYOUT = AV_CH_LAYOUT_STEREO;
 const int OUT_SAMPLE_RATE = 48000;
 const AVSampleFormat OUT_SAMPLE_FORMAT = AV_SAMPLE_FMT_S16;
-const int OUT_NUM_CHANNELS = av_get_channel_layout_nb_channels(OUT_CH_LAYOUT);
+const int OUT_NUM_CHANNELS = 2;
 
 const int DEFAULT_SRC_NUM_SAMPLES = 1024;
 
@@ -17,7 +16,7 @@ SwrContext* getSWRContext(uint64_t layout, int rate, AVSampleFormat inFmt) {
 	av_opt_set_int(swr, "in_sample_rate", rate, 0);
 	av_opt_set_int(swr, "in_sample_fmt", inFmt, 0);
 
-	av_opt_set_int(swr, "out_channel_layout", OUT_CH_LAYOUT, 0);
+	av_opt_set_int(swr, "out_channel_layout", AV_CH_LAYOUT_STEREO, 0);
 	av_opt_set_int(swr, "out_sample_rate", OUT_SAMPLE_RATE, 0);
 	av_opt_set_int(swr, "out_sample_fmt", OUT_SAMPLE_FORMAT, 0);
 
@@ -66,7 +65,7 @@ AudioDecoder::AudioDecoder(DecoderStatus* status)
 	: FFMPEGStreamDecoder(status) {
 	m_audioBuffer.reserve(static_cast<size_t>(OUT_SAMPLE_RATE * OUT_NUM_CHANNELS / 2));
 
-	m_resampleCtx = getSWRContext(m_status->audioCodecPars.channel_layout, m_status->audioCodecPars.sample_rate,
+	m_resampleCtx = getSWRContext(m_status->audioCodecPars.ch_layout.u.mask, m_status->audioCodecPars.sample_rate,
 								  m_status->audioCodecPars.audio_format);
 
 	/*
@@ -161,7 +160,6 @@ void AudioDecoder::handleDecodedFrame(AVFrame* frame) {
 
 void AudioDecoder::decodePacket(AVPacket* packet) {
 	TRACE_SCOPE(tracing::CutsceneFFmpegAudioDecoder);
-#if LIBAVCODEC_VERSION_INT > AV_VERSION_INT(57, 24, 255)
 	int send_result;
 	do {
 		send_result = avcodec_send_packet(m_status->audioCodecCtx, packet);
@@ -170,19 +168,10 @@ void AudioDecoder::decodePacket(AVPacket* packet) {
 			handleDecodedFrame(m_decodeFrame);
 		}
 	} while (send_result == AVERROR(EAGAIN));
-#else
-	int finishedFrame = 0;
-	auto err = avcodec_decode_audio4(m_status->audioCodecCtx, m_decodeFrame, &finishedFrame, packet);
-
-	if (err >= 0 && finishedFrame) {
-		handleDecodedFrame(m_decodeFrame);
-	}
-#endif
 }
 
 void AudioDecoder::finishDecoding() {
 	TRACE_SCOPE(tracing::CutsceneFFmpegAudioDecoder);
-#if LIBAVCODEC_VERSION_INT > AV_VERSION_INT(57, 24, 255)
 	// Send flush packet
 	avcodec_send_packet(m_status->audioCodecCtx, nullptr);
 
@@ -198,24 +187,6 @@ void AudioDecoder::finishDecoding() {
 			break;
 		}
 	}
-#else
-    // Handle those decoders that have a delay
-	AVPacket nullPacket;
-	memset(&nullPacket, 0, sizeof(nullPacket));
-	nullPacket.data = nullptr;
-	nullPacket.size = 0;
-
-	while (true) {
-		int finishedFrame = 1;
-		auto err = avcodec_decode_audio4(m_status->audioCodecCtx, m_decodeFrame, &finishedFrame, &nullPacket);
-
-		if (err < 0 || !finishedFrame) {
-			break;
-		}
-
-		handleDecodedFrame(m_decodeFrame);
-	}
-#endif
 
 	// Push the last bits of audio data into the queue
 	flushAudioBuffer();

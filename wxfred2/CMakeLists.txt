@@ -38,6 +38,7 @@ ELSEIF(WIN32)
 	set(wxWidgets_CONFIGURATION "mswu" CACHE STRING "Release WxWidgets configuration" FORCE)
 ENDIF(UNIX)
 
+cmake_policy(SET CMP0077 NEW) #/usr/share/cmake-3.25/Modules/FindwxWidgets.cmake:777 (WX_CONFIG_SELECT_QUERY_BOOL)
 find_package(wxWidgets COMPONENTS gl core base REQUIRED)
 
 include(${wxWidgets_USE_FILE})
