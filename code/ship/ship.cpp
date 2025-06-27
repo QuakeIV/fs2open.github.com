@@ -1051,8 +1051,6 @@ void ship_info::clone(const ship_info& other)
 	use_newtonian_damp = other.use_newtonian_damp;
 	newtonian_damp_override = other.newtonian_damp_override;
 
-	autoaim_fov = other.autoaim_fov;
-
 	topdown_offset_def = other.topdown_offset_def;
 	topdown_offset = other.topdown_offset;
 
@@ -1333,8 +1331,6 @@ void ship_info::move(ship_info&& other)
 	glide_accel_mult = other.glide_accel_mult;
 	use_newtonian_damp = other.use_newtonian_damp;
 	newtonian_damp_override = other.newtonian_damp_override;
-
-	autoaim_fov = other.autoaim_fov;
 
 	topdown_offset_def = other.topdown_offset_def;
 	std::swap(topdown_offset, other.topdown_offset);
@@ -1734,8 +1730,6 @@ ship_info::ship_info()
 	glide_accel_mult = 0.0f;
 	use_newtonian_damp = false;
 	newtonian_damp_override = false;
-
-	autoaim_fov = 0.0f;
 
 	topdown_offset_def = false;
 	vm_vec_zero(&topdown_offset);
@@ -2875,28 +2869,6 @@ int parse_ship_values(ship_info* sip, const bool is_template, const bool first_t
 	if(optional_string("$Use Newtonian Dampening:")) {
 			sip->newtonian_damp_override = true;
 			stuff_boolean(&sip->use_newtonian_damp);
-	}
-
-	if(optional_string("$Autoaim FOV:"))
-	{
-		float fov_temp;
-		stuff_float(&fov_temp);
-
-		// Make sure it is a reasonable value
-		if (fov_temp < 0.0f)
-			fov_temp = 0.0f;
-
-		if (fov_temp > 180.0f)
-			fov_temp = 180.0f;
-
-		sip->aiming_flags.set(Ship::Aiming_Flags::Autoaim); 
-		sip->autoaim_fov = fov_temp * PI / 180.0f;
-
-		if(optional_string("+Converging Autoaim"))
-			sip->aiming_flags.set(Ship::Aiming_Flags::Autoaim_convergence);
-
-		if(optional_string("+Minimum Distance:"))
-			stuff_float(&sip->minimum_convergence_distance);
 	}
 
 	if(optional_string("$Convergence:"))
@@ -5985,8 +5957,6 @@ void ship::clear()
 	secondary_team_name = "";
 	team_change_timestamp = timestamp(-1);
 	team_change_time = 0;
-
-	autoaim_fov = 0.0f;
 }
 
 void ship_weapon::clear() 
@@ -6216,8 +6186,6 @@ void ship_set(int ship_index, int objnum, int ship_type)
 	// Team colors
 	shipp->team_name.assign( sip->default_team_name);
 	shipp->secondary_team_name = "none";
-
-	shipp->autoaim_fov = sip->autoaim_fov;
 }
 
 /**
@@ -10617,8 +10585,6 @@ int ship_fire_primary(object * obj, int stream_weapons, int force)
 	int			banks_fired;				// used for multiplayer to help determine whether or not to send packet
 	banks_fired = 0;			// used in multiplayer -- bitfield of banks that were fired
 	bool has_fired = false;		// used to determine whether we should fire the scripting hook
-	bool has_autoaim, has_converging_autoaim, needs_target_pos;	// used to flag weapon/ship as having autoaim
-	float autoaim_fov = 0;			// autoaim limit
 	float dist_to_target = 0;		// distance to target, for autoaim & automatic convergence
 
 	int			sound_played;	// used to track what sound is played.  If the player is firing two banks
@@ -10695,28 +10661,17 @@ int ship_fire_primary(object * obj, int stream_weapons, int force)
 			if(i!=swp->current_primary_bank)ship_stop_fire_primary_bank(obj, i);
 		}
 
-	// lets start gun convergence / autoaim code from here - Wanderer
-	has_converging_autoaim = ((sip->aiming_flags[Ship::Aiming_Flags::Autoaim_convergence] || (The_mission.ai_profile->player_autoaim_fov[Game_skill_level] > 0.0f && !( Game_mode & GM_MULTIPLAYER ))) && aip->target_objnum != -1);
-	has_autoaim = ((has_converging_autoaim || (sip->aiming_flags[Ship::Aiming_Flags::Autoaim])) && aip->target_objnum != -1);
-	needs_target_pos = ((has_autoaim || (sip->aiming_flags[Ship::Aiming_Flags::Auto_convergence])) && aip->target_objnum != -1);
-	
-	if (needs_target_pos) {
-		if (has_autoaim) {
-			autoaim_fov = MAX(shipp->autoaim_fov, The_mission.ai_profile->player_autoaim_fov[Game_skill_level]);
-		}
-
-		// If a subsystem is targeted, fire in that direction instead
-		if (aip->targeted_subsys != NULL)
-		{
-			get_subsystem_world_pos(&Objects[aip->target_objnum], aip->targeted_subsys, &target_position);
-		}
-		else
-		{
-			target_position = Objects[aip->target_objnum].pos;
-		}
-
-		dist_to_target = vm_vec_dist_quick(&target_position, &obj->pos);
+	// If a subsystem is targeted, fire in that direction instead
+	if (aip->targeted_subsys != NULL)
+	{
+		get_subsystem_world_pos(&Objects[aip->target_objnum], aip->targeted_subsys, &target_position);
 	}
+	else
+	{
+		target_position = Objects[aip->target_objnum].pos;
+	}
+
+	dist_to_target = vm_vec_dist_quick(&target_position, &obj->pos);
 
 	for ( i = 0; i < num_primary_banks; i++ ) {		
 		// Goober5000 - allow more than two banks
@@ -10739,11 +10694,9 @@ int ship_fire_primary(object * obj, int stream_weapons, int force)
 
 		weapon_info* winfo_p = &Weapon_info[weapon_idx];
 
-		if (needs_target_pos) {
-			target_velocity_vec = Objects[aip->target_objnum].phys_info.vel;
-			if (The_mission.ai_profile->flags[AI::Profile_Flags::Use_additive_weapon_velocity])
-				vm_vec_scale_sub2(&target_velocity_vec, &obj->phys_info.vel, winfo_p->vel_inherit_amount);
-		}
+		target_velocity_vec = Objects[aip->target_objnum].phys_info.vel;
+		if (The_mission.ai_profile->flags[AI::Profile_Flags::Use_additive_weapon_velocity])
+			vm_vec_scale_sub2(&target_velocity_vec, &obj->phys_info.vel, winfo_p->vel_inherit_amount);
 
 		if (winfo_p->weapon_submodel_rotate_vel > 0.0f) {
 			if (shipp->primary_rotate_rate[bank_to_fire] < winfo_p->weapon_submodel_rotate_vel)
@@ -10891,36 +10844,35 @@ int ship_fire_primary(object * obj, int stream_weapons, int force)
 
 			// more autoaim stuff here - Wanderer
 			// needs weapon speed
-			if (needs_target_pos) {
-				float time_to_target, angle_to_target;
-				vec3d last_delta_vec;
+			float time_to_target, angle_to_target;
+			vec3d last_delta_vec;
 
-				time_to_target = 0.0f;
+			time_to_target = 0.0f;
 
-				if (winfo_p->max_speed != 0)
-				{
-					time_to_target = dist_to_target / winfo_p->max_speed;
-				}
+			if (winfo_p->max_speed != 0)
+			{
+				time_to_target = dist_to_target / winfo_p->max_speed;
+			}
 
-				vm_vec_scale_add(&predicted_target_pos, &target_position, &target_velocity_vec, time_to_target);
-				polish_predicted_target_pos(winfo_p, &Objects[aip->target_objnum], &target_position, &predicted_target_pos, dist_to_target, &last_delta_vec, 1);
-				vm_vec_sub(&plr_to_target_vec, &predicted_target_pos, &obj->pos);
+			vm_vec_scale_add(&predicted_target_pos, &target_position, &target_velocity_vec, time_to_target);
+			polish_predicted_target_pos(winfo_p, &Objects[aip->target_objnum], &target_position, &predicted_target_pos, dist_to_target, &last_delta_vec, 1);
+			vm_vec_sub(&plr_to_target_vec, &predicted_target_pos, &obj->pos);
 
-				if (has_autoaim) {
-					angle_to_target = vm_vec_delta_ang(&player_forward_vec, &plr_to_target_vec, NULL);
-					if (angle_to_target < autoaim_fov)
-						in_automatic_aim_fov = true;
-				}
+			if (winfo_p->autoaim_fov)
+      {
+				angle_to_target = vm_vec_delta_ang(&player_forward_vec, &plr_to_target_vec, NULL);
+				if (angle_to_target < winfo_p->autoaim_fov)
+					in_automatic_aim_fov = true;
+			}
 
-				dist_to_aim = vm_vec_mag_quick(&plr_to_target_vec);
+			dist_to_aim = vm_vec_mag_quick(&plr_to_target_vec);
 
-				// minimum convergence distance
-				if (sip->minimum_convergence_distance > dist_to_aim) {
-					float dist_mult;
-					dist_mult = sip->minimum_convergence_distance / dist_to_aim;
-					vm_vec_scale_add(&predicted_target_pos, &obj->pos, &plr_to_target_vec, dist_mult);
-					dist_to_aim = sip->minimum_convergence_distance;
-				}
+			// minimum convergence distance
+			if (sip->minimum_convergence_distance > dist_to_aim) {
+				float dist_mult;
+				dist_mult = sip->minimum_convergence_distance / dist_to_aim;
+				vm_vec_scale_add(&predicted_target_pos, &obj->pos, &plr_to_target_vec, dist_mult);
+				dist_to_aim = sip->minimum_convergence_distance;
 			}
 			
 			if(winfo_p->wi_flags[Weapon::Info_Flags::Beam]){		// the big change I made for fighter beams, if there beams fill out the Fire_Info for a targeting laser then fire it, for each point in the weapon bank -Bobboau
@@ -11154,16 +11106,10 @@ int ship_fire_primary(object * obj, int stream_weapons, int force)
 								V SIF convergence
 								no convergence or autoaim
 							*/
-							if (has_autoaim && in_automatic_aim_fov) {
+							if (in_automatic_aim_fov) {
 								vec3d firing_vec;
 
-								if (has_converging_autoaim) {
-									// converging autoaim
-									vm_vec_sub(&firing_vec, &predicted_target_pos, &firing_pos);
-								} else {
-									// autoaim
-									vm_vec_sub(&firing_vec, &predicted_target_pos, &obj->pos);
-								}
+							  vm_vec_sub(&firing_vec, &predicted_target_pos, &firing_pos);
 
 								vm_vector_2_matrix(&firing_orient, &firing_vec, NULL, NULL);
 							} else if ((sip->aiming_flags[Ship::Aiming_Flags::Std_convergence]) || ((sip->aiming_flags[Ship::Aiming_Flags::Auto_convergence]) && (aip->target_objnum != -1))) {

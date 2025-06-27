@@ -705,8 +705,6 @@ public:
 	fix team_change_timestamp;
 	int team_change_time;
 
-	float autoaim_fov;
-
 	// reset to a completely blank ship
 	void clear();
 
@@ -1168,9 +1166,7 @@ public:
 	bool glide_dynamic_cap;	//SUSHI: Whether or not we are using a dynamic glide cap
 	float glide_accel_mult;	//SUSHI: acceleration multiplier for glide mode
 	bool use_newtonian_damp; //SUSHI: Whether or not to use newtonian dampening for this ship
-	bool newtonian_damp_override; 
-
-	float autoaim_fov;
+	bool newtonian_damp_override;
 
 	bool topdown_offset_def;
 	vec3d topdown_offset;

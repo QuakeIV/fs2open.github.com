@@ -326,24 +326,6 @@ void parse_ai_profiles_tbl(const char *filename)
 				if (optional_string("$Turret Max Aim Update Delay:"))
 					parse_float_list(profile->turret_max_aim_update_delay, NUM_SKILL_LEVELS);
 
-				if (optional_string("$Player Autoaim FOV:"))
-				{
-					float fov_list[NUM_SKILL_LEVELS];
-					parse_float_list(fov_list, NUM_SKILL_LEVELS);
-					for (i = 0; i < NUM_SKILL_LEVELS; i++)
-					{
-						//Enforce range
-						if (fov_list[i] < 0.0f || fov_list[i] >= 360.0f)
-						{
-							Warning(LOCATION, "$Player Autoaim FOV should be >= 0 and < 360.0 (read %f). Setting to 0.", fov_list[i]);
-							fov_list[i] = 0.0f;
-						}
-
-						//Convert units
-						profile->player_autoaim_fov[i] = fov_list[i] * PI / 180.0f;
-					}
-				}
-
 				if (optional_string("$Detail Distance Multiplier:"))
 					parse_float_list(profile->detail_distance_mult, MAX_DETAIL_LEVEL + 1);
 
@@ -615,7 +597,6 @@ void ai_profile_t::reset()
         repair_penalty[i] = 0;
         delay_bomb_arm_timer[i] = 0;
         chance_to_use_missiles_on_plr[i] = 0;
-        player_autoaim_fov[i] = 0;
     }
 
     for (int i = 0; i <= MAX_DETAIL_LEVEL; ++i) {

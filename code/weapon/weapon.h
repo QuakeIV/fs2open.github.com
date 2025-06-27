@@ -312,6 +312,9 @@ typedef struct weapon_info {
 	//	Specific to HEAT homing missiles.
 	float	fov;
 
+  // autoaim
+	float autoaim_fov;
+
 	// Seeker strength - for countermeasures overhaul.
 	float seeker_strength;
 

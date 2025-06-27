@@ -2571,6 +2571,20 @@ int parse_weapon(int subtype, bool replace, const char *filename)
 		}
 	}
 
+	if(optional_string("$Autoaim FOV:"))
+	{
+		float fov_temp;
+		stuff_float(&fov_temp);
+
+		// Make sure it is a reasonable value
+		if (fov_temp < 0.0f)
+			fov_temp = 0.0f;
+
+		if (fov_temp > 180.0f)
+			fov_temp = 180.0f;
+
+		wip->autoaim_fov = fov_temp * PI / 180.0f;
+	}
 
 	if( optional_string("$Shots:")){
 		stuff_int(&wip->shots);
@@ -7559,6 +7573,7 @@ void weapon_info::reset()
 
 	this->turn_time = 1.0f;
 	this->fov = 0;				//should be cos(pi), not pi
+	this->autoaim_fov = 0;
 
 	this->min_lock_time = 0.0f;
 	this->lock_pixels_per_sec = 50;
