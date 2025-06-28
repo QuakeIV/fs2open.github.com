@@ -122,7 +122,7 @@ bool WaveFile::Open(const char* pszFilename, bool keep_ext) {
 	char fullpath[MAX_PATH_LEN];
 	char filename[MAX_FILENAME_LEN];
 
-	// NOTE: the extension will be removed and set to the actual extension of keep_ext is false, otherwise it's not changed
+	// NOTE: the extension will be removed and set to the actual extension if keep_ext is false, otherwise it's not changed
 	strcpy_s(filename, pszFilename);
 
 	try {
@@ -141,7 +141,9 @@ bool WaveFile::Open(const char* pszFilename, bool keep_ext) {
 				throw FFmpegException("Unknown file extension.");
 			}
 
-			cf_find_file_location(pszFilename, CF_TYPE_ANY, sizeof(fullpath) - 1, fullpath, &FileSize, &FileOffset);
+			rc = cf_find_file_location(pszFilename, CF_TYPE_ANY, sizeof(fullpath) - 1, fullpath, &FileSize, &FileOffset);
+      if (!rc)
+				throw FFmpegException("File not found.");
 		}
 		else {
 			// ... otherwise we just find the best match
