@@ -2077,32 +2077,36 @@ void hud_squadmsg_wing_command()
 	default_orders &= ~CAPTURE_TARGET_ITEM;		// we cannot capture any target with a wing.
 
 	Num_menu_items = 0;
+
+  
 	shipnum = wingp->ship_index[wingp->special_ship];
-	Assertion(shipnum >= 0, "Special ship (%d) for wing '%s' has a negative ship_index (%d). This should not happen; get a coder!\n", wingp->special_ship, wingp->name, shipnum);
-	orders = Ships[shipnum].orders_accepted;		// get the orders that the wing leader will accept
-	for ( i = 0; i < NUM_COMM_ORDER_ITEMS; i++ ) {
-		// add the set of default orders to the comm menu.  We will currently allow all messages
-		// to be available in the wing.
-		if ( default_orders & Comm_orders[i].item ) {
-			Assert ( Num_menu_items < MAX_MENU_ITEMS );
-			strcpy_s(MsgItems[Num_menu_items].text, Comm_orders[i].name);
-			MsgItems[Num_menu_items].instance = Comm_orders[i].item;
-			MsgItems[Num_menu_items].active = 0;
+  if (shipnum >= 0)
+	  orders = Ships[shipnum].orders_accepted; // get the orders that the wing leader will accept
+  else
+    orders = default_orders; // no 'special ship', idk why not just do this, was crashing if special ship was -1 for whatever reason i dont personally understand the concept there tbh
 
-			// possibly grey out the menu item depending on whether or not the "wing" will accept this order
-			// the "wing" won't accept the order if the first ship in the wing doesn't accept it.
-			if ( orders & Comm_orders[i].item )
-				MsgItems[Num_menu_items].active = 1;
+  for ( i = 0; i < NUM_COMM_ORDER_ITEMS; i++ ) {
+	  // add the set of default orders to the comm menu.  We will currently allow all messages
+	  // to be available in the wing.
+	  if ( default_orders & Comm_orders[i].item ) {
+		  Assert ( Num_menu_items < MAX_MENU_ITEMS );
+		  strcpy_s(MsgItems[Num_menu_items].text, Comm_orders[i].name);
+		  MsgItems[Num_menu_items].instance = Comm_orders[i].item;
+		  MsgItems[Num_menu_items].active = 0;
 
-			// do some other checks to possibly gray out other items.
-			// if no target, remove any items which are associated with the players target
-			if ( !hud_squadmsg_is_target_order_valid(i, 0) )
-				MsgItems[Num_menu_items].active = 0;
+		  // possibly grey out the menu item depending on whether or not the "wing" will accept this order
+		  // the "wing" won't accept the order if the first ship in the wing doesn't accept it.
+		  if ( orders & Comm_orders[i].item )
+			  MsgItems[Num_menu_items].active = 1;
 
-			Num_menu_items++;
-		}
-	}
+		  // do some other checks to possibly gray out other items.
+		  // if no target, remove any items which are associated with the players target
+		  if ( !hud_squadmsg_is_target_order_valid(i, 0) )
+			  MsgItems[Num_menu_items].active = 0;
 
+		  Num_menu_items++;
+	  }
+  }
 	
 	strcpy_s(Squad_msg_title, XSTR( "What Command", 321) );
 	k = hud_squadmsg_get_key();
@@ -2297,7 +2301,7 @@ int hud_squadmsg_hotkey_select( int k )
 // get called if the player flag PLAYER_FLAG_MSG_MODE is set.  Parameter is the key
 // that was hit this frame
 
-int hud_squadmsg_do_frame( )
+int hud_squadmsg_do_frame( void )
 {
 	int target_changed;
 
