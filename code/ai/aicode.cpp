@@ -3010,9 +3010,13 @@ void ai_stay_still(object *still_objp, vec3d *view_pos)
 
 	//	If view_pos not NULL, point at that point.  Else, point at a point directly in front of ship.  Ie, don't turn.
 	if (view_pos != NULL)
+  {
 		aip->goal_point = *view_pos;
+  }
 	else
+  {
 		vm_vec_scale_add(&aip->goal_point, &still_objp->pos, &still_objp->orient.vec.fvec, 100.0f);
+  }
 }
 
 // code which is called from ai_dock_with_object and ai_dock to set flags and apprioriate variable
@@ -7196,7 +7200,8 @@ void ai_stealth_sweep()
 		break;
 
 	default:
-		Int3();
+    Assertion(true,"AI stealth sweep submode invalid");
+    return;
 
 	}
 
@@ -7984,6 +7989,7 @@ int maybe_hack_cruiser_chase_abort()
 void ai_cruiser_chase()
 {
 	ship			*shipp = &Ships[Pl_objp->instance];	
+  ship_info *sip = &Ship_info[shipp->ship_info_index];
 	ai_info		*aip = &Ai_info[shipp->ai_index];
 
 	if (En_objp->type != OBJ_SHIP) {
@@ -7999,8 +8005,15 @@ void ai_cruiser_chase()
 	vec3d	goal_pos;
 	float turn_time = Ship_info[Ships[Pl_objp->instance].ship_info_index].srotation_time;
 
+  // no engines, just point towards them and attack
+  if (sip->max_vel.xyz.z <= 0)
+  {
+    // TODO: maybe smartly bring remaining turret arcs to bear?
+		ai_turn_towards_vector(&En_objp->pos, Pl_objp, flFrametime, turn_time, NULL, NULL, 0.0f, 0);
+  }
+
 	// kamikaze - ram and explode
-	if (aip->ai_flags[AI::AI_Flags::Kamikaze]) {
+	else if (aip->ai_flags[AI::AI_Flags::Kamikaze]) {
 		ai_turn_towards_vector(&En_objp->pos, Pl_objp, flFrametime, turn_time, NULL, NULL, 0.0f, 0);
 		accelerate_ship(aip, 1.0f);
 	} 

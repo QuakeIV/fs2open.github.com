@@ -2189,6 +2189,19 @@ void beam_aim(beam *b)
 				vm_vec_sub(&p2, &temp, &b->last_start);
 			}
 			vm_vec_scale_add(&b->last_shot, &b->last_start, &p2, 2.0f);
+
+      // apply field of fire if applicable (field has been taken over for mjolnir inaccuracy)
+      weapon_info	*wip = &Weapon_info[b->weapon_info_index];
+      if (wip->field_of_fire >= 0)
+      {
+		    vec3d dir;
+				vm_vec_sub(&dir, &b->last_shot, &b->last_start);
+		    vm_vec_random_cone(&temp, &dir, wip->field_of_fire);
+		    //vm_vec_normalize(&f);
+				//vm_vec_scale(&temp, dist);
+        vm_vec_add(&b->last_shot, &b->last_start, &temp);
+      }
+      
 			break;
 		}
 
