@@ -18,34 +18,34 @@ ADE_OBJ(l_GameState, gamestate_h, "gamestate", "Game state");
 
 ADE_FUNC(__tostring, l_GameState, NULL, "Game state name", "string", "Game state name, or empty string if handle is invalid")
 {
-	gamestate_h *gh = NULL;
-	if(!ade_get_args(L, "o", l_GameState.GetPtr(&gh)))
-		return ade_set_error(L, "s", "");
+  gamestate_h *gh = NULL;
+  if(!ade_get_args(L, "o", l_GameState.GetPtr(&gh)))
+    return ade_set_error(L, "s", "");
 
-	if(!gh->IsValid())
-		return ade_set_error(L, "s", "");
+  if(!gh->IsValid())
+    return ade_set_error(L, "s", "");
 
-	return ade_set_args(L, "s", GS_state_text[gh->Get()]);
+  return ade_set_args(L, "s", GS_state_text[gh->Get()]);
 }
 
 ADE_VIRTVAR(Name, l_GameState,"string", "Game state name", "string", "Game state name, or empty string if handle is invalid")
 {
-	gamestate_h *gh = NULL;
-	char *n_name = NULL;
-	if(!ade_get_args(L, "o|s", l_GameState.GetPtr(&gh), &n_name))
-		return ade_set_error(L, "s", "");
+  gamestate_h *gh = NULL;
+  char *n_name = NULL;
+  if(!ade_get_args(L, "o|s", l_GameState.GetPtr(&gh), &n_name))
+    return ade_set_error(L, "s", "");
 
-	if(!gh->IsValid())
-		return ade_set_error(L, "s", "");
+  if(!gh->IsValid())
+    return ade_set_error(L, "s", "");
 
-	int sdx = gh->Get();
+  int sdx = gh->Get();
 
-	if(ADE_SETTING_VAR)
-	{
-		Error(LOCATION, "Can't set game state names at this time");
-	}
+  if(ADE_SETTING_VAR)
+  {
+    Error(LOCATION, "Can't set game state names at this time");
+  }
 
-	return ade_set_args(L, "s", GS_state_text[sdx]);
+  return ade_set_args(L, "s", GS_state_text[sdx]);
 }
 
 

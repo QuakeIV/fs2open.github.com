@@ -24,66 +24,66 @@
 
 namespace
 {
-	char* preferencesPath = nullptr;
+  char* preferencesPath = nullptr;
 
-	SCP_vector<std::unique_ptr<os::Viewport>> viewports;
-	os::Viewport* mainViewPort = nullptr;
-	SDL_Window* mainSDLWindow = nullptr;
+  SCP_vector<std::unique_ptr<os::Viewport>> viewports;
+  os::Viewport* mainViewPort = nullptr;
+  SDL_Window* mainSDLWindow = nullptr;
 
-	const char* getPreferencesPath()
-	{
-			// No preferences path, try current directory
-			return "." DIR_SEPARATOR_STR;
-	}
-	
-	bool fAppActive = false;
-	bool window_event_handler(const SDL_Event& e)
-	{
-		Assertion(mainSDLWindow != nullptr, "This function may only be called with a valid SDL Window.");
-		if (os::events::isWindowEvent(e, mainSDLWindow)) {
-			switch (e.window.event) {
-			case SDL_WINDOWEVENT_MINIMIZED:
-			case SDL_WINDOWEVENT_FOCUS_LOST:
-			{
-				if (fAppActive) {
-					if (!Cmdline_no_unfocus_pause) {
-						game_pause();
-					}
+  const char* getPreferencesPath()
+  {
+      // No preferences path, try current directory
+      return "." DIR_SEPARATOR_STR;
+  }
+  
+  bool fAppActive = false;
+  bool window_event_handler(const SDL_Event& e)
+  {
+    Assertion(mainSDLWindow != nullptr, "This function may only be called with a valid SDL Window.");
+    if (os::events::isWindowEvent(e, mainSDLWindow)) {
+      switch (e.window.event) {
+      case SDL_WINDOWEVENT_MINIMIZED:
+      case SDL_WINDOWEVENT_FOCUS_LOST:
+      {
+        if (fAppActive) {
+          if (!Cmdline_no_unfocus_pause) {
+            game_pause();
+          }
 
-					fAppActive = false;
-				}
-				break;
-			}
-			case SDL_WINDOWEVENT_MAXIMIZED:
-			case SDL_WINDOWEVENT_RESTORED:
-			case SDL_WINDOWEVENT_FOCUS_GAINED:
-			{
-				if (!fAppActive) {
-					if (!Cmdline_no_unfocus_pause) {
-						game_unpause();
-					}
+          fAppActive = false;
+        }
+        break;
+      }
+      case SDL_WINDOWEVENT_MAXIMIZED:
+      case SDL_WINDOWEVENT_RESTORED:
+      case SDL_WINDOWEVENT_FOCUS_GAINED:
+      {
+        if (!fAppActive) {
+          if (!Cmdline_no_unfocus_pause) {
+            game_unpause();
+          }
 
-					fAppActive = true;
-				}
-				break;
-			}
-			case SDL_WINDOWEVENT_CLOSE:
-				gameseq_post_event(GS_EVENT_QUIT_GAME);
-				break;
-			}
+          fAppActive = true;
+        }
+        break;
+      }
+      case SDL_WINDOWEVENT_CLOSE:
+        gameseq_post_event(GS_EVENT_QUIT_GAME);
+        break;
+      }
 
-			gr_activate(fAppActive);
+      gr_activate(fAppActive);
 
-			return true;
-		}
+      return true;
+    }
 
-		return false;
-	}
-	
-	bool quit_handler(const SDL_Event& e) {
-		gameseq_post_event(GS_EVENT_QUIT_GAME);
-		return true;
-	}
+    return false;
+  }
+  
+  bool quit_handler(const SDL_Event& e) {
+    gameseq_post_event(GS_EVENT_QUIT_GAME);
+    return true;
+  }
 }
 
 
@@ -100,73 +100,73 @@ namespace
 // go through all windows and try and find the one that matches the search string
 BOOL __stdcall os_enum_windows( HWND hwnd, LPARAM param )
 {
-	const char* search_string = reinterpret_cast<const char*>(param);
-	char tmp[128];
-	int len;
+  const char* search_string = reinterpret_cast<const char*>(param);
+  char tmp[128];
+  int len;
 
-	len = GetWindowText( hwnd, tmp, 127 );
+  len = GetWindowText( hwnd, tmp, 127 );
 
-	if ( len )	{
-		if ( strstr( tmp, search_string ))	{
-			Os_debugger_running = 1;		// found the search string!
-			return FALSE;	// stop enumerating windows
-		}
-	}
+  if ( len )  {
+    if ( strstr( tmp, search_string ))  {
+      Os_debugger_running = 1;    // found the search string!
+      return FALSE;  // stop enumerating windows
+    }
+  }
 
-	return TRUE;	// continue enumeration
+  return TRUE;  // continue enumeration
 }
 
 // Fills in the Os_debugger_running with non-zero if debugger detected.
 void os_check_debugger()
 {
-	HMODULE hMod;
-	char search_string[256];
-	char myname[128];
-	int namelen;
-	char * p;
+  HMODULE hMod;
+  char search_string[256];
+  char myname[128];
+  int namelen;
+  char * p;
 
-	Os_debugger_running = 0;		// Assume its not
+  Os_debugger_running = 0;    // Assume its not
 
-	// Find my EXE file name
-	hMod = GetModuleHandle(NULL);
-	if ( !hMod ) return;
-	namelen = GetModuleFileName( hMod, myname, 127 );
-	if ( namelen < 1 ) return;
+  // Find my EXE file name
+  hMod = GetModuleHandle(NULL);
+  if ( !hMod ) return;
+  namelen = GetModuleFileName( hMod, myname, 127 );
+  if ( namelen < 1 ) return;
 
-	// Strip off the .EXE
-	p = strstr( myname, ".exe" );
-	if (!p) return;
-	*p = '\0';
+  // Strip off the .EXE
+  p = strstr( myname, ".exe" );
+  if (!p) return;
+  *p = '\0';
 
-	// Move p to point to first letter of EXE filename
-	while( (*p!='\\') && (*p!='/') && (*p!=':') )
-		p--;
-	p++;
-	if ( strlen(p) < 1 ) return;
+  // Move p to point to first letter of EXE filename
+  while( (*p!='\\') && (*p!='/') && (*p!=':') )
+    p--;
+  p++;
+  if ( strlen(p) < 1 ) return;
 
-	// Build what the debugger's window title would be if the debugger is running...
-	sprintf( search_string, "[run] - %s -", p );
+  // Build what the debugger's window title would be if the debugger is running...
+  sprintf( search_string, "[run] - %s -", p );
 
-	// ... and then search for it.
-	EnumWindows(os_enum_windows, reinterpret_cast<LPARAM>(&search_string));
+  // ... and then search for it.
+  EnumWindows(os_enum_windows, reinterpret_cast<LPARAM>(&search_string));
 }
 
 void os_set_process_affinity()
 {
-	HANDLE pHandle = GetCurrentProcess();
-	DWORD_PTR pMaskProcess = 0, pMaskSystem = 0;
+  HANDLE pHandle = GetCurrentProcess();
+  DWORD_PTR pMaskProcess = 0, pMaskSystem = 0;
 
-	if ( GetProcessAffinityMask(pHandle, &pMaskProcess, &pMaskSystem) ) {
-		// only do this if we have at least 2 procs
-		if (pMaskProcess >= 3) {
-			// prefer running on the second processor by default
-			pMaskProcess = os_config_read_uint(NULL, "ProcessorAffinity", 2);
+  if ( GetProcessAffinityMask(pHandle, &pMaskProcess, &pMaskSystem) ) {
+    // only do this if we have at least 2 procs
+    if (pMaskProcess >= 3) {
+      // prefer running on the second processor by default
+      pMaskProcess = os_config_read_uint(NULL, "ProcessorAffinity", 2);
 
-			if (pMaskProcess > 0) {
-				SetProcessAffinityMask(pHandle, pMaskProcess);
-			}
-		}
-	}
+      if (pMaskProcess > 0) {
+        SetProcessAffinityMask(pHandle, pMaskProcess);
+      }
+    }
+  }
 }
 
 #endif // WIN32
@@ -177,7 +177,7 @@ void os_set_process_affinity()
 //
 
 // os-wide globals
-static int			Os_inited = 0;
+static int      Os_inited = 0;
 
 static SCP_vector<SDL_Event> buffered_events;
 
@@ -198,55 +198,55 @@ void os_deinit();
 // for the app name, which is where registry keys are stored.
 void os_init(void)
 {
-	mprintf(("  Initializing SDL...\n"));
+  mprintf(("  Initializing SDL...\n"));
 
-	if (SDL_Init(SDL_INIT_EVENTS) < 0)
-	{
-		fprintf(stderr, "Couldn't init SDL: %s", SDL_GetError());
-		mprintf(("Couldn't init SDL: %s", SDL_GetError()));
+  if (SDL_Init(SDL_INIT_EVENTS) < 0)
+  {
+    fprintf(stderr, "Couldn't init SDL: %s", SDL_GetError());
+    mprintf(("Couldn't init SDL: %s", SDL_GetError()));
 
-		exit(1);
-		return;
-	}
+    exit(1);
+    return;
+  }
 
 #ifdef FS2_VOICER
-	SDL_EventState(SDL_SYSWMEVENT, SDL_ENABLE); // We currently only need this for voice recognition
+  SDL_EventState(SDL_SYSWMEVENT, SDL_ENABLE); // We currently only need this for voice recognition
 #endif
 
-	// initialized
-	Os_inited = 1;
+  // initialized
+  Os_inited = 1;
 
 #ifdef WIN32
-	// check to see if we're running under msdev
-	os_check_debugger();
+  // check to see if we're running under msdev
+  os_check_debugger();
 
-	if (Cmdline_set_cpu_affinity)
-	{
-		// deal with processor affinity
-		os_set_process_affinity();
-	}
+  if (Cmdline_set_cpu_affinity)
+  {
+    // deal with processor affinity
+    os_set_process_affinity();
+  }
 #endif // WIN32
 
-	os::events::addEventListener(SDL_WINDOWEVENT, os::events::DEFAULT_LISTENER_WEIGHT, window_event_handler);
-	os::events::addEventListener(SDL_QUIT, os::events::DEFAULT_LISTENER_WEIGHT, quit_handler);
+  os::events::addEventListener(SDL_WINDOWEVENT, os::events::DEFAULT_LISTENER_WEIGHT, window_event_handler);
+  os::events::addEventListener(SDL_QUIT, os::events::DEFAULT_LISTENER_WEIGHT, quit_handler);
 }
 
 // set the main window title
 void os_set_title( const char * title )
 {
-	Assertion(mainSDLWindow != nullptr, "This function may only be called with a valid SDL Window.");
+  Assertion(mainSDLWindow != nullptr, "This function may only be called with a valid SDL Window.");
 
-	SDL_SetWindowTitle(mainSDLWindow, title);
+  SDL_SetWindowTitle(mainSDLWindow, title);
 }
 
 // call at program end
 void os_cleanup()
 {
 #ifndef NDEBUG
-	outwnd_close();
+  outwnd_close();
 #endif
 
-	os_deinit();
+  os_deinit();
 }
 
 // window management -----------------------------------------------------------------
@@ -254,7 +254,7 @@ void os_cleanup()
 // Returns 1 if app is not the foreground app.
 int os_foreground()
 {
-	return fAppActive;
+  return fAppActive;
 }
 
 // process management -----------------------------------------------------------------
@@ -263,20 +263,20 @@ int os_foreground()
 void os_sleep(uint ms)
 {
 #ifdef __APPLE__
-	// ewwww, I hate this!!  SDL_Delay() is causing issues for us though and this
-	// basically matches Apple examples of the same thing.  Same as SDL_Delay() but
-	// we aren't hitting up the system for anything during the process
-	uint then = SDL_GetTicks() + ms;
+  // ewwww, I hate this!!  SDL_Delay() is causing issues for us though and this
+  // basically matches Apple examples of the same thing.  Same as SDL_Delay() but
+  // we aren't hitting up the system for anything during the process
+  uint then = SDL_GetTicks() + ms;
 
-	while (then > SDL_GetTicks());
+  while (then > SDL_GetTicks());
 #else
-	SDL_Delay(ms);
+  SDL_Delay(ms);
 #endif
 }
 
 static bool file_exists(const SCP_string& path) {
-	std::ofstream str(path, std::ios::in);
-	return str.good();
+  std::ofstream str(path, std::ios::in);
+  return str.good();
 }
 
 
@@ -287,208 +287,208 @@ static bool file_exists(const SCP_string& path) {
 // called at shutdown. Makes sure all thread processing terminates.
 void os_deinit()
 {
-	// Free the view ports 
-	viewports.clear();
+  // Free the view ports 
+  viewports.clear();
 
-	if (preferencesPath) {
-		SDL_free(preferencesPath);
-		preferencesPath = nullptr;
-	}
+  if (preferencesPath) {
+    SDL_free(preferencesPath);
+    preferencesPath = nullptr;
+  }
 
-	SDL_Quit();
+  SDL_Quit();
 }
 
 void debug_int3(const char *file, int line)
 {
-	mprintf(("Int3(): From %s at line %d\n", file, line));
+  mprintf(("Int3(): From %s at line %d\n", file, line));
 
-	gr_activate(0);
+  gr_activate(0);
 
-	mprintf(("%s\n", dump_stacktrace().c_str()));
+  mprintf(("%s\n", dump_stacktrace().c_str()));
 
 #ifndef NDEBUG
-	SDL_TriggerBreakpoint();
+  SDL_TriggerBreakpoint();
 #endif
 
-	gr_activate(1);
+  gr_activate(1);
 }
 
 namespace os
 {
-	Viewport* addViewport(std::unique_ptr<Viewport>&& viewport) {
-		auto port = viewport.get();
-		viewports.push_back(std::move(viewport));
-		return port;
-	}
-	void setMainViewPort(Viewport* mainView) {
-		mainViewPort = mainView;
-		mainSDLWindow = mainView->toSDLWindow();
-	}
-	SDL_Window* getSDLMainWindow() {
-		return mainSDLWindow;
-	}
-	Viewport* getMainViewport() {
-		return mainViewPort;
-	}
+  Viewport* addViewport(std::unique_ptr<Viewport>&& viewport) {
+    auto port = viewport.get();
+    viewports.push_back(std::move(viewport));
+    return port;
+  }
+  void setMainViewPort(Viewport* mainView) {
+    mainViewPort = mainView;
+    mainSDLWindow = mainView->toSDLWindow();
+  }
+  SDL_Window* getSDLMainWindow() {
+    return mainSDLWindow;
+  }
+  Viewport* getMainViewport() {
+    return mainViewPort;
+  }
 
-	namespace events
-	{
-		namespace
-		{
-			ListenerIdentifier nextListenerIdentifier;
+  namespace events
+  {
+    namespace
+    {
+      ListenerIdentifier nextListenerIdentifier;
 
-			struct EventListenerData
-			{
-				ListenerIdentifier identifier;
-				Listener listener;
-				
-				uint32_t type;
-				int weight;
+      struct EventListenerData
+      {
+        ListenerIdentifier identifier;
+        Listener listener;
+        
+        uint32_t type;
+        int weight;
 
-				bool operator<(const EventListenerData& other) const
-				{
-					if (type < other.type)
-					{
-						return true;
-					}
-					if (type > other.type)
-					{
-						return false;
-					}
-					
-					// Type is the same
-					return weight < other.weight;
-				}
-			};
-			
-			bool compare_type(const EventListenerData& left, const EventListenerData& right)
-			{
-				return left.type < right.type;
-			}
-			
-			SCP_vector<EventListenerData> eventListeners;
-		}
+        bool operator<(const EventListenerData& other) const
+        {
+          if (type < other.type)
+          {
+            return true;
+          }
+          if (type > other.type)
+          {
+            return false;
+          }
+          
+          // Type is the same
+          return weight < other.weight;
+        }
+      };
+      
+      bool compare_type(const EventListenerData& left, const EventListenerData& right)
+      {
+        return left.type < right.type;
+      }
+      
+      SCP_vector<EventListenerData> eventListeners;
+    }
 
-		ListenerIdentifier addEventListener(SDL_EventType type, int weight, const Listener& listener)
-		{
-			Assertion(listener, "Invalid event handler passed!");
+    ListenerIdentifier addEventListener(SDL_EventType type, int weight, const Listener& listener)
+    {
+      Assertion(listener, "Invalid event handler passed!");
 
-			EventListenerData data;
-			data.identifier = ++nextListenerIdentifier;
-			data.listener = listener;
-			
-			data.weight = weight;
-			data.type = static_cast<uint32_t>(type);
+      EventListenerData data;
+      data.identifier = ++nextListenerIdentifier;
+      data.listener = listener;
+      
+      data.weight = weight;
+      data.type = static_cast<uint32_t>(type);
 
-			eventListeners.push_back(data);
-			// This is suboptimal for runtime but we will iterate that vector often so cache hits are more important
-			std::sort(eventListeners.begin(), eventListeners.end());
+      eventListeners.push_back(data);
+      // This is suboptimal for runtime but we will iterate that vector often so cache hits are more important
+      std::sort(eventListeners.begin(), eventListeners.end());
 
-			return data.identifier;
-		}
+      return data.identifier;
+    }
 
-		bool removeEventListener(ListenerIdentifier identifier)
-		{
-			auto endIter = end(eventListeners);
-			for (auto iter = begin(eventListeners); iter != endIter; ++iter)
-			{
-				if (iter->identifier == identifier)
-				{
-					eventListeners.erase(iter);
-					return true; // Identifiers are unique
-				}
-			}
+    bool removeEventListener(ListenerIdentifier identifier)
+    {
+      auto endIter = end(eventListeners);
+      for (auto iter = begin(eventListeners); iter != endIter; ++iter)
+      {
+        if (iter->identifier == identifier)
+        {
+          eventListeners.erase(iter);
+          return true; // Identifiers are unique
+        }
+      }
 
-			return false;
-		}
+      return false;
+    }
 
-		bool isWindowEvent(const SDL_Event& e, SDL_Window* window)
-		{
-			auto mainId = SDL_GetWindowID(window);
-			switch(e.type)
-			{
-			case SDL_WINDOWEVENT:
-				return mainId == e.window.windowID;
-			case SDL_KEYDOWN:
-			case SDL_KEYUP:
-				return mainId == e.key.windowID;
-			case SDL_TEXTEDITING:
-				return mainId == e.edit.windowID;
-			case SDL_TEXTINPUT:
-				return mainId == e.text.windowID;
-			case SDL_MOUSEMOTION:
-				return mainId == e.motion.windowID;
-			case SDL_MOUSEBUTTONDOWN:
-			case SDL_MOUSEBUTTONUP:
-				return mainId == e.button.windowID;
-			case SDL_MOUSEWHEEL:
-				return mainId == e.wheel.windowID;
-			default:
-				// Event doesn't have a window ID
-				return true;
-			}
-		}
-	}
+    bool isWindowEvent(const SDL_Event& e, SDL_Window* window)
+    {
+      auto mainId = SDL_GetWindowID(window);
+      switch(e.type)
+      {
+      case SDL_WINDOWEVENT:
+        return mainId == e.window.windowID;
+      case SDL_KEYDOWN:
+      case SDL_KEYUP:
+        return mainId == e.key.windowID;
+      case SDL_TEXTEDITING:
+        return mainId == e.edit.windowID;
+      case SDL_TEXTINPUT:
+        return mainId == e.text.windowID;
+      case SDL_MOUSEMOTION:
+        return mainId == e.motion.windowID;
+      case SDL_MOUSEBUTTONDOWN:
+      case SDL_MOUSEBUTTONUP:
+        return mainId == e.button.windowID;
+      case SDL_MOUSEWHEEL:
+        return mainId == e.wheel.windowID;
+      default:
+        // Event doesn't have a window ID
+        return true;
+      }
+    }
+  }
 }
-	
+  
 void os_ignore_events() {
-	SDL_Event event;
-	while (SDL_PollEvent(&event)) {
-		// Add event to buffer
-		buffered_events.push_back(event);
-	}
+  SDL_Event event;
+  while (SDL_PollEvent(&event)) {
+    // Add event to buffer
+    buffered_events.push_back(event);
+  }
 }
 
 static void handle_sdl_event(const SDL_Event& event) {
-	using namespace os::events;
-	
-	EventListenerData data;
-	data.type = event.type;
-		
-	auto iter = std::lower_bound(eventListeners.begin(), eventListeners.end(), data, compare_type);
+  using namespace os::events;
+  
+  EventListenerData data;
+  data.type = event.type;
+    
+  auto iter = std::lower_bound(eventListeners.begin(), eventListeners.end(), data, compare_type);
 
-	if (iter != eventListeners.end())
-	{
-		// The vector contains all event listeners, the listeners are sorted for type and weight
-		// -> iterating through all listeners will yield them in increasing weight order
-		// but we can only do this until we have reached the end of the vector or the type has changed
-		for(; iter != eventListeners.end() && iter->type == event.type; ++iter)
-		{
-			if (iter->listener(event))
-			{
-				// Listener has handled the event
-				break;
-			}
-		}
-	}
+  if (iter != eventListeners.end())
+  {
+    // The vector contains all event listeners, the listeners are sorted for type and weight
+    // -> iterating through all listeners will yield them in increasing weight order
+    // but we can only do this until we have reached the end of the vector or the type has changed
+    for(; iter != eventListeners.end() && iter->type == event.type; ++iter)
+    {
+      if (iter->listener(event))
+      {
+        // Listener has handled the event
+        break;
+      }
+    }
+  }
 }
 
 void os_poll()
 {
-	// Replay the buffered events
-	auto end = buffered_events.end();
-	for (auto it = buffered_events.begin(); it != end; ++it) {
-		handle_sdl_event(*it);
-	}
-	buffered_events.clear();
+  // Replay the buffered events
+  auto end = buffered_events.end();
+  for (auto it = buffered_events.begin(); it != end; ++it) {
+    handle_sdl_event(*it);
+  }
+  buffered_events.clear();
 
-	SDL_Event event;
+  SDL_Event event;
 
-	while (SDL_PollEvent(&event)) {
-		handle_sdl_event(event);
-	}
+  while (SDL_PollEvent(&event)) {
+    handle_sdl_event(event);
+  }
 }
 
 SCP_string os_get_config_path(const SCP_string& subpath)
 {
-	// Make path platform compatible
-	SCP_string compatiblePath(subpath);
-	std::replace(compatiblePath.begin(), compatiblePath.end(), '/', DIR_SEPARATOR_CHAR);
+  // Make path platform compatible
+  SCP_string compatiblePath(subpath);
+  std::replace(compatiblePath.begin(), compatiblePath.end(), '/', DIR_SEPARATOR_CHAR);
 
-	SCP_stringstream ss;
+  SCP_stringstream ss;
 
-	// Use the current directory
-	ss << "." << DIR_SEPARATOR_CHAR << compatiblePath;
-	return ss.str();
+  // Use the current directory
+  ss << "." << DIR_SEPARATOR_CHAR << compatiblePath;
+  return ss.str();
 }
 

@@ -19,27 +19,27 @@
 #include "ship/ship.h"
 #include "weapon/weapon.h"
 
-int	Cmeasures_homing_check = 0;
-int	Countermeasures_enabled = 1;			//	Debug, set to 0 means no one can fire countermeasures.
+int  Cmeasures_homing_check = 0;
+int  Countermeasures_enabled = 1;      //  Debug, set to 0 means no one can fire countermeasures.
 const float CMEASURE_DETONATE_DISTANCE = 40.0f;
 
 void cmeasure_select_next(ship *shipp)
 {
-	Assert(shipp != NULL);
-	int i, new_index;
+  Assert(shipp != NULL);
+  int i, new_index;
 
-	for (i = 1; i < Num_weapon_types; i++)
-	{
-		new_index = (shipp->current_cmeasure + i) % Num_weapon_types;
+  for (i = 1; i < Num_weapon_types; i++)
+  {
+    new_index = (shipp->current_cmeasure + i) % Num_weapon_types;
 
-		if(Weapon_info[new_index].wi_flags[Weapon::Info_Flags::Cmeasure])
-		{
-			shipp->current_cmeasure = new_index;
-			return;
-		}
-	}
+    if(Weapon_info[new_index].wi_flags[Weapon::Info_Flags::Cmeasure])
+    {
+      shipp->current_cmeasure = new_index;
+      return;
+    }
+  }
 
-	mprintf(("Countermeasure type set to %i in frame %i\n", shipp->current_cmeasure, Framecount));
+  mprintf(("Countermeasure type set to %i in frame %i\n", shipp->current_cmeasure, Framecount));
 }
 
 
@@ -53,17 +53,17 @@ void cmeasure_select_next(ship *shipp)
 
 void cmeasure_maybe_alert_success(object *objp)
 {
-	//Is this a countermeasure, and does it have a parent
-	if ( objp->type != OBJ_WEAPON || objp->parent < 0) {
-		return;
-	}
+  //Is this a countermeasure, and does it have a parent
+  if ( objp->type != OBJ_WEAPON || objp->parent < 0) {
+    return;
+  }
 
-	Assert(Weapon_info[Weapons[objp->instance].weapon_info_index].wi_flags[Weapon::Info_Flags::Cmeasure]);
+  Assert(Weapon_info[Weapons[objp->instance].weapon_info_index].wi_flags[Weapon::Info_Flags::Cmeasure]);
 
-	if ( objp->parent == OBJ_INDEX(Player_obj) ) {
-		hud_start_text_flash(XSTR("Evaded", 1430), 800);
-		snd_play(&Snds[ship_get_sound(Player_obj, SND_MISSILE_EVADED_POPUP)]);
-	} else if ( Objects[objp->parent].flags[Object::Object_Flags::Player_ship] ) {
-		send_countermeasure_success_packet( objp->parent );
-	}
+  if ( objp->parent == OBJ_INDEX(Player_obj) ) {
+    hud_start_text_flash(XSTR("Evaded", 1430), 800);
+    snd_play(&Snds[ship_get_sound(Player_obj, SND_MISSILE_EVADED_POPUP)]);
+  } else if ( Objects[objp->parent].flags[Object::Object_Flags::Player_ship] ) {
+    send_countermeasure_success_packet( objp->parent );
+  }
 }

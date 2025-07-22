@@ -6,10 +6,10 @@ namespace tracing {
 Category::Category(const char* name, bool is_graphics) : _name(name), _graphics_category(is_graphics) {
 }
 const char* Category::getName() const {
-	return _name;
+  return _name;
 }
 bool Category::usesGPUCounter() const {
-	return _graphics_category;
+  return _graphics_category;
 }
 
 Category LuaOnFrame("LUA On Frame", true);

@@ -23,7 +23,7 @@
 #include "hud/hudets.h"
 #include "hud/hudlock.h"
 #include "hud/hudmessage.h"
-#include "hud/hudnavigation.h"	//kazan
+#include "hud/hudnavigation.h"  //kazan
 #include "hud/hudobserver.h"
 #include "hud/hudreticle.h"
 #include "hud/hudshield.h"
@@ -57,14 +57,14 @@
 SCP_vector<HudGauge*> default_hud_gauges;
 
 // new values for HUD alpha
-#define HUD_NEW_ALPHA_DIM				80	
-#define HUD_NEW_ALPHA_NORMAL			120
-#define HUD_NEW_ALPHA_BRIGHT			220
+#define HUD_NEW_ALPHA_DIM        80  
+#define HUD_NEW_ALPHA_NORMAL      120
+#define HUD_NEW_ALPHA_BRIGHT      220
 
 // high contrast
-#define HUD_NEW_ALPHA_DIM_HI			130
-#define HUD_NEW_ALPHA_NORMAL_HI			190
-#define HUD_NEW_ALPHA_BRIGHT_HI			255
+#define HUD_NEW_ALPHA_DIM_HI      130
+#define HUD_NEW_ALPHA_NORMAL_HI      190
+#define HUD_NEW_ALPHA_BRIGHT_HI      255
 
 // Externals not related to the HUD code itself
 extern float View_zoom;
@@ -73,16 +73,16 @@ extern float View_zoom;
 int HUD_color_red = 0;
 int HUD_color_green = 255;
 int HUD_color_blue = 0;
-int HUD_color_alpha = HUD_COLOR_ALPHA_DEFAULT;		// 1 -> HUD_COLOR_ALPHA_USER_MAX
+int HUD_color_alpha = HUD_COLOR_ALPHA_DEFAULT;    // 1 -> HUD_COLOR_ALPHA_USER_MAX
 
 int HUD_draw     = 1;
-int HUD_contrast = 0;										// high or lo contrast (for nebula, etc)
+int HUD_contrast = 0;                    // high or lo contrast (for nebula, etc)
 
 // Goober5000
 int HUD_disable_except_messages = 0;
 
-color HUD_color_defaults[HUD_NUM_COLOR_LEVELS];		// array of colors with different alpha blending
-color HUD_color_debug;										// grey debug text shown on HUD
+color HUD_color_defaults[HUD_NUM_COLOR_LEVELS];    // array of colors with different alpha blending
+color HUD_color_debug;                    // grey debug text shown on HUD
 
 static int Player_engine_snd_loop = -1;
 
@@ -98,8 +98,8 @@ float Pl_target_integrity;
 
 int Hud_max_targeting_range;
 
-static int Hud_last_can_target;	// whether Player is able to target in the last frame
-static int Hud_can_target_timer;	// timestamp to allow target gauge to draw static once targeting functions are not allowed
+static int Hud_last_can_target;  // whether Player is able to target in the last frame
+static int Hud_can_target_timer;  // timestamp to allow target gauge to draw static once targeting functions are not allowed
 
 // centered text message gauges (collision, emp, etc)
 char Hud_text_flash[512] = "";
@@ -111,53 +111,53 @@ void hud_start_text_flash(char *txt, int t, int interval);
 
 // multiplayer messaging text
 int Multi_msg_coords[GR_NUM_RESOLUTIONS][2] = {
-	{ // GR_640
-		5, 150
-	},
-	{ // GR_1024
-		8, 240
-	}
+  { // GR_640
+    5, 150
+  },
+  { // GR_1024
+    8, 240
+  }
 };
 
 // multiplayer voice stuff
 int Voice_coords[GR_NUM_RESOLUTIONS][2] = {
-	{ // GR_640
-		5, 165
-	},
-	{ // GR_1024
-		8, 255
-	}
+  { // GR_640
+    5, 165
+  },
+  { // GR_1024
+    8, 255
+  }
 };
 
 // ping text coords
 int Ping_coords[GR_NUM_RESOLUTIONS][2] = {
-	{ // GR_640
-		560, 3
-	},
-	{ // GR_1024
-		896, 5
-	}
+  { // GR_640
+    560, 3
+  },
+  { // GR_1024
+    896, 5
+  }
 };
 
 // supernova coords
 int Supernova_coords[GR_NUM_RESOLUTIONS][2] = {
-	{ // GR_640
-		100, 100
-	},
-	{ // GR_1024
-		170, 170
-	}
+  { // GR_640
+    100, 100
+  },
+  { // GR_1024
+    170, 170
+  }
 };
 
 // used to draw the hud support view
 static int Hud_support_view_active;
-static int Hud_support_view_abort;		// active when we need to display abort message
-static int Hud_support_view_fade;		// timer
+static int Hud_support_view_abort;    // active when we need to display abort message
+static int Hud_support_view_fade;    // timer
 static int Hud_support_obj_sig, Hud_support_objnum, Hud_support_target_sig;
 
 // flashing gauges
-#define HUD_GAUGE_FLASH_DURATION		5000
-#define HUD_GAUGE_FLASH_INTERVAL		200
+#define HUD_GAUGE_FLASH_DURATION    5000
+#define HUD_GAUGE_FLASH_INTERVAL    200
 int HUD_gauge_flash_duration[NUM_HUD_GAUGES];
 int HUD_gauge_flash_next[NUM_HUD_GAUGES];
 int HUD_gauge_bright;
@@ -169,12 +169,12 @@ static int Subspace_notify_active;
 static int Objective_notify_active;
 static int HUD_abort_subspace_timer = 1;
 
-static hud_subsys_info	Pl_hud_subsys_info[SUBSYSTEM_MAX];
-static int					Pl_hud_next_flash_timestamp;
-static int					Pl_hud_is_bright;
+static hud_subsys_info  Pl_hud_subsys_info[SUBSYSTEM_MAX];
+static int          Pl_hud_next_flash_timestamp;
+static int          Pl_hud_is_bright;
 
-#define SUBSYS_DAMAGE_FLASH_DURATION	1800
-#define SUBSYS_DAMAGE_FLASH_INTERVAL	100
+#define SUBSYS_DAMAGE_FLASH_DURATION  1800
+#define SUBSYS_DAMAGE_FLASH_INTERVAL  100
 
 float Player_rearm_eta = 0;
 
@@ -195,39 +195,39 @@ void hud_maybe_display_subspace_notify();
 int hud_maybe_render_emp_icon();
 void hud_init_emp_icon();
 
-//	Saturate a value in minv..maxv.
+//  Saturate a value in minv..maxv.
 void saturate(int *i, int minv, int maxv)
 {
-	if (*i < minv)
-		*i = minv;
-	else if (*i > maxv)
-		*i = maxv;
+  if (*i < minv)
+    *i = minv;
+  else if (*i > maxv)
+    *i = maxv;
 }
 
 // init the colors used for the different shades of the HUD
 void HUD_init_hud_color_array()
 {
-	int i;
+  int i;
 
-	for ( i = 0; i < HUD_NUM_COLOR_LEVELS; i++ ) {
-		gr_init_alphacolor( &HUD_color_defaults[i], HUD_color_red, HUD_color_green, HUD_color_blue, (i+1)*16 );
-	}
+  for ( i = 0; i < HUD_NUM_COLOR_LEVELS; i++ ) {
+    gr_init_alphacolor( &HUD_color_defaults[i], HUD_color_red, HUD_color_green, HUD_color_blue, (i+1)*16 );
+  }
 }
 
 // HUD_init will call all the various HUD gauge init functions.  This function is called at the
 // start of each mission (level)
 void HUD_init_colors()
 {
-	saturate(&HUD_color_red, 0, 255);
-	saturate(&HUD_color_green, 0, 255);
-	saturate(&HUD_color_blue, 0, 255);
-	saturate(&HUD_color_alpha, 0, HUD_COLOR_ALPHA_USER_MAX);
+  saturate(&HUD_color_red, 0, 255);
+  saturate(&HUD_color_green, 0, 255);
+  saturate(&HUD_color_blue, 0, 255);
+  saturate(&HUD_color_alpha, 0, HUD_COLOR_ALPHA_USER_MAX);
 
-	gr_init_alphacolor( &HUD_color_debug, 128, 255, 128, HUD_color_alpha*16 );
-	HUD_init_hud_color_array();
+  gr_init_alphacolor( &HUD_color_debug, 128, 255, 128, HUD_color_alpha*16 );
+  HUD_init_hud_color_array();
 
-	hud_init_targeting_colors();
-	hud_gauge_flash_init();
+  hud_init_targeting_colors();
+  hud_gauge_flash_init();
 }
 
 // The following global data is used to determine if we should change the engine sound.
@@ -236,7 +236,7 @@ void HUD_init_colors()
 // a new sound and/or adjust the volume.  This occurs in update_throttle_sound()
 //
 static float last_percent_throttle;
-#define THROTTLE_SOUND_CHECK_INTERVAL	50	// in ms
+#define THROTTLE_SOUND_CHECK_INTERVAL  50  // in ms
 static int throttle_sound_check_id;
 
 #define DAMAGE_FLASH_TIME 150
@@ -248,23 +248,23 @@ base_w(0), base_h(0), gauge_config(-1), font_num(font::FONT1), lock_color(false)
 active(false), off_by_default(false), sexp_override(false), pop_up(false), disabled_views(0), custom_gauge(false),
 texture_target(-1), canvas_w(-1), canvas_h(-1), target_w(-1), target_h(-1)
 {
-	position[0] = 0;
-	position[1] = 0;
+  position[0] = 0;
+  position[1] = 0;
 
-	gr_init_alphacolor(&gauge_color, 255, 255, 255, (HUD_color_alpha+1)*16);
-	flash_duration = timestamp(1);
-	flash_next = timestamp(1);
-	flash_status = false;
+  gr_init_alphacolor(&gauge_color, 255, 255, 255, (HUD_color_alpha+1)*16);
+  flash_duration = timestamp(1);
+  flash_next = timestamp(1);
+  flash_status = false;
 
-	popup_timer = timestamp(1);
+  popup_timer = timestamp(1);
 
-	texture_target_fname[0] = '\0';
+  texture_target_fname[0] = '\0';
 
-	custom_name[0] = '\0';
-	custom_text = "";
-	custom_frame.first_frame = -1;
-	custom_frame.num_frames = 0;
-	custom_frame_offset = 0;
+  custom_name[0] = '\0';
+  custom_text = "";
+  custom_frame.first_frame = -1;
+  custom_frame.num_frames = 0;
+  custom_frame_offset = 0;
 }
 
 HudGauge::HudGauge(int _gauge_object, int _gauge_config, bool _slew, bool _message, int _disabled_views, int r, int g, int b):
@@ -273,33 +273,33 @@ reticle_follow(_slew), active(false), off_by_default(false), sexp_override(false
 disabled_views(_disabled_views), custom_gauge(false), textoffset_x(0), textoffset_y(0), texture_target(-1),
 canvas_w(-1), canvas_h(-1), target_w(-1), target_h(-1)
 {
-	Assert(gauge_config <= NUM_HUD_GAUGES && gauge_config >= 0);
+  Assert(gauge_config <= NUM_HUD_GAUGES && gauge_config >= 0);
 
-	position[0] = 0;
-	position[1] = 0;
+  position[0] = 0;
+  position[1] = 0;
 
-	if(r >= 0 && r <= 255 && 
-		g >= 0 && g <= 255 && 
-		b >= 0 && b <= 255) {
-		gr_init_alphacolor(&gauge_color, r, g, b, (HUD_color_alpha+1)*16);
-	} else {
-		gr_init_alphacolor(&gauge_color, 255, 255, 255, (HUD_color_alpha+1)*16);
-	}
+  if(r >= 0 && r <= 255 && 
+    g >= 0 && g <= 255 && 
+    b >= 0 && b <= 255) {
+    gr_init_alphacolor(&gauge_color, r, g, b, (HUD_color_alpha+1)*16);
+  } else {
+    gr_init_alphacolor(&gauge_color, 255, 255, 255, (HUD_color_alpha+1)*16);
+  }
 
-	flash_duration = timestamp(1);
-	flash_next = timestamp(1);
-	flash_status = false;
+  flash_duration = timestamp(1);
+  flash_next = timestamp(1);
+  flash_status = false;
 
-	popup_timer = timestamp(1);
+  popup_timer = timestamp(1);
 
-	texture_target_fname[0] = '\0';
+  texture_target_fname[0] = '\0';
 
-	custom_name[0] = '\0';
-	custom_text = "";
-	default_text = "";
-	custom_frame.first_frame = -1;
-	custom_frame.num_frames = 0;
-	custom_frame_offset = 0;
+  custom_name[0] = '\0';
+  custom_text = "";
+  default_text = "";
+  custom_frame.first_frame = -1;
+  custom_frame.num_frames = 0;
+  custom_frame_offset = 0;
 }
 
 // constructor for custom gauges
@@ -309,324 +309,324 @@ reticle_follow(_slew), active(false), off_by_default(false), sexp_override(false
 disabled_views(VM_EXTERNAL | VM_DEAD_VIEW | VM_WARP_CHASE | VM_PADLOCK_ANY), custom_gauge(true), textoffset_x(txtoffset_x),
  textoffset_y(txtoffset_y), texture_target(-1), canvas_w(-1), canvas_h(-1), target_w(-1), target_h(-1)
 {
-	position[0] = 0;
-	position[1] = 0;
+  position[0] = 0;
+  position[1] = 0;
 
-	if(r >= 0 && r <= 255 && g >= 0 && g <= 255 && b >= 0 && b <= 255) {
-		gr_init_alphacolor(&gauge_color, r, g, b, (HUD_color_alpha+1)*16);
-	} else {
-		gr_init_alphacolor(&gauge_color, 255, 255, 255, (HUD_color_alpha+1)*16);
-	}
+  if(r >= 0 && r <= 255 && g >= 0 && g <= 255 && b >= 0 && b <= 255) {
+    gr_init_alphacolor(&gauge_color, r, g, b, (HUD_color_alpha+1)*16);
+  } else {
+    gr_init_alphacolor(&gauge_color, 255, 255, 255, (HUD_color_alpha+1)*16);
+  }
 
-	flash_duration = timestamp(1);
-	flash_next = timestamp(1);
-	flash_status = false;
+  flash_duration = timestamp(1);
+  flash_next = timestamp(1);
+  flash_status = false;
 
-	popup_timer = timestamp(1);
+  popup_timer = timestamp(1);
 
-	texture_target_fname[0] = '\0';
+  texture_target_fname[0] = '\0';
 
-	if(_custom_name) {
-		strcpy_s(custom_name, _custom_name);
-	} else {
-		custom_name[0] = '\0';
-	}
+  if(_custom_name) {
+    strcpy_s(custom_name, _custom_name);
+  } else {
+    custom_name[0] = '\0';
+  }
 
-	if(_custom_text) {
-		custom_text = _custom_text;
-		default_text = _custom_text;
-	} else {
-		custom_text = "";
-		default_text = "";
-	}
+  if(_custom_text) {
+    custom_text = _custom_text;
+    default_text = _custom_text;
+  } else {
+    custom_text = "";
+    default_text = "";
+  }
 
-	custom_frame.first_frame = -1;
-	custom_frame.num_frames = 0;
-	custom_frame_offset = 0;
+  custom_frame.first_frame = -1;
+  custom_frame.num_frames = 0;
+  custom_frame_offset = 0;
 
-	if(frame_fname) {
-		custom_frame.first_frame = bm_load_animation(frame_fname, &custom_frame.num_frames);
-		if (custom_frame.first_frame < 0 ) {
-			Warning(LOCATION,"Cannot load hud ani: %s\n", frame_fname);
-		}
-	}
+  if(frame_fname) {
+    custom_frame.first_frame = bm_load_animation(frame_fname, &custom_frame.num_frames);
+    if (custom_frame.first_frame < 0 ) {
+      Warning(LOCATION,"Cannot load hud ani: %s\n", frame_fname);
+    }
+  }
 }
 
 HudGauge::~HudGauge() {};
 
 void HudGauge::initPosition(int x, int y)
 {
-	position[0] = x;
-	position[1] = y;
+  position[0] = x;
+  position[1] = y;
 }
 
 void HudGauge::getPosition(int *x, int *y)
 {
-	*x = position[0];
-	*y = position[1];
+  *x = position[0];
+  *y = position[1];
 }
 
 void HudGauge::initBaseResolution(int w, int h)
 {
-	Assert(w >= 640 && h >= 480);
+  Assert(w >= 640 && h >= 480);
 
-	base_w = w;
-	base_h = h;
+  base_w = w;
+  base_h = h;
 }
 
 void HudGauge::initSlew(bool slew)
 {
-	reticle_follow = slew;
+  reticle_follow = slew;
 }
 
 void HudGauge::initFont(int input_font_num)
 {
-	if (input_font_num >= 0 && input_font_num < font::FontManager::numberOfFonts()) {
-		font_num = input_font_num;
-	}
+  if (input_font_num >= 0 && input_font_num < font::FontManager::numberOfFonts()) {
+    font_num = input_font_num;
+  }
 }
 
 const char* HudGauge::getCustomGaugeName()
 {
-	return custom_name;
+  return custom_name;
 }
 
 const char* HudGauge::getCustomGaugeText()
 {
-	return custom_text.c_str();
+  return custom_text.c_str();
 }
 
 void HudGauge::updateCustomGaugeCoords(int _x, int _y)
 {
-	if(!custom_gauge) {
-		return;
-	}
+  if(!custom_gauge) {
+    return;
+  }
 
-	position[0] = _x;
-	position[1] = _y;
+  position[0] = _x;
+  position[1] = _y;
 }
 
 void HudGauge::updateCustomGaugeFrame(int frame_offset)
 {
-	if(!custom_gauge) {
-		return;
-	}
-	
-	if (frame_offset < 0 ||frame_offset > custom_frame.num_frames) {
-		return;
-	}
+  if(!custom_gauge) {
+    return;
+  }
+  
+  if (frame_offset < 0 ||frame_offset > custom_frame.num_frames) {
+    return;
+  }
 
-	custom_frame_offset = frame_offset;
+  custom_frame_offset = frame_offset;
 }
 
 void HudGauge::updateCustomGaugeText(const char* txt)
 {
-	if(!custom_gauge) {
-		return;
-	}
+  if(!custom_gauge) {
+    return;
+  }
 
-	custom_text = txt;
+  custom_text = txt;
 }
 
 void HudGauge::updateCustomGaugeText(const SCP_string& txt)
 {
-	if(!custom_gauge) {
-		return;
-	}
+  if(!custom_gauge) {
+    return;
+  }
 
-	custom_text = txt;
+  custom_text = txt;
 }
 
 void HudGauge::setFont()
 {
-	font::set_font(font_num);
+  font::set_font(font_num);
 }
 
 void HudGauge::setGaugeColor(int bright_index)
 {
-	int alpha;
+  int alpha;
 
-	// if we're drawing it as bright
-	if(bright_index != HUD_C_NONE){
-		switch(bright_index){
-		case HUD_C_DIM:
-			alpha = HUD_contrast ? HUD_NEW_ALPHA_DIM_HI : HUD_NEW_ALPHA_DIM;
-			gr_init_alphacolor(&gauge_color, gauge_color.red, gauge_color.green, gauge_color.blue, alpha);
-			break;
+  // if we're drawing it as bright
+  if(bright_index != HUD_C_NONE){
+    switch(bright_index){
+    case HUD_C_DIM:
+      alpha = HUD_contrast ? HUD_NEW_ALPHA_DIM_HI : HUD_NEW_ALPHA_DIM;
+      gr_init_alphacolor(&gauge_color, gauge_color.red, gauge_color.green, gauge_color.blue, alpha);
+      break;
 
-		case HUD_C_NORMAL:
-			alpha = HUD_contrast ? HUD_NEW_ALPHA_NORMAL_HI : HUD_NEW_ALPHA_NORMAL;
-			gr_init_alphacolor(&gauge_color, gauge_color.red, gauge_color.green, gauge_color.blue, alpha);
-			break;
+    case HUD_C_NORMAL:
+      alpha = HUD_contrast ? HUD_NEW_ALPHA_NORMAL_HI : HUD_NEW_ALPHA_NORMAL;
+      gr_init_alphacolor(&gauge_color, gauge_color.red, gauge_color.green, gauge_color.blue, alpha);
+      break;
 
-		case HUD_C_BRIGHT:
-			alpha = HUD_contrast ? HUD_NEW_ALPHA_BRIGHT_HI : HUD_NEW_ALPHA_BRIGHT;
-			gr_init_alphacolor(&gauge_color, gauge_color.red, gauge_color.green, gauge_color.blue, alpha);
-			break;
+    case HUD_C_BRIGHT:
+      alpha = HUD_contrast ? HUD_NEW_ALPHA_BRIGHT_HI : HUD_NEW_ALPHA_BRIGHT;
+      gr_init_alphacolor(&gauge_color, gauge_color.red, gauge_color.green, gauge_color.blue, alpha);
+      break;
 
-		// intensity
-		default: 
-			Assert((bright_index >= 0) && (bright_index < HUD_NUM_COLOR_LEVELS));
-			if(bright_index < 0){
-				bright_index = 0;
-			}
-			if(bright_index >= HUD_NUM_COLOR_LEVELS){
-				bright_index = HUD_NUM_COLOR_LEVELS - 1;
-			}
+    // intensity
+    default: 
+      Assert((bright_index >= 0) && (bright_index < HUD_NUM_COLOR_LEVELS));
+      if(bright_index < 0){
+        bright_index = 0;
+      }
+      if(bright_index >= HUD_NUM_COLOR_LEVELS){
+        bright_index = HUD_NUM_COLOR_LEVELS - 1;
+      }
 
-			// alpha = 255 - (255 / (bright_index + 1));
-			// alpha = (int)((float)alpha * 1.5f);
-			int level = 255 / (HUD_NUM_COLOR_LEVELS);
-			alpha = level * bright_index;
-			if(alpha > 255){
-				alpha = 255;
-			}
-			if(alpha < 0){
-				alpha = 0;
-			}
-			gr_init_alphacolor(&gauge_color, gauge_color.red, gauge_color.green, gauge_color.blue, alpha);
-			break;
-		}
-	} else {
-		switch(maybeFlashSexp()) {
-		case 0:
-			alpha = HUD_contrast ? HUD_NEW_ALPHA_DIM_HI : HUD_NEW_ALPHA_DIM;
-			gr_init_alphacolor(&gauge_color, gauge_color.red, gauge_color.green, gauge_color.blue, alpha);
-			break;
-		case 1:			
-			alpha = HUD_contrast ? HUD_NEW_ALPHA_BRIGHT_HI : HUD_NEW_ALPHA_BRIGHT;
-			gr_init_alphacolor(&gauge_color, gauge_color.red, gauge_color.green, gauge_color.blue, alpha);
-			break;
-		default:
-			alpha = HUD_contrast ? HUD_NEW_ALPHA_NORMAL_HI : HUD_NEW_ALPHA_NORMAL;
-			gr_init_alphacolor(&gauge_color, gauge_color.red, gauge_color.green, gauge_color.blue, alpha);
-		}
-	}
+      // alpha = 255 - (255 / (bright_index + 1));
+      // alpha = (int)((float)alpha * 1.5f);
+      int level = 255 / (HUD_NUM_COLOR_LEVELS);
+      alpha = level * bright_index;
+      if(alpha > 255){
+        alpha = 255;
+      }
+      if(alpha < 0){
+        alpha = 0;
+      }
+      gr_init_alphacolor(&gauge_color, gauge_color.red, gauge_color.green, gauge_color.blue, alpha);
+      break;
+    }
+  } else {
+    switch(maybeFlashSexp()) {
+    case 0:
+      alpha = HUD_contrast ? HUD_NEW_ALPHA_DIM_HI : HUD_NEW_ALPHA_DIM;
+      gr_init_alphacolor(&gauge_color, gauge_color.red, gauge_color.green, gauge_color.blue, alpha);
+      break;
+    case 1:      
+      alpha = HUD_contrast ? HUD_NEW_ALPHA_BRIGHT_HI : HUD_NEW_ALPHA_BRIGHT;
+      gr_init_alphacolor(&gauge_color, gauge_color.red, gauge_color.green, gauge_color.blue, alpha);
+      break;
+    default:
+      alpha = HUD_contrast ? HUD_NEW_ALPHA_NORMAL_HI : HUD_NEW_ALPHA_NORMAL;
+      gr_init_alphacolor(&gauge_color, gauge_color.red, gauge_color.green, gauge_color.blue, alpha);
+    }
+  }
 
-	gr_set_color_fast(&gauge_color);	
+  gr_set_color_fast(&gauge_color);  
 }
 
 int HudGauge::getConfigType()
 {
-	//return gauge_type;
-	return gauge_config;
+  //return gauge_type;
+  return gauge_config;
 }
 
 int HudGauge::getObjectType()
 {
-	return gauge_object;
+  return gauge_object;
 }
 
 void HudGauge::lockConfigColor(bool lock)
 {
-	lock_color = lock;
+  lock_color = lock;
 }
 
 void HudGauge::sexpLockConfigColor(bool lock)
 {
-	sexp_lock_color = lock;
+  sexp_lock_color = lock;
 }
 
 void HudGauge::updateColor(int r, int g, int b, int a)
 {
-	if(sexp_lock_color || lock_color)
-		return;
+  if(sexp_lock_color || lock_color)
+    return;
 
-	gr_init_alphacolor(&gauge_color, r, g, b, a);
+  gr_init_alphacolor(&gauge_color, r, g, b, a);
 }
 
 void HudGauge::updateActive(bool show)
 {
-	active = show;
+  active = show;
 }
 
 void HudGauge::initRenderStatus(bool do_render)
 {
-	off_by_default = !do_render;
+  off_by_default = !do_render;
 }
 
 bool HudGauge::isOffbyDefault()
 {
-	return off_by_default;
+  return off_by_default;
 }
 
 bool HudGauge::isActive()
 {
-	return active && !sexp_override;
+  return active && !sexp_override;
 }
 
 void HudGauge::updateSexpOverride(bool sexp)
 {
-	sexp_override = sexp;
+  sexp_override = sexp;
 }
 
 void HudGauge::updatePopUp(bool pop_up_flag)
 {
-	pop_up = pop_up_flag;
+  pop_up = pop_up_flag;
 }
 
 void HudGauge::startPopUp(int time) 
 {
-	//Assert(gauge_index >=0 && gauge_index < NUM_HUD_GAUGES);
-	if ( !pop_up ) {
-		return;
-	}
+  //Assert(gauge_index >=0 && gauge_index < NUM_HUD_GAUGES);
+  if ( !pop_up ) {
+    return;
+  }
 
-	popup_timer = timestamp(time);
+  popup_timer = timestamp(time);
 }
 
 int HudGauge::popUpActive()
 {
-	//Assert(gauge_index >=0 && gauge_index < NUM_HUD_GAUGES);
-	if ( !pop_up ) {
-		return 0;
-	}
+  //Assert(gauge_index >=0 && gauge_index < NUM_HUD_GAUGES);
+  if ( !pop_up ) {
+    return 0;
+  }
 
-	if ( !timestamp_elapsed(popup_timer) ) {
-		return 1;
-	} else {
-		return 0;
-	}
+  if ( !timestamp_elapsed(popup_timer) ) {
+    return 1;
+  } else {
+    return 0;
+  }
 }
 
 void HudGauge::resetTimers()
 {
-	flash_duration = timestamp(1);
-	flash_next = timestamp(1);
-	flash_status = false;
+  flash_duration = timestamp(1);
+  flash_next = timestamp(1);
+  flash_status = false;
 
-	popup_timer = timestamp(1);
+  popup_timer = timestamp(1);
 }
 
 void HudGauge::startFlashSexp()
 {
-	flash_duration = timestamp(HUD_GAUGE_FLASH_DURATION);
-	flash_next = timestamp(1);
-	flash_status = false;
+  flash_duration = timestamp(HUD_GAUGE_FLASH_DURATION);
+  flash_next = timestamp(1);
+  flash_status = false;
 }
 
 bool HudGauge::flashExpiredSexp()
 {
-	if(timestamp_elapsed(flash_duration)) {
-		return true;
-	}
-	
-	return false;
+  if(timestamp_elapsed(flash_duration)) {
+    return true;
+  }
+  
+  return false;
 }
 
 int HudGauge::maybeFlashSexp()
 {
-	if ( !timestamp_elapsed(flash_duration) ) {
-		if ( timestamp_elapsed(flash_next) ) {
-			flash_next = timestamp(HUD_GAUGE_FLASH_INTERVAL);
+  if ( !timestamp_elapsed(flash_duration) ) {
+    if ( timestamp_elapsed(flash_next) ) {
+      flash_next = timestamp(HUD_GAUGE_FLASH_INTERVAL);
 
-			// toggle between default and bright frames
-			flash_status = !flash_status;
-		}
-		return (int)flash_status;
-	}
+      // toggle between default and bright frames
+      flash_status = !flash_status;
+    }
+    return (int)flash_status;
+  }
 
-	return -1;
+  return -1;
 }
 
 void HudGauge::preprocess()
@@ -636,525 +636,525 @@ void HudGauge::preprocess()
 
 void HudGauge::onFrame(float frametime)
 {
-	
+  
 }
 
 void HudGauge::render(float frametime)
 {
-	if(!custom_gauge) {
-		return;
-	}
+  if(!custom_gauge) {
+    return;
+  }
 
-	setGaugeColor();
+  setGaugeColor();
 
-	if( !custom_text.empty() ) {
-		char *text = new char[custom_text.size()+1];
-		strcpy(text, custom_text.c_str());
+  if( !custom_text.empty() ) {
+    char *text = new char[custom_text.size()+1];
+    strcpy(text, custom_text.c_str());
 
-		hud_num_make_mono(text, font_num);
-		renderString(position[0] + textoffset_x, position[1] + textoffset_y, text);
+    hud_num_make_mono(text, font_num);
+    renderString(position[0] + textoffset_x, position[1] + textoffset_y, text);
 
-		delete[] text;
-	}
+    delete[] text;
+  }
 
-	if(custom_frame.first_frame > -1) {
-		renderBitmap(custom_frame.first_frame + custom_frame_offset, position[0], position[1]);
-	}
+  if(custom_frame.first_frame > -1) {
+    renderBitmap(custom_frame.first_frame + custom_frame_offset, position[0], position[1]);
+  }
 }
 
 void HudGauge::renderString(int x, int y, const char *str)
 {
-	int nx = 0, ny = 0;
+  int nx = 0, ny = 0;
 
-	if ( gr_screen.rendering_to_texture != -1 ) {
-		gr_set_screen_scale(canvas_w, canvas_h, -1, -1, target_w, target_h, target_w, target_h, true);
-	} else {
-		if ( reticle_follow ) {
-			nx = HUD_nose_x;
-			ny = HUD_nose_y;
+  if ( gr_screen.rendering_to_texture != -1 ) {
+    gr_set_screen_scale(canvas_w, canvas_h, -1, -1, target_w, target_h, target_w, target_h, true);
+  } else {
+    if ( reticle_follow ) {
+      nx = HUD_nose_x;
+      ny = HUD_nose_y;
 
-			gr_resize_screen_pos(&nx, &ny);
-			gr_set_screen_scale(base_w, base_h);
-			gr_unsize_screen_pos(&nx, &ny);
-		} else {
-			gr_set_screen_scale(base_w, base_h);
-		}
-	}
+      gr_resize_screen_pos(&nx, &ny);
+      gr_set_screen_scale(base_w, base_h);
+      gr_unsize_screen_pos(&nx, &ny);
+    } else {
+      gr_set_screen_scale(base_w, base_h);
+    }
+  }
 
-	gr_string(x + nx, y + ny, str);
-	gr_reset_screen_scale();
+  gr_string(x + nx, y + ny, str);
+  gr_reset_screen_scale();
 }
 
 void HudGauge::renderString(int x, int y, int gauge_id, const char *str)
 {
-	int nx = 0, ny = 0;
+  int nx = 0, ny = 0;
 
-	if ( gr_screen.rendering_to_texture != -1 ) {
-		gr_set_screen_scale(canvas_w, canvas_h, -1, -1, target_w, target_h, target_w, target_h, true);
-	} else {
-		if ( reticle_follow ) {
-			nx = HUD_nose_x;
-			ny = HUD_nose_y;
+  if ( gr_screen.rendering_to_texture != -1 ) {
+    gr_set_screen_scale(canvas_w, canvas_h, -1, -1, target_w, target_h, target_w, target_h, true);
+  } else {
+    if ( reticle_follow ) {
+      nx = HUD_nose_x;
+      ny = HUD_nose_y;
 
-			gr_resize_screen_pos(&nx, &ny);
-			gr_set_screen_scale(base_w, base_h);
-			gr_unsize_screen_pos(&nx, &ny);
-		} else {
-			gr_set_screen_scale(base_w, base_h);
-		}
-	}
+      gr_resize_screen_pos(&nx, &ny);
+      gr_set_screen_scale(base_w, base_h);
+      gr_unsize_screen_pos(&nx, &ny);
+    } else {
+      gr_set_screen_scale(base_w, base_h);
+    }
+  }
 
-	if ( gauge_id > -2 ) {
-		emp_hud_string(x + nx, y + ny, gauge_id, str, GR_RESIZE_FULL);
-	} else {
-		gr_string(x + nx, y + ny, str);
-	}
+  if ( gauge_id > -2 ) {
+    emp_hud_string(x + nx, y + ny, gauge_id, str, GR_RESIZE_FULL);
+  } else {
+    gr_string(x + nx, y + ny, str);
+  }
 
-	gr_reset_screen_scale();
+  gr_reset_screen_scale();
 }
 
 void HudGauge::renderStringAlignCenter(int x, int y, int area_width, const char *s)
 {
-	int w, h;
+  int w, h;
 
-	gr_get_string_size(&w, &h, s);
-	renderString(x + ((area_width - w) / 2), y, s);
+  gr_get_string_size(&w, &h, s);
+  renderString(x + ((area_width - w) / 2), y, s);
 }
 
 void HudGauge::renderPrintf(int x, int y, const char* format, ...)
 {
-	char tmp[256] = "";
-	va_list args;
-	
-	// format the text
-	va_start(args, format);
-	vsnprintf(tmp, sizeof(tmp)-1, format, args);
-	va_end(args);
-	tmp[sizeof(tmp)-1] = '\0';
+  char tmp[256] = "";
+  va_list args;
+  
+  // format the text
+  va_start(args, format);
+  vsnprintf(tmp, sizeof(tmp)-1, format, args);
+  va_end(args);
+  tmp[sizeof(tmp)-1] = '\0';
 
-	renderString(x, y, tmp);
+  renderString(x, y, tmp);
 }
 
 void HudGauge::renderPrintf(int x, int y, int gauge_id, const char* format, ...)
 {
-	char tmp[256] = "";
-	va_list args;
-	
-	// format the text
-	va_start(args, format);
-	vsnprintf(tmp, sizeof(tmp)-1, format, args);
-	va_end(args);
-	tmp[sizeof(tmp)-1] = '\0';
+  char tmp[256] = "";
+  va_list args;
+  
+  // format the text
+  va_start(args, format);
+  vsnprintf(tmp, sizeof(tmp)-1, format, args);
+  va_end(args);
+  tmp[sizeof(tmp)-1] = '\0';
 
-	renderString(x, y, gauge_id, tmp);
+  renderString(x, y, gauge_id, tmp);
 }
 
 void HudGauge::renderBitmapColor(int frame, int x, int y)
 {
-	int nx = 0, ny = 0;
+  int nx = 0, ny = 0;
 
-	if( !emp_should_blit_gauge() ) {
-		return;
-	}
+  if( !emp_should_blit_gauge() ) {
+    return;
+  }
 
-	emp_hud_jitter(&x, &y);
+  emp_hud_jitter(&x, &y);
 
-	if ( gr_screen.rendering_to_texture != -1 ) {
-		gr_set_screen_scale(canvas_w, canvas_h, -1, -1, target_w, target_h, target_w, target_h, true);
-	} else {
-		if ( reticle_follow ) {
-			nx = HUD_nose_x;
-			ny = HUD_nose_y;
+  if ( gr_screen.rendering_to_texture != -1 ) {
+    gr_set_screen_scale(canvas_w, canvas_h, -1, -1, target_w, target_h, target_w, target_h, true);
+  } else {
+    if ( reticle_follow ) {
+      nx = HUD_nose_x;
+      ny = HUD_nose_y;
 
-			gr_resize_screen_pos(&nx, &ny);
-			gr_set_screen_scale(base_w, base_h);
-			gr_unsize_screen_pos(&nx, &ny);
-		} else {
-			gr_set_screen_scale(base_w, base_h);
-		}
-	}
+      gr_resize_screen_pos(&nx, &ny);
+      gr_set_screen_scale(base_w, base_h);
+      gr_unsize_screen_pos(&nx, &ny);
+    } else {
+      gr_set_screen_scale(base_w, base_h);
+    }
+  }
 
-	gr_set_bitmap(frame);
-	gr_bitmap(x + nx, y + ny);
-	gr_reset_screen_scale();
+  gr_set_bitmap(frame);
+  gr_bitmap(x + nx, y + ny);
+  gr_reset_screen_scale();
 }
 
 void HudGauge::renderBitmap(int x, int y)
 {
-	int nx = 0, ny = 0;
+  int nx = 0, ny = 0;
 
-	if( !emp_should_blit_gauge() ) {
-		return;
-	}
+  if( !emp_should_blit_gauge() ) {
+    return;
+  }
 
-	emp_hud_jitter(&x, &y);
+  emp_hud_jitter(&x, &y);
 
-	if ( gr_screen.rendering_to_texture != -1 ) {
-		gr_set_screen_scale(canvas_w, canvas_h, -1, -1, target_w, target_h, target_w, target_h, true);
-	} else {
-		if ( reticle_follow ) {
-			nx = HUD_nose_x;
-			ny = HUD_nose_y;
+  if ( gr_screen.rendering_to_texture != -1 ) {
+    gr_set_screen_scale(canvas_w, canvas_h, -1, -1, target_w, target_h, target_w, target_h, true);
+  } else {
+    if ( reticle_follow ) {
+      nx = HUD_nose_x;
+      ny = HUD_nose_y;
 
-			gr_resize_screen_pos(&nx, &ny);
-			gr_set_screen_scale(base_w, base_h);
-			gr_unsize_screen_pos(&nx, &ny);
-		} else {
-			gr_set_screen_scale(base_w, base_h);
-		}
-	}
-	
-	gr_aabitmap(x + nx, y + ny);
+      gr_resize_screen_pos(&nx, &ny);
+      gr_set_screen_scale(base_w, base_h);
+      gr_unsize_screen_pos(&nx, &ny);
+    } else {
+      gr_set_screen_scale(base_w, base_h);
+    }
+  }
+  
+  gr_aabitmap(x + nx, y + ny);
 
-	gr_reset_screen_scale();
+  gr_reset_screen_scale();
 }
 
 void HudGauge::renderBitmap(int frame, int x, int y)
 {
-	gr_set_bitmap(frame);
-	renderBitmap(x, y);
+  gr_set_bitmap(frame);
+  renderBitmap(x, y);
 }
 
 void HudGauge::renderBitmapEx(int frame, int x, int y, int w, int h, int sx, int sy)
 {
-	int nx = 0, ny = 0; 
-	
-	if( !emp_should_blit_gauge() ) { 
-		return;
-	}
+  int nx = 0, ny = 0; 
+  
+  if( !emp_should_blit_gauge() ) { 
+    return;
+  }
 
-	emp_hud_jitter(&x, &y); 
+  emp_hud_jitter(&x, &y); 
 
-	gr_set_bitmap(frame);
+  gr_set_bitmap(frame);
 
-	if( gr_screen.rendering_to_texture != -1 ) {
-		gr_set_screen_scale(canvas_w, canvas_h, -1, -1, target_w, target_h, target_w, target_h, true);
-	} else {
-		if ( reticle_follow ) {
-			nx = HUD_nose_x;
-			ny = HUD_nose_y;
+  if( gr_screen.rendering_to_texture != -1 ) {
+    gr_set_screen_scale(canvas_w, canvas_h, -1, -1, target_w, target_h, target_w, target_h, true);
+  } else {
+    if ( reticle_follow ) {
+      nx = HUD_nose_x;
+      ny = HUD_nose_y;
 
-			gr_resize_screen_pos(&nx, &ny);
-			gr_set_screen_scale(base_w, base_h);
-			gr_unsize_screen_pos(&nx, &ny);
-		} else {
-			gr_set_screen_scale(base_w, base_h);
-		}
-	}
+      gr_resize_screen_pos(&nx, &ny);
+      gr_set_screen_scale(base_w, base_h);
+      gr_unsize_screen_pos(&nx, &ny);
+    } else {
+      gr_set_screen_scale(base_w, base_h);
+    }
+  }
 
-	gr_aabitmap_ex(x + nx, y + ny, w, h, sx, sy);
+  gr_aabitmap_ex(x + nx, y + ny, w, h, sx, sy);
 
-	gr_reset_screen_scale();
+  gr_reset_screen_scale();
 }
 
 void HudGauge::renderLine(int x1, int y1, int x2, int y2)
 {
-	int nx = 0, ny = 0;
+  int nx = 0, ny = 0;
 
-	if ( gr_screen.rendering_to_texture != -1 ) {
-		gr_set_screen_scale(canvas_w, canvas_h, -1, -1, target_w, target_h, target_w, target_h, true);
-	} else {
-		if ( reticle_follow ) {
-			nx = HUD_nose_x;
-			ny = HUD_nose_y;
+  if ( gr_screen.rendering_to_texture != -1 ) {
+    gr_set_screen_scale(canvas_w, canvas_h, -1, -1, target_w, target_h, target_w, target_h, true);
+  } else {
+    if ( reticle_follow ) {
+      nx = HUD_nose_x;
+      ny = HUD_nose_y;
 
-			gr_resize_screen_pos(&nx, &ny);
-			gr_set_screen_scale(base_w, base_h);
-			gr_unsize_screen_pos(&nx, &ny);
-		} else {
-			gr_set_screen_scale(base_w, base_h);
-		}
-	}
+      gr_resize_screen_pos(&nx, &ny);
+      gr_set_screen_scale(base_w, base_h);
+      gr_unsize_screen_pos(&nx, &ny);
+    } else {
+      gr_set_screen_scale(base_w, base_h);
+    }
+  }
 
-	gr_line(x1+nx, y1+ny, x2+nx, y2+ny);
-	gr_reset_screen_scale();
+  gr_line(x1+nx, y1+ny, x2+nx, y2+ny);
+  gr_reset_screen_scale();
 }
 
 void HudGauge::renderGradientLine(int x1, int y1, int x2, int y2)
 {
-	int nx = 0, ny = 0;
+  int nx = 0, ny = 0;
 
-	if ( gr_screen.rendering_to_texture != -1 ) {
-		gr_set_screen_scale(canvas_w, canvas_h, -1, -1, target_w, target_h, target_w, target_h, true);
-	} else {
-		if(reticle_follow) {
-			nx = HUD_nose_x;
-			ny = HUD_nose_y;
+  if ( gr_screen.rendering_to_texture != -1 ) {
+    gr_set_screen_scale(canvas_w, canvas_h, -1, -1, target_w, target_h, target_w, target_h, true);
+  } else {
+    if(reticle_follow) {
+      nx = HUD_nose_x;
+      ny = HUD_nose_y;
 
-			gr_resize_screen_pos(&nx, &ny);
-			gr_set_screen_scale(base_w, base_h);
-			gr_unsize_screen_pos(&nx, &ny);
-		} else {
-			gr_set_screen_scale(base_w, base_h);
-		}
-	}
+      gr_resize_screen_pos(&nx, &ny);
+      gr_set_screen_scale(base_w, base_h);
+      gr_unsize_screen_pos(&nx, &ny);
+    } else {
+      gr_set_screen_scale(base_w, base_h);
+    }
+  }
 
-	gr_gradient(x1+nx, y1+ny, x2+nx, y2+ny);
-	gr_reset_screen_scale();
+  gr_gradient(x1+nx, y1+ny, x2+nx, y2+ny);
+  gr_reset_screen_scale();
 }
 
 void HudGauge::renderRect(int x, int y, int w, int h)
 {
-	int nx = 0, ny = 0;
+  int nx = 0, ny = 0;
 
-	if ( gr_screen.rendering_to_texture != -1 ) {
-		gr_set_screen_scale(canvas_w, canvas_h, -1, -1, target_w, target_h, target_w, target_h, true);
-	} else {
-		if ( reticle_follow ) {
-			nx = HUD_nose_x;
-			ny = HUD_nose_y;
+  if ( gr_screen.rendering_to_texture != -1 ) {
+    gr_set_screen_scale(canvas_w, canvas_h, -1, -1, target_w, target_h, target_w, target_h, true);
+  } else {
+    if ( reticle_follow ) {
+      nx = HUD_nose_x;
+      ny = HUD_nose_y;
 
-			gr_resize_screen_pos(&nx, &ny);
-			gr_set_screen_scale(base_w, base_h);
-			gr_unsize_screen_pos(&nx, &ny);
-		} else {
-			gr_set_screen_scale(base_w, base_h);
-		}
-	}
+      gr_resize_screen_pos(&nx, &ny);
+      gr_set_screen_scale(base_w, base_h);
+      gr_unsize_screen_pos(&nx, &ny);
+    } else {
+      gr_set_screen_scale(base_w, base_h);
+    }
+  }
 
-	gr_rect(x+nx, y+ny, w, h);
-	gr_reset_screen_scale();
+  gr_rect(x+nx, y+ny, w, h);
+  gr_reset_screen_scale();
 }
 
 void HudGauge::renderCircle(int x, int y, int diameter) 
 {
-	int nx = 0, ny = 0;
+  int nx = 0, ny = 0;
 
-	if ( gr_screen.rendering_to_texture != -1 ) {
-		gr_set_screen_scale(canvas_w, canvas_h, -1, -1, target_w, target_h, target_w, target_h, true);
-	} else {
-		if ( reticle_follow ) {
-			nx = HUD_nose_x;
-			ny = HUD_nose_y;
+  if ( gr_screen.rendering_to_texture != -1 ) {
+    gr_set_screen_scale(canvas_w, canvas_h, -1, -1, target_w, target_h, target_w, target_h, true);
+  } else {
+    if ( reticle_follow ) {
+      nx = HUD_nose_x;
+      ny = HUD_nose_y;
 
-			gr_resize_screen_pos(&nx, &ny);
-			gr_set_screen_scale(base_w, base_h);
-			gr_unsize_screen_pos(&nx, &ny);
-		} else {
-			gr_set_screen_scale(base_w, base_h);
-		}
-	}
-	
-	gr_circle(x+nx, y+ny, diameter);
-	gr_reset_screen_scale();
+      gr_resize_screen_pos(&nx, &ny);
+      gr_set_screen_scale(base_w, base_h);
+      gr_unsize_screen_pos(&nx, &ny);
+    } else {
+      gr_set_screen_scale(base_w, base_h);
+    }
+  }
+  
+  gr_circle(x+nx, y+ny, diameter);
+  gr_reset_screen_scale();
 }
 
 void HudGauge::setClip(int x, int y, int w, int h)
 {
-	int hx = fl2i(HUD_offset_x);
-	int hy = fl2i(HUD_offset_y);
+  int hx = fl2i(HUD_offset_x);
+  int hy = fl2i(HUD_offset_y);
 
-	if ( gr_screen.rendering_to_texture != -1 ) {
-		gr_set_screen_scale(canvas_w, canvas_h, -1, -1, target_w, target_h, target_w, target_h, true);
+  if ( gr_screen.rendering_to_texture != -1 ) {
+    gr_set_screen_scale(canvas_w, canvas_h, -1, -1, target_w, target_h, target_w, target_h, true);
 
-		hx = display_offset_x;
-		hy = display_offset_y;
+    hx = display_offset_x;
+    hy = display_offset_y;
 
-		gr_resize_screen_pos(&x, &y);
+    gr_resize_screen_pos(&x, &y);
 
-		hx += x;
-		hy += y;
+    hx += x;
+    hy += y;
 
-		gr_unsize_screen_pos(&hx, &hy);
+    gr_unsize_screen_pos(&hx, &hy);
 
-		gr_set_clip(hx, hy, w, h);
-	} else {
-		if ( reticle_follow ) {
-			hx += HUD_nose_x;
-			hy += HUD_nose_y;
-		}
+    gr_set_clip(hx, hy, w, h);
+  } else {
+    if ( reticle_follow ) {
+      hx += HUD_nose_x;
+      hy += HUD_nose_y;
+    }
 
-		gr_resize_screen_pos(&hx, &hy);
+    gr_resize_screen_pos(&hx, &hy);
 
-		gr_set_screen_scale(base_w, base_h);
-		gr_resize_screen_pos(&x, &y, &w, &h);
+    gr_set_screen_scale(base_w, base_h);
+    gr_resize_screen_pos(&x, &y, &w, &h);
 
-		gr_set_clip(hx+x, hy+y, w, h, GR_RESIZE_NONE);
-	}
+    gr_set_clip(hx+x, hy+y, w, h, GR_RESIZE_NONE);
+  }
 
-	gr_reset_screen_scale();
+  gr_reset_screen_scale();
 }
 
 void HudGauge::resetClip()
 {
-	int hx = 0, hy = 0;
-	int w, h;
+  int hx = 0, hy = 0;
+  int w, h;
 
-	if ( gr_screen.rendering_to_texture != -1 ) {
-		gr_set_screen_scale(canvas_w, canvas_h, -1, -1, target_w, target_h, target_w, target_h, true);
-		
-		hx = display_offset_x;
-		hy = display_offset_y;
+  if ( gr_screen.rendering_to_texture != -1 ) {
+    gr_set_screen_scale(canvas_w, canvas_h, -1, -1, target_w, target_h, target_w, target_h, true);
+    
+    hx = display_offset_x;
+    hy = display_offset_y;
 
-		gr_unsize_screen_pos(&hx, &hy);
+    gr_unsize_screen_pos(&hx, &hy);
 
-		w = canvas_w;
-		h = canvas_h;
+    w = canvas_w;
+    h = canvas_h;
 
-		gr_set_clip(hx, hy, w, h);
-	} else {
-		hx = fl2i(HUD_offset_x);
-		hy = fl2i(HUD_offset_y);
+    gr_set_clip(hx, hy, w, h);
+  } else {
+    hx = fl2i(HUD_offset_x);
+    hy = fl2i(HUD_offset_y);
 
-		gr_resize_screen_pos(&hx, &hy);
-		gr_set_screen_scale(base_w, base_h);
+    gr_resize_screen_pos(&hx, &hy);
+    gr_set_screen_scale(base_w, base_h);
 
-		w = gr_screen.max_w;
-		h = gr_screen.max_h;
+    w = gr_screen.max_w;
+    h = gr_screen.max_h;
 
-		// clip the screen based on the actual resolution
-		gr_set_clip(hx, hy, w, h, GR_RESIZE_NONE);
-	}
+    // clip the screen based on the actual resolution
+    gr_set_clip(hx, hy, w, h, GR_RESIZE_NONE);
+  }
 
-	gr_reset_screen_scale();
+  gr_reset_screen_scale();
 }
 
 void HudGauge::unsize(int *x, int *y)
 {
-	gr_set_screen_scale(base_w, base_h);
-	gr_unsize_screen_pos(x, y);
-	gr_reset_screen_scale();
+  gr_set_screen_scale(base_w, base_h);
+  gr_unsize_screen_pos(x, y);
+  gr_reset_screen_scale();
 }
 
 void HudGauge::unsize(float *x, float *y)
 {
-	gr_set_screen_scale(base_w, base_h);
-	gr_unsize_screen_posf(x, y);
-	gr_reset_screen_scale();
+  gr_set_screen_scale(base_w, base_h);
+  gr_unsize_screen_posf(x, y);
+  gr_reset_screen_scale();
 }
 
 void HudGauge::resize(int *x, int *y)
 {
-	gr_set_screen_scale(base_w, base_h);
-	gr_resize_screen_pos(x, y);
-	gr_reset_screen_scale();
+  gr_set_screen_scale(base_w, base_h);
+  gr_resize_screen_pos(x, y);
+  gr_reset_screen_scale();
 }
 
 void HudGauge::resize(float *x, float *y)
 {
-	gr_set_screen_scale(base_w, base_h);
-	gr_resize_screen_posf(x, y);
-	gr_reset_screen_scale();
+  gr_set_screen_scale(base_w, base_h);
+  gr_resize_screen_posf(x, y);
+  gr_reset_screen_scale();
 }
 
 void HudGauge::pageIn()
 {
-	if(custom_gauge) {
-		if(custom_frame.first_frame > -1 && custom_frame.num_frames > 0) {
-			bm_page_in_aabitmap( custom_frame.first_frame, custom_frame.num_frames );
-		}
-	}
+  if(custom_gauge) {
+    if(custom_frame.first_frame > -1 && custom_frame.num_frames > 0) {
+      bm_page_in_aabitmap( custom_frame.first_frame, custom_frame.num_frames );
+    }
+  }
 }
 
 void HudGauge::initialize()
 {
-	//Reset text to default
-	custom_text = default_text;
+  //Reset text to default
+  custom_text = default_text;
 
-	custom_frame_offset = 0;
+  custom_frame_offset = 0;
 
-	sexp_lock_color = false;
+  sexp_lock_color = false;
 }
 
 bool HudGauge::canRender()
 {
-	if (sexp_override) {
-		return false;
-	}
+  if (sexp_override) {
+    return false;
+  }
 
-	if(hud_disabled_except_messages() && !message_gauge) {
-		return false;
-	}
+  if(hud_disabled_except_messages() && !message_gauge) {
+    return false;
+  }
 
-	if (hud_disabled() && !hud_disabled_except_messages()) {
-		return false;
-	}
+  if (hud_disabled() && !hud_disabled_except_messages()) {
+    return false;
+  }
 
-	if(!active)
-		return false;
-	
-	if ( !(Game_detail_flags & DETAIL_FLAG_HUD) ) {
-		return false;
-	}
+  if(!active)
+    return false;
+  
+  if ( !(Game_detail_flags & DETAIL_FLAG_HUD) ) {
+    return false;
+  }
 
-	if ((Viewer_mode & disabled_views)) {
-		return false;
-	}
+  if ((Viewer_mode & disabled_views)) {
+    return false;
+  }
 
-	if(pop_up) {
-		if(!popUpActive()) {
-			return false;
-		}
-	}
+  if(pop_up) {
+    if(!popUpActive()) {
+      return false;
+    }
+  }
 
-	if (gauge_config == HUD_ETS_GAUGE) {
-		if (Ships[Player_obj->instance].flags[Ship::Ship_Flags::No_ets]) {
-			return false;
-		}
-	}
+  if (gauge_config == HUD_ETS_GAUGE) {
+    if (Ships[Player_obj->instance].flags[Ship::Ship_Flags::No_ets]) {
+      return false;
+    }
+  }
 
-	return true;
+  return true;
 }
 
 void HudGauge::initCockpitTarget(const char* display_name, int _target_x, int _target_y, int _target_w, int _target_h, int _canvas_w, int _canvas_h)
 {
-	if ( strlen(display_name) <= 0 ) {
-		return;
-	}
+  if ( strlen(display_name) <= 0 ) {
+    return;
+  }
 
-	target_x = _target_x;
-	target_y = _target_y;
+  target_x = _target_x;
+  target_y = _target_y;
 
-	strcpy_s(texture_target_fname, display_name);
-	target_w = _target_w;
-	target_h = _target_h;
+  strcpy_s(texture_target_fname, display_name);
+  target_w = _target_w;
+  target_h = _target_h;
 
-	if ( _canvas_w > 0 && _canvas_h > 0 ) {
-		canvas_w = _canvas_w;
-		canvas_h = _canvas_h;
-	} else {
-		canvas_w = _target_w;
-		canvas_h = _target_h;
-	}
+  if ( _canvas_w > 0 && _canvas_h > 0 ) {
+    canvas_w = _canvas_w;
+    canvas_h = _canvas_h;
+  } else {
+    canvas_w = _target_w;
+    canvas_h = _target_h;
+  }
 }
 
 bool HudGauge::setupRenderCanvas(int render_target)
 {
-	if (texture_target_fname[0] != '\0') {
-		if ( render_target >= 0 && render_target == texture_target ) {
-			return true;
-		}
-	} else {
-		if ( render_target < 0 ) {
-			return true;
-		}
-	}
+  if (texture_target_fname[0] != '\0') {
+    if ( render_target >= 0 && render_target == texture_target ) {
+      return true;
+    }
+  } else {
+    if ( render_target < 0 ) {
+      return true;
+    }
+  }
 
-	return false;
+  return false;
 }
 
 void HudGauge::setCockpitTarget(const cockpit_display *display)
 {
-	if ( display == NULL ) {
-		return;
-	}
+  if ( display == NULL ) {
+    return;
+  }
 
-	if ( strcmp(texture_target_fname, display->name) ) {
-		return;
-	}
+  if ( strcmp(texture_target_fname, display->name) ) {
+    return;
+  }
 
-	if ( display->target < 0 ) {
-		return;
-	}
+  if ( display->target < 0 ) {
+    return;
+  }
 
-	texture_target = display->target;
-	display_offset_x = display->offset[0] + target_x;
-	display_offset_y = display->offset[1] + target_y;
+  texture_target = display->target;
+  display_offset_x = display->offset[0] + target_x;
+  display_offset_y = display->offset[1] + target_y;
 }
 
 void HudGauge::resetCockpitTarget()
 {
-	texture_target = -1;
+  texture_target = -1;
 }
 
 // ----------------------------------------------------------------------
@@ -1163,64 +1163,64 @@ void HudGauge::resetCockpitTarget()
  */
 void HUD_init()
 {
-	HUD_init_colors();
-	hud_init_msg_window();
-	hud_init_targeting();
-	hud_init_reticle();
-	hud_shield_level_init();
-	hud_targetbox_init_flash();
-	hud_escort_init();
-	hud_damage_popup_init();
-	hud_support_view_init();
-	hud_init_squadmsg();		// initialize the vars needed for squadmate messaging
-	hud_objective_message_init();
-	hud_init_wingman_status_gauge();
-	hud_init_target_static();
-	hud_init_text_flash_gauge();
-	hud_stop_subspace_notify();
-	hud_stop_objective_notify();
-	hud_target_last_transmit_level_init();
+  HUD_init_colors();
+  hud_init_msg_window();
+  hud_init_targeting();
+  hud_init_reticle();
+  hud_shield_level_init();
+  hud_targetbox_init_flash();
+  hud_escort_init();
+  hud_damage_popup_init();
+  hud_support_view_init();
+  hud_init_squadmsg();    // initialize the vars needed for squadmate messaging
+  hud_objective_message_init();
+  hud_init_wingman_status_gauge();
+  hud_init_target_static();
+  hud_init_text_flash_gauge();
+  hud_stop_subspace_notify();
+  hud_stop_objective_notify();
+  hud_target_last_transmit_level_init();
 
-	throttle_sound_check_id = timestamp(THROTTLE_SOUND_CHECK_INTERVAL);
-	HUD_abort_subspace_timer = 1;
-	Hud_last_can_target = 1;
-	Hud_can_target_timer = 1;
-	last_percent_throttle = 0.0f;
+  throttle_sound_check_id = timestamp(THROTTLE_SOUND_CHECK_INTERVAL);
+  HUD_abort_subspace_timer = 1;
+  Hud_last_can_target = 1;
+  Hud_can_target_timer = 1;
+  last_percent_throttle = 0.0f;
 
-	// default to high contrast in the nebula
-	HUD_contrast = 0;
-	HUD_draw     = 1;
-	HUD_disable_except_messages = 0;
+  // default to high contrast in the nebula
+  HUD_contrast = 0;
+  HUD_draw     = 1;
+  HUD_disable_except_messages = 0;
 
-	if(The_mission.flags[Mission::Mission_Flags::Fullneb]){
-		HUD_contrast = 1;
-	}
+  if(The_mission.flags[Mission::Mission_Flags::Fullneb]){
+    HUD_contrast = 1;
+  }
 
-	// reset to infinite
-	Hud_max_targeting_range = 0;
+  // reset to infinite
+  Hud_max_targeting_range = 0;
 
-	size_t j, num_gauges;
+  size_t j, num_gauges;
 
-	// go through all HUD gauges and call their initialization functions
-	for (auto it = Ship_info.cbegin(); it != Ship_info.cend(); ++it) {
-		if(it->hud_enabled) {
-			num_gauges = it->hud_gauges.size();
+  // go through all HUD gauges and call their initialization functions
+  for (auto it = Ship_info.cbegin(); it != Ship_info.cend(); ++it) {
+    if(it->hud_enabled) {
+      num_gauges = it->hud_gauges.size();
 
-			for(j = 0; j < num_gauges; j++) {
-				it->hud_gauges[j]->initialize();
-				it->hud_gauges[j]->resetTimers();
-				it->hud_gauges[j]->updateSexpOverride(false);
-			}
-		}
-	}
+      for(j = 0; j < num_gauges; j++) {
+        it->hud_gauges[j]->initialize();
+        it->hud_gauges[j]->resetTimers();
+        it->hud_gauges[j]->updateSexpOverride(false);
+      }
+    }
+  }
 
-	num_gauges = default_hud_gauges.size();
+  num_gauges = default_hud_gauges.size();
 
-	for(j = 0; j < num_gauges; j++) {
-		default_hud_gauges[j]->initialize();
-		default_hud_gauges[j]->resetTimers();
-		default_hud_gauges[j]->updateSexpOverride(false);
-	}
+  for(j = 0; j < num_gauges; j++) {
+    default_hud_gauges[j]->initialize();
+    default_hud_gauges[j]->resetTimers();
+    default_hud_gauges[j]->updateSexpOverride(false);
+  }
 }
 
 /**
@@ -1228,17 +1228,17 @@ void HUD_init()
  */
 void hud_level_close()
 {
-	size_t j, num_gauges;
+  size_t j, num_gauges;
 
-	for ( auto it = Ship_info.cbegin(); it != Ship_info.cend(); ++it ) {
-		if(it->hud_enabled) {
-			num_gauges = it->hud_gauges.size();
+  for ( auto it = Ship_info.cbegin(); it != Ship_info.cend(); ++it ) {
+    if(it->hud_enabled) {
+      num_gauges = it->hud_gauges.size();
 
-			for(j = 0; j < num_gauges; j++) {
-				it->hud_gauges[j]->resetCockpitTarget();
-			}
-		}
-	}
+      for(j = 0; j < num_gauges; j++) {
+        it->hud_gauges[j]->resetCockpitTarget();
+      }
+    }
+  }
 }
 
 /**
@@ -1246,48 +1246,48 @@ void hud_level_close()
  */
 void hud_close()
 {
-	size_t j, num_gauges = 0;
+  size_t j, num_gauges = 0;
 
-	for (auto it = Ship_info.begin(); it != Ship_info.end(); ++it) {
-		num_gauges = it->hud_gauges.size();
+  for (auto it = Ship_info.begin(); it != Ship_info.end(); ++it) {
+    num_gauges = it->hud_gauges.size();
 
-		for(j = 0; j < num_gauges; j++) {
-			delete it->hud_gauges[j];
-			it->hud_gauges[j] = NULL;
-		}
-		it->hud_gauges.clear();
-	}
+    for(j = 0; j < num_gauges; j++) {
+      delete it->hud_gauges[j];
+      it->hud_gauges[j] = NULL;
+    }
+    it->hud_gauges.clear();
+  }
 
-	num_gauges = default_hud_gauges.size();
+  num_gauges = default_hud_gauges.size();
 
-	for(j = 0; j < num_gauges; j++) {
-		delete default_hud_gauges[j];
-		default_hud_gauges[j] = NULL;
-	}
-	default_hud_gauges.clear();
+  for(j = 0; j < num_gauges; j++) {
+    delete default_hud_gauges[j];
+    default_hud_gauges[j] = NULL;
+  }
+  default_hud_gauges.clear();
 }
 
 void hud_toggle_draw()
 {
-	HUD_draw = !HUD_draw;
+  HUD_draw = !HUD_draw;
 }
 
 // Goober5000
 void hud_set_draw(int draw)
 {
-	HUD_draw = draw;
+  HUD_draw = draw;
 }
 
 //WMC
 int hud_get_draw()
 {
-	return HUD_draw;
+  return HUD_draw;
 }
 
 // Goober5000
 void hud_disable_except_messages(int disable)
 {
-	HUD_disable_except_messages = disable;
+  HUD_disable_except_messages = disable;
 }
 
 // Goober5000
@@ -1296,7 +1296,7 @@ void hud_disable_except_messages(int disable)
  */
 int hud_disabled_except_messages()
 {
-	return HUD_disable_except_messages;
+  return HUD_disable_except_messages;
 }
 
 /**
@@ -1305,7 +1305,7 @@ int hud_disabled_except_messages()
  */
 int hud_disabled()
 {
-	return !HUD_draw;
+  return !HUD_draw;
 }
 
 /**
@@ -1313,19 +1313,19 @@ int hud_disabled()
  */
 void hud_maybe_popup_weapons_gauge()
 {
-	if ( hud_gauge_is_popup(HUD_WEAPONS_GAUGE) ) {
-		ship_weapon *swp = &Player_ship->weapons;
-		int			i;
+  if ( hud_gauge_is_popup(HUD_WEAPONS_GAUGE) ) {
+    ship_weapon *swp = &Player_ship->weapons;
+    int      i;
 
-		for ( i = 0; i < swp->num_secondary_banks; i++ ) {
-			if ( swp->secondary_bank_ammo[i] > 0 ) {
-				int ms_till_fire = timestamp_until(swp->next_secondary_fire_stamp[i]);
-				if ( ms_till_fire >= 1000 ) {
-					hud_gauge_popup_start(HUD_WEAPONS_GAUGE, 2500);
-				}
-			}
-		}
-	}
+    for ( i = 0; i < swp->num_secondary_banks; i++ ) {
+      if ( swp->secondary_bank_ammo[i] > 0 ) {
+        int ms_till_fire = timestamp_until(swp->next_secondary_fire_stamp[i]);
+        if ( ms_till_fire >= 1000 ) {
+          hud_gauge_popup_start(HUD_WEAPONS_GAUGE, 2500);
+        }
+      }
+    }
+  }
 }
 
 /**
@@ -1335,233 +1335,233 @@ void hud_maybe_popup_weapons_gauge()
  */
 void hud_update_frame(float frametime)
 {
-	object	*targetp;
-	vec3d target_pos;
-	int		can_target;
+  object  *targetp;
+  vec3d target_pos;
+  int    can_target;
 
-	update_throttle_sound();
-	hud_check_reticle_list();
-	hud_wingman_status_update();
+  update_throttle_sound();
+  hud_check_reticle_list();
+  hud_wingman_status_update();
 
-	// Check hotkey selections to see if any ships need to be removed
-	hud_prune_hotkeys();
+  // Check hotkey selections to see if any ships need to be removed
+  hud_prune_hotkeys();
 
-	// Remove dead/departed ships from the escort list
-	hud_escort_cull_list();
-	hud_escort_update_list();
+  // Remove dead/departed ships from the escort list
+  hud_escort_cull_list();
+  hud_escort_update_list();
 
-	hud_update_reticle( Player );
+  hud_update_reticle( Player );
 
-	hud_shield_hit_update();
-	hud_update_weapon_flash();
-	hud_maybe_popup_weapons_gauge();
-	hud_update_objective_message();
-	hud_support_view_update();
-	message_training_update_frame();
+  hud_shield_hit_update();
+  hud_update_weapon_flash();
+  hud_maybe_popup_weapons_gauge();
+  hud_update_objective_message();
+  hud_support_view_update();
+  message_training_update_frame();
 
-	// if emp is active we have to allow targeting by the "random emp" system
-	// we will intercept player targeting requests in hud_sensors_ok() when checking key commands
-	// DB - 8/24/98
-	can_target = hud_sensors_ok(Player_ship, 0);
-	if(emp_active_local()){
-		can_target = 1;
-	}
-	if ( !can_target && Hud_last_can_target ) {
-		Hud_can_target_timer = timestamp(1200);		
-	}
-	Hud_last_can_target = can_target;
+  // if emp is active we have to allow targeting by the "random emp" system
+  // we will intercept player targeting requests in hud_sensors_ok() when checking key commands
+  // DB - 8/24/98
+  can_target = hud_sensors_ok(Player_ship, 0);
+  if(emp_active_local()){
+    can_target = 1;
+  }
+  if ( !can_target && Hud_last_can_target ) {
+    Hud_can_target_timer = timestamp(1200);    
+  }
+  Hud_last_can_target = can_target;
 
-	if ( timestamp_elapsed(Hud_can_target_timer) ) {
-		if ( (Player_ai->target_objnum != -1) && !can_target ){
-			Player_ai->target_objnum = -1;
-		}
-	}
+  if ( timestamp_elapsed(Hud_can_target_timer) ) {
+    if ( (Player_ai->target_objnum != -1) && !can_target ){
+      Player_ai->target_objnum = -1;
+    }
+  }
 
-	// if there is no target, check if auto-targeting is enabled, and select new target
-	int retarget = 0;
-	int retarget_turret = 0;
+  // if there is no target, check if auto-targeting is enabled, and select new target
+  int retarget = 0;
+  int retarget_turret = 0;
 
-	if (Player_ai->target_objnum == -1){
-		retarget = 1;
-	} else if (Objects[Player_ai->target_objnum].type == OBJ_SHIP) {
-		if (Ships[Objects[Player_ai->target_objnum].instance].flags[Ship::Ship_Flags::Dying]){
-			if (timestamp_elapsed(Ships[Objects[Player_ai->target_objnum].instance].final_death_time)) {
-				retarget = 1;
-			}
-		}
-	}
+  if (Player_ai->target_objnum == -1){
+    retarget = 1;
+  } else if (Objects[Player_ai->target_objnum].type == OBJ_SHIP) {
+    if (Ships[Objects[Player_ai->target_objnum].instance].flags[Ship::Ship_Flags::Dying]){
+      if (timestamp_elapsed(Ships[Objects[Player_ai->target_objnum].instance].final_death_time)) {
+        retarget = 1;
+      }
+    }
+  }
 
-	// check if big ship and currently selected subsys is turret and turret is dead
-	// only do this is not retargeting
-	if ((!retarget) && (Player_ai->target_objnum != -1)) {
-		if (Objects[Player_ai->target_objnum].type == OBJ_SHIP) {
-			if ( !(Ships[Objects[Player_ai->target_objnum].instance].flags[Ship::Ship_Flags::Dying]) ) {
-				if ( Ship_info[Ships[Objects[Player_ai->target_objnum].instance].ship_info_index].is_big_or_huge() ) {
-					ship_subsys *ss = Player_ai->targeted_subsys;
-					if (ss != NULL) {
-						if ((ss->system_info->type == SUBSYSTEM_TURRET) && (ss->current_hits == 0)) {
-							retarget_turret = 1;
-						}
-					}
-				}
-			}
-		}
-	}
+  // check if big ship and currently selected subsys is turret and turret is dead
+  // only do this is not retargeting
+  if ((!retarget) && (Player_ai->target_objnum != -1)) {
+    if (Objects[Player_ai->target_objnum].type == OBJ_SHIP) {
+      if ( !(Ships[Objects[Player_ai->target_objnum].instance].flags[Ship::Ship_Flags::Dying]) ) {
+        if ( Ship_info[Ships[Objects[Player_ai->target_objnum].instance].ship_info_index].is_big_or_huge() ) {
+          ship_subsys *ss = Player_ai->targeted_subsys;
+          if (ss != NULL) {
+            if ((ss->system_info->type == SUBSYSTEM_TURRET) && (ss->current_hits == 0)) {
+              retarget_turret = 1;
+            }
+          }
+        }
+      }
+    }
+  }
 
-	if ( retarget && can_target ) {
-		Player_ai->current_target_is_locked = 0;
-		if ( Players[Player_num].flags & PLAYER_FLAGS_AUTO_TARGETING ) {
-			Player_ai->target_objnum = -1;
-			hud_target_auto_target_next();
-		}
-	}
+  if ( retarget && can_target ) {
+    Player_ai->current_target_is_locked = 0;
+    if ( Players[Player_num].flags & PLAYER_FLAGS_AUTO_TARGETING ) {
+      Player_ai->target_objnum = -1;
+      hud_target_auto_target_next();
+    }
+  }
 
-	if (retarget_turret && can_target) {
-		Assert(!retarget);
-		void hud_update_closest_turret();
-		hud_update_closest_turret();
-	}
+  if (retarget_turret && can_target) {
+    Assert(!retarget);
+    void hud_update_closest_turret();
+    hud_update_closest_turret();
+  }
 
-	hud_target_change_check();
+  hud_target_change_check();
 
-	// check to see if we are in messaging mode.  If so, send the key to the code
-	// to deal with the message.  hud_sqaudmsg_do_frame will return 0 if the key
-	// wasn't used in messaging mode, otherwise 1.  In the event the key was used,
-	// return immediately out of this function.
-	if ( Players[Player_num].flags & PLAYER_FLAGS_MSG_MODE ) {
-		hud_squadmsg_do_frame();
-	}
+  // check to see if we are in messaging mode.  If so, send the key to the code
+  // to deal with the message.  hud_sqaudmsg_do_frame will return 0 if the key
+  // wasn't used in messaging mode, otherwise 1.  In the event the key was used,
+  // return immediately out of this function.
+  if ( Players[Player_num].flags & PLAYER_FLAGS_MSG_MODE ) {
+    hud_squadmsg_do_frame();
+  }
 
-	if (Player_ai->target_objnum == -1) {
-		if ( Target_static_looping != -1 ) {
-			snd_stop(Target_static_looping);
-		}
-		return;
-	}
+  if (Player_ai->target_objnum == -1) {
+    if ( Target_static_looping != -1 ) {
+      snd_stop(Target_static_looping);
+    }
+    return;
+  }
 
-	targetp = &Objects[Player_ai->target_objnum];
+  targetp = &Objects[Player_ai->target_objnum];
 
-	if ( Player_ai->targeted_subsys != NULL ) {
-		get_subsystem_world_pos(targetp, Player_ai->targeted_subsys, &target_pos);
+  if ( Player_ai->targeted_subsys != NULL ) {
+    get_subsystem_world_pos(targetp, Player_ai->targeted_subsys, &target_pos);
 
-		// get new distance of current target
-		Player_ai->current_target_distance = vm_vec_dist_quick(&target_pos,&Player_obj->pos);
+    // get new distance of current target
+    Player_ai->current_target_distance = vm_vec_dist_quick(&target_pos,&Player_obj->pos);
 
-		float shield_strength = Player_ai->targeted_subsys->current_hits/Player_ai->targeted_subsys->max_hits * 100.0f;
-		int screen_integrity = fl2i(shield_strength+0.5f);
+    float shield_strength = Player_ai->targeted_subsys->current_hits/Player_ai->targeted_subsys->max_hits * 100.0f;
+    int screen_integrity = fl2i(shield_strength+0.5f);
 
-		if ( screen_integrity < 0 ) {
-			screen_integrity = 0;
-		}
+    if ( screen_integrity < 0 ) {
+      screen_integrity = 0;
+    }
 
-		if ( screen_integrity == 0 ) {
-			if ( shield_strength > 0 ) {
-				screen_integrity = 1;
-			}
-		}
+    if ( screen_integrity == 0 ) {
+      if ( shield_strength > 0 ) {
+        screen_integrity = 1;
+      }
+    }
 
-		// Goober5000 - don't flash if this subsystem can't be destroyed
-		if ( ship_subsys_takes_damage(Player_ai->targeted_subsys) )
-		{
-			if ( screen_integrity <= 0 ){
-				hud_targetbox_start_flash(TBOX_FLASH_SUBSYS);	// need to flash 0% continuously
-			}
-		}
-	} else {
-		target_pos = targetp->pos;
+    // Goober5000 - don't flash if this subsystem can't be destroyed
+    if ( ship_subsys_takes_damage(Player_ai->targeted_subsys) )
+    {
+      if ( screen_integrity <= 0 ){
+        hud_targetbox_start_flash(TBOX_FLASH_SUBSYS);  // need to flash 0% continuously
+      }
+    }
+  } else {
+    target_pos = targetp->pos;
 
-		Player_ai->current_target_distance = hud_find_target_distance(targetp,Player_obj);
-	}
+    Player_ai->current_target_distance = hud_find_target_distance(targetp,Player_obj);
+  }
 
-	int stop_targetting_this_thing = 0;
+  int stop_targetting_this_thing = 0;
 
-	// check to see if the target is still alive
-	if ( targetp->flags[Object::Object_Flags::Should_be_dead] ) {
-		stop_targetting_this_thing = 1;
-	}
+  // check to see if the target is still alive
+  if ( targetp->flags[Object::Object_Flags::Should_be_dead] ) {
+    stop_targetting_this_thing = 1;
+  }
 
-	Player->target_is_dying = FALSE;
-	ship	*target_shipp = NULL;
-	
-	if ( targetp->type == OBJ_SHIP ) {
-		Assert ( targetp->instance >=0 && targetp->instance < MAX_SHIPS );
-		target_shipp = &Ships[targetp->instance];
-		Player->target_is_dying = target_shipp->flags[Ship::Ship_Flags::Dying];
+  Player->target_is_dying = FALSE;
+  ship  *target_shipp = NULL;
+  
+  if ( targetp->type == OBJ_SHIP ) {
+    Assert ( targetp->instance >=0 && targetp->instance < MAX_SHIPS );
+    target_shipp = &Ships[targetp->instance];
+    Player->target_is_dying = target_shipp->flags[Ship::Ship_Flags::Dying];
 
-		// If it is warping out (or exploded), turn off targeting
-		if ( target_shipp->flags[Ship::Ship_Flags::Depart_warp] || target_shipp->flags[Ship::Ship_Flags::Exploded] ) {
-			stop_targetting_this_thing = 1;
-		}
-	}
+    // If it is warping out (or exploded), turn off targeting
+    if ( target_shipp->flags[Ship::Ship_Flags::Depart_warp] || target_shipp->flags[Ship::Ship_Flags::Exploded] ) {
+      stop_targetting_this_thing = 1;
+    }
+  }
 
-	// Check if can still be seen in Nebula
-	if ( hud_target_invalid_awacs(targetp) ) {
-		stop_targetting_this_thing = 1;
-	}
+  // Check if can still be seen in Nebula
+  if ( hud_target_invalid_awacs(targetp) ) {
+    stop_targetting_this_thing = 1;
+  }
 
-	// If this was found to be something we shouldn't
-	// target anymore, just remove it
-	if ( stop_targetting_this_thing )	{
-		Player_ai->target_objnum = -1;
-		Player_ai->targeted_subsys = NULL;
-		hud_stop_looped_locking_sounds();
-	}
-	
-	if (Player->target_is_dying) {
-		hud_stop_looped_locking_sounds();
-		if ( Players[Player_num].flags & PLAYER_FLAGS_AUTO_TARGETING ) {
-			hud_target_auto_target_next();
-		}
-	}
+  // If this was found to be something we shouldn't
+  // target anymore, just remove it
+  if ( stop_targetting_this_thing )  {
+    Player_ai->target_objnum = -1;
+    Player_ai->targeted_subsys = NULL;
+    hud_stop_looped_locking_sounds();
+  }
+  
+  if (Player->target_is_dying) {
+    hud_stop_looped_locking_sounds();
+    if ( Players[Player_num].flags & PLAYER_FLAGS_AUTO_TARGETING ) {
+      hud_target_auto_target_next();
+    }
+  }
 
-	// Switch to battle track when a targeted ship is hostile (it attacks you) and within BATTLE_START_MIN_TARGET_DIST
-	if (targetp->type == OBJ_SHIP && Event_Music_battle_started == 0 ) {
-		Assert( target_shipp != NULL );
+  // Switch to battle track when a targeted ship is hostile (it attacks you) and within BATTLE_START_MIN_TARGET_DIST
+  if (targetp->type == OBJ_SHIP && Event_Music_battle_started == 0 ) {
+    Assert( target_shipp != NULL );
 
-		// Goober5000
-		if (iff_x_attacks_y(target_shipp->team, Player_ship->team))
-		{
-			float	dist_to_target;
+    // Goober5000
+    if (iff_x_attacks_y(target_shipp->team, Player_ship->team))
+    {
+      float  dist_to_target;
 
-			dist_to_target = vm_vec_dist_quick(&targetp->pos, &Player_obj->pos);
-			if (dist_to_target < BATTLE_START_MIN_TARGET_DIST) {
+      dist_to_target = vm_vec_dist_quick(&targetp->pos, &Player_obj->pos);
+      if (dist_to_target < BATTLE_START_MIN_TARGET_DIST) {
 
-				// If the target has an AI class of none, it is a Cargo, NavBuoy or other non-aggressive
-				// ship, so don't start the battle music	
-				if (stricmp(Ai_class_names[Ai_info[target_shipp->ai_index].ai_class], NOX("none")))
-					event_music_battle_start();
-			}
-		}
-	}
+        // If the target has an AI class of none, it is a Cargo, NavBuoy or other non-aggressive
+        // ship, so don't start the battle music  
+        if (stricmp(Ai_class_names[Ai_info[target_shipp->ai_index].ai_class], NOX("none")))
+          event_music_battle_start();
+      }
+    }
+  }
 
-	// Make sure that the player isn't targeting a 3rd stage local ssm
-	if (Player_ai->target_objnum >= 0 && Objects[Player_ai->target_objnum].type == OBJ_WEAPON)
-	{
-		if (Weapons[Objects[Player_ai->target_objnum].instance].lssm_stage==3)
-		{
-			set_target_objnum( Player_ai, -1 );
-			hud_lock_reset();
-		}
-	}
+  // Make sure that the player isn't targeting a 3rd stage local ssm
+  if (Player_ai->target_objnum >= 0 && Objects[Player_ai->target_objnum].type == OBJ_WEAPON)
+  {
+    if (Weapons[Objects[Player_ai->target_objnum].instance].lssm_stage==3)
+    {
+      set_target_objnum( Player_ai, -1 );
+      hud_lock_reset();
+    }
+  }
 
-	// Since we need to reference the player's target integrity in several places this upcoming 
-	// frame, only calculate once here
-	if ( target_shipp ) {
-		Pl_target_integrity = get_hull_pct(targetp);
-	}
+  // Since we need to reference the player's target integrity in several places this upcoming 
+  // frame, only calculate once here
+  if ( target_shipp ) {
+    Pl_target_integrity = get_hull_pct(targetp);
+  }
 
-	// Update cargo scanning
-	hud_update_cargo_scan_sound();
+  // Update cargo scanning
+  hud_update_cargo_scan_sound();
 
-	if ( Viewer_mode & ( VM_EXTERNAL | VM_WARP_CHASE ) ) {
-		Player->cargo_inspect_time = 0;
-		player_stop_cargo_scan_sound();
-	}
+  if ( Viewer_mode & ( VM_EXTERNAL | VM_WARP_CHASE ) ) {
+    Player->cargo_inspect_time = 0;
+    player_stop_cargo_scan_sound();
+  }
 
-	hud_update_target_static();
-	if ( (targetp->instance >=0) && (targetp->instance < MAX_SHIPS) ) {
-		hud_update_ship_status(targetp);
-	}
+  hud_update_target_static();
+  if ( (targetp->instance >=0) && (targetp->instance < MAX_SHIPS) ) {
+    hud_update_ship_status(targetp);
+  }
 }
 
 /**
@@ -1569,9 +1569,9 @@ void hud_update_frame(float frametime)
  */
 void hud_show_asteroid_brackets()
 {
-	if ( hud_sensors_ok(Player_ship, 0) ) {
-		asteroid_show_brackets();
-	}
+  if ( hud_sensors_ok(Player_ship, 0) ) {
+    asteroid_show_brackets();
+  }
 }
 
 /**
@@ -1579,54 +1579,54 @@ void hud_show_asteroid_brackets()
  */
 void hud_render_preprocess(float frametime)
 {
-	Player->subsys_in_view = -1;
-	hud_target_clear_display_list();
+  Player->subsys_in_view = -1;
+  hud_target_clear_display_list();
 
-	if ( (Game_detail_flags & DETAIL_FLAG_HUD) && (supernova_active() >= 3) ) {
-		return;
-	}
+  if ( (Game_detail_flags & DETAIL_FLAG_HUD) && (supernova_active() >= 3) ) {
+    return;
+  }
 
-	if ( hud_disabled() ) {
-		return;
-	}
+  if ( hud_disabled() ) {
+    return;
+  }
 
-	if ( Viewer_mode & ( VM_DEAD_VIEW ) ) {
-		return;
-	}
+  if ( Viewer_mode & ( VM_DEAD_VIEW ) ) {
+    return;
+  }
 
-	if ( Viewer_mode & (VM_EXTERNAL | VM_WARP_CHASE | VM_PADLOCK_ANY ) ) {
-		// If the player is warping out, don't draw the targeting gauges
-		Assert(Player != NULL);
-		if ( Player->control_mode != PCM_NORMAL ) {
-			return;
-		}
-	}
-	
-	// process targeting data around any message sender
-	hud_show_message_sender();
+  if ( Viewer_mode & (VM_EXTERNAL | VM_WARP_CHASE | VM_PADLOCK_ANY ) ) {
+    // If the player is warping out, don't draw the targeting gauges
+    Assert(Player != NULL);
+    if ( Player->control_mode != PCM_NORMAL ) {
+      return;
+    }
+  }
+  
+  // process targeting data around any message sender
+  hud_show_message_sender();
 
-	// if messages are disabled then skip everything else
-	if ( hud_disabled_except_messages() ) {
-		return;
-	}
+  // if messages are disabled then skip everything else
+  if ( hud_disabled_except_messages() ) {
+    return;
+  }
 
-	// process navigation stuff
-	hud_draw_navigation();
+  // process navigation stuff
+  hud_draw_navigation();
 
-	// process current selection set, if any
-	hud_show_selection_set();
+  // process current selection set, if any
+  hud_show_selection_set();
 
-	// process asteroid brackets if necessary
-	hud_show_asteroid_brackets();
+  // process asteroid brackets if necessary
+  hud_show_asteroid_brackets();
 
-	// process targeting data around the current target
-	hud_show_targeting_gauges(frametime);
+  // process targeting data around the current target
+  hud_show_targeting_gauges(frametime);
 
-	// process brackets and distance to remote detonate missile
-	hud_process_remote_detonate_missile();
+  // process brackets and distance to remote detonate missile
+  hud_process_remote_detonate_missile();
 
-	// process any incoming missiles
-	hud_process_homing_missiles();
+  // process any incoming missiles
+  hud_process_homing_missiles();
 }
 
 HudGaugeMissionTime::HudGaugeMissionTime():
@@ -1636,58 +1636,58 @@ HudGauge(HUD_OBJECT_MISSION_TIME, HUD_MISSION_TIME, false, false, (VM_EXTERNAL |
 
 void HudGaugeMissionTime::initTextOffsets(int x, int y)
 {
-	time_text_offsets[0] = x;
-	time_text_offsets[1] = y;
+  time_text_offsets[0] = x;
+  time_text_offsets[1] = y;
 }
 
 void HudGaugeMissionTime::initValueOffsets(int x, int y)
 {
-	time_val_offsets[0] = x;
-	time_val_offsets[1] = y;
+  time_val_offsets[0] = x;
+  time_val_offsets[1] = y;
 }
 
 void HudGaugeMissionTime::initBitmaps(const char *fname)
 {
-	time_gauge.first_frame = bm_load_animation(fname, &time_gauge.num_frames);
+  time_gauge.first_frame = bm_load_animation(fname, &time_gauge.num_frames);
 
-	if ( time_gauge.first_frame == -1 ) {
-		Warning(LOCATION, "Could not load in ani: %s\n", fname);
-	}
+  if ( time_gauge.first_frame == -1 ) {
+    Warning(LOCATION, "Could not load in ani: %s\n", fname);
+  }
 }
 
 void HudGaugeMissionTime::pageIn()
 {
-	bm_page_in_aabitmap(time_gauge.first_frame, time_gauge.num_frames );
+  bm_page_in_aabitmap(time_gauge.first_frame, time_gauge.num_frames );
 }
 
 void HudGaugeMissionTime::render(float frametime)
 {
-	float mission_time, time_comp;
-	int minutes=0;
-	int seconds=0;
-	
-	mission_time = f2fl(Missiontime);  // convert to seconds
+  float mission_time, time_comp;
+  int minutes=0;
+  int seconds=0;
+  
+  mission_time = f2fl(Missiontime);  // convert to seconds
 
-	minutes=(int)(mission_time/60);
-	seconds=(int)mission_time%60;
+  minutes=(int)(mission_time/60);
+  seconds=(int)mission_time%60;
 
-	setGaugeColor();
+  setGaugeColor();
 
-	// blit background frame
-	if ( time_gauge.first_frame >= 0 ) {
-		renderBitmap(time_gauge.first_frame, position[0], position[1]);				
-	}
+  // blit background frame
+  if ( time_gauge.first_frame >= 0 ) {
+    renderBitmap(time_gauge.first_frame, position[0], position[1]);        
+  }
 
-	// print out mission time in MM:SS format
-	renderPrintf(position[0] + time_text_offsets[0], position[1] + time_text_offsets[1], NOX("%02d:%02d"), minutes, seconds);
+  // print out mission time in MM:SS format
+  renderPrintf(position[0] + time_text_offsets[0], position[1] + time_text_offsets[1], NOX("%02d:%02d"), minutes, seconds);
 
-	// display time compression as xN
-	time_comp = f2fl(Game_time_compression);
-	if ( time_comp < 1 ) {
-		renderPrintf(position[0] + time_val_offsets[0], position[1] + time_val_offsets[1], /*XSTR( "x%.1f", 215), time_comp)*/ NOX("%.2f"), time_comp);
-	} else {
-		renderPrintf(position[0] + time_val_offsets[0], position[1] + time_val_offsets[1], XSTR( "x%.2f", 216), time_comp);
-	}
+  // display time compression as xN
+  time_comp = f2fl(Game_time_compression);
+  if ( time_comp < 1 ) {
+    renderPrintf(position[0] + time_val_offsets[0], position[1] + time_val_offsets[1], /*XSTR( "x%.1f", 215), time_comp)*/ NOX("%.2f"), time_comp);
+  } else {
+    renderPrintf(position[0] + time_val_offsets[0], position[1] + time_val_offsets[1], XSTR( "x%.2f", 216), time_comp);
+  }
 }
 
 /**
@@ -1695,19 +1695,19 @@ void HudGaugeMissionTime::render(float frametime)
  */
 void hud_maybe_display_supernova()
 {
-	float time_left;
+  float time_left;
 
-	time_left = supernova_time_left();
-	if(time_left < 0.0f){
-		return;
-	}
+  time_left = supernova_time_left();
+  if(time_left < 0.0f){
+    return;
+  }
 
-	gr_set_color_fast(&Color_bright_red);
-	if (Lcl_pl) {
-		gr_printf(Supernova_coords[gr_screen.res][0], Supernova_coords[gr_screen.res][1], "Wybuch supernowej: %.2f s", time_left);
-	} else {
-		gr_printf(Supernova_coords[gr_screen.res][0], Supernova_coords[gr_screen.res][1], "Supernova Warning: %.2f s", time_left);
-	}
+  gr_set_color_fast(&Color_bright_red);
+  if (Lcl_pl) {
+    gr_printf(Supernova_coords[gr_screen.res][0], Supernova_coords[gr_screen.res][1], "Wybuch supernowej: %.2f s", time_left);
+  } else {
+    gr_printf(Supernova_coords[gr_screen.res][0], Supernova_coords[gr_screen.res][1], "Supernova Warning: %.2f s", time_left);
+  }
 }
 
 /**
@@ -1715,101 +1715,101 @@ void hud_maybe_display_supernova()
  */
 void hud_render_all()
 {
-	int i;
+  int i;
 
-	hud_render_gauges();
+  hud_render_gauges();
 
-	// start rendering cockpit dependent gauges if possible
-	for ( i = 0; i < (int)Player_displays.size(); ++i ) {
-		hud_render_gauges(i);
-	}
+  // start rendering cockpit dependent gauges if possible
+  for ( i = 0; i < (int)Player_displays.size(); ++i ) {
+    hud_render_gauges(i);
+  }
 
-	hud_clear_msg_buffer();
+  hud_clear_msg_buffer();
 
-	// set font back the way it was
-	font::set_font(font::FONT1);
+  // set font back the way it was
+  font::set_font(font::FONT1);
 }
 
 void hud_render_gauges(int cockpit_display_num)
 {
-	size_t j, num_gauges;
-	ship_info* sip = &Ship_info[Player_ship->ship_info_index];
-	int render_target = -1;
+  size_t j, num_gauges;
+  ship_info* sip = &Ship_info[Player_ship->ship_info_index];
+  int render_target = -1;
 
-	if ( cockpit_display_num >= 0 ) {
-		if ( sip->cockpit_model_num < 0 ) {
-			return;
-		}
+  if ( cockpit_display_num >= 0 ) {
+    if ( sip->cockpit_model_num < 0 ) {
+      return;
+    }
 
-		if ( !sip->hud_enabled ) {
-			return;
-		}
+    if ( !sip->hud_enabled ) {
+      return;
+    }
 
-		render_target = ship_start_render_cockpit_display(cockpit_display_num);
+    render_target = ship_start_render_cockpit_display(cockpit_display_num);
 
-		if ( render_target <= 0 ) {
-			return;
-		}
-	} else {
-		if( supernova_active() >= 3 ) {
-			return;
-		}
-	}
+    if ( render_target <= 0 ) {
+      return;
+    }
+  } else {
+    if( supernova_active() >= 3 ) {
+      return;
+    }
+  }
 
-	// Check if this ship has its own HUD gauges. 
-	if ( sip->hud_enabled ) {
-		num_gauges = sip->hud_gauges.size();
+  // Check if this ship has its own HUD gauges. 
+  if ( sip->hud_enabled ) {
+    num_gauges = sip->hud_gauges.size();
 
-		for(j = 0; j < num_gauges; j++) {
-			GR_DEBUG_SCOPE("Render HUD gauge");
+    for(j = 0; j < num_gauges; j++) {
+      GR_DEBUG_SCOPE("Render HUD gauge");
 
-			// only preprocess gauges if we're not rendering to cockpit
-			if ( cockpit_display_num < 0 ) {
-				sip->hud_gauges[j]->preprocess();
-			}
+      // only preprocess gauges if we're not rendering to cockpit
+      if ( cockpit_display_num < 0 ) {
+        sip->hud_gauges[j]->preprocess();
+      }
 
-			sip->hud_gauges[j]->onFrame(flFrametime);
+      sip->hud_gauges[j]->onFrame(flFrametime);
 
-			if ( !sip->hud_gauges[j]->setupRenderCanvas(render_target) ) {
-				continue;
-			}
+      if ( !sip->hud_gauges[j]->setupRenderCanvas(render_target) ) {
+        continue;
+      }
 
-			if ( !sip->hud_gauges[j]->canRender() ) {
-				continue;
-			}
+      if ( !sip->hud_gauges[j]->canRender() ) {
+        continue;
+      }
 
-			sip->hud_gauges[j]->resetClip();
-			sip->hud_gauges[j]->setFont();
-			sip->hud_gauges[j]->render(flFrametime);
-		}
-	} else {
-		num_gauges = default_hud_gauges.size();
+      sip->hud_gauges[j]->resetClip();
+      sip->hud_gauges[j]->setFont();
+      sip->hud_gauges[j]->render(flFrametime);
+    }
+  } else {
+    num_gauges = default_hud_gauges.size();
 
-		for(j = 0; j < num_gauges; j++) {
-			GR_DEBUG_SCOPE("Render HUD gauge");
+    for(j = 0; j < num_gauges; j++) {
+      GR_DEBUG_SCOPE("Render HUD gauge");
 
-			default_hud_gauges[j]->preprocess();
+      default_hud_gauges[j]->preprocess();
 
-			default_hud_gauges[j]->onFrame(flFrametime);
+      default_hud_gauges[j]->onFrame(flFrametime);
 
-			if ( !default_hud_gauges[j]->canRender() ) {
-				continue;
-			}
+      if ( !default_hud_gauges[j]->canRender() ) {
+        continue;
+      }
 
-			default_hud_gauges[j]->resetClip();
-			default_hud_gauges[j]->setFont();
-			default_hud_gauges[j]->render(flFrametime);
-		}
-	}
+      default_hud_gauges[j]->resetClip();
+      default_hud_gauges[j]->setFont();
+      default_hud_gauges[j]->render(flFrametime);
+    }
+  }
 
-	if ( cockpit_display_num >= 0 ) {
-		ship_end_render_cockpit_display(cockpit_display_num);
+  if ( cockpit_display_num >= 0 ) {
+    ship_end_render_cockpit_display(cockpit_display_num);
 
-		if ( gr_screen.rendering_to_texture != -1 ) {
-			// are we still are rendering to a texture at this point? uh oh.
-			bm_set_render_target(-1);
-		}
-	}
+    if ( gr_screen.rendering_to_texture != -1 ) {
+      // are we still are rendering to a texture at this point? uh oh.
+      bm_set_render_target(-1);
+    }
+  }
 }
 
 /**
@@ -1819,15 +1819,15 @@ void hud_render_gauges(int cockpit_display_num)
  */
 void hud_stop_looped_engine_sounds()
 {
-	if ( Player_engine_snd_loop > -1 )	{
-		snd_stop(Player_engine_snd_loop);
-		Player_engine_snd_loop = -1;
-	}
+  if ( Player_engine_snd_loop > -1 )  {
+    snd_stop(Player_engine_snd_loop);
+    Player_engine_snd_loop = -1;
+  }
 }
 
-#define ZERO_PERCENT			0.01f
-#define ENGINE_MAX_VOL		1.0f
-#define ENGINE_MAX_PITCH	44100
+#define ZERO_PERCENT      0.01f
+#define ENGINE_MAX_VOL    1.0f
+#define ENGINE_MAX_PITCH  44100
 
 /**
  * @brief If the throttle has changed, modify the sound
@@ -1837,56 +1837,56 @@ void hud_stop_looped_engine_sounds()
  */
 void update_throttle_sound()
 {
-	float percent_throttle;
+  float percent_throttle;
 
-	if((Game_mode & GM_MULTIPLAYER) && (Net_player->flags & NETINFO_FLAG_OBSERVER)){
-		if(Player_engine_snd_loop != -1){
-			snd_stop(Player_engine_snd_loop);
-			Player_engine_snd_loop = -1;
-		}
+  if((Game_mode & GM_MULTIPLAYER) && (Net_player->flags & NETINFO_FLAG_OBSERVER)){
+    if(Player_engine_snd_loop != -1){
+      snd_stop(Player_engine_snd_loop);
+      Player_engine_snd_loop = -1;
+    }
 
-		return;
-	}
+    return;
+  }
 
-	if ( timestamp_elapsed(throttle_sound_check_id) ) {
+  if ( timestamp_elapsed(throttle_sound_check_id) ) {
 
-		throttle_sound_check_id = timestamp(THROTTLE_SOUND_CHECK_INTERVAL);
-	
-		if ( object_get_gliding(Player_obj) ) {	// Backslash
-			percent_throttle = Player_obj->phys_info.forward_thrust;
-		} else if ( Ships[Player_obj->instance].current_max_speed == 0 ) {
-			percent_throttle = Player_obj->phys_info.fspeed / Ship_info[Ships[Player_obj->instance].ship_info_index].max_speed;
-		} else {
-			percent_throttle = Player_obj->phys_info.fspeed / Ships[Player_obj->instance].current_max_speed;
-		}
+    throttle_sound_check_id = timestamp(THROTTLE_SOUND_CHECK_INTERVAL);
+  
+    if ( object_get_gliding(Player_obj) ) {  // Backslash
+      percent_throttle = Player_obj->phys_info.forward_thrust;
+    } else if ( Ships[Player_obj->instance].current_max_speed == 0 ) {
+      percent_throttle = Player_obj->phys_info.fspeed / Ship_info[Ships[Player_obj->instance].ship_info_index].max_speed;
+    } else {
+      percent_throttle = Player_obj->phys_info.fspeed / Ships[Player_obj->instance].current_max_speed;
+    }
 
-		if ( percent_throttle != last_percent_throttle || Player_engine_snd_loop == -1 ) {
+    if ( percent_throttle != last_percent_throttle || Player_engine_snd_loop == -1 ) {
 
-			if ( percent_throttle < ZERO_PERCENT ) {
-				if ( Player_engine_snd_loop > -1 )	{
-					snd_stop(Player_engine_snd_loop); // Backslash - otherwise, long engine loops keep playing
-					Player_engine_snd_loop = -1;
-				}
-			}
-			else {
-				if ( Player_engine_snd_loop == -1 ){
-					Player_engine_snd_loop = snd_play_looping( &Snds[ship_get_sound(Player_obj, SND_ENGINE)], 0.0f , -1, -1, percent_throttle * ENGINE_MAX_VOL, FALSE);
-				} else {
-					// The sound may have been trashed at the low-level if sound channel overflow.
-					// TODO: implement system where certain sounds cannot be interrupted (priority?)
-					if ( snd_is_playing(Player_engine_snd_loop) ) {
-						snd_set_volume(Player_engine_snd_loop, percent_throttle * ENGINE_MAX_VOL);
-					}
-					else {
-						Player_engine_snd_loop = -1;
-					}
-				}
-			}
-		}	// end if (percent_throttle != last_percent_throttle)
+      if ( percent_throttle < ZERO_PERCENT ) {
+        if ( Player_engine_snd_loop > -1 )  {
+          snd_stop(Player_engine_snd_loop); // Backslash - otherwise, long engine loops keep playing
+          Player_engine_snd_loop = -1;
+        }
+      }
+      else {
+        if ( Player_engine_snd_loop == -1 ){
+          Player_engine_snd_loop = snd_play_looping( &Snds[ship_get_sound(Player_obj, SND_ENGINE)], 0.0f , -1, -1, percent_throttle * ENGINE_MAX_VOL, FALSE);
+        } else {
+          // The sound may have been trashed at the low-level if sound channel overflow.
+          // TODO: implement system where certain sounds cannot be interrupted (priority?)
+          if ( snd_is_playing(Player_engine_snd_loop) ) {
+            snd_set_volume(Player_engine_snd_loop, percent_throttle * ENGINE_MAX_VOL);
+          }
+          else {
+            Player_engine_snd_loop = -1;
+          }
+        }
+      }
+    }  // end if (percent_throttle != last_percent_throttle)
 
-		last_percent_throttle = percent_throttle;
+    last_percent_throttle = percent_throttle;
 
-	}	// end if ( timestamp_elapsed(throttle_sound_check_id) )
+  }  // end if ( timestamp_elapsed(throttle_sound_check_id) )
 }
 
 /**
@@ -1895,17 +1895,17 @@ void update_throttle_sound()
  */
 void hud_damage_popup_init()
 {
-	int i;
+  int i;
 
-	Damage_flash_bright = 0;
-	Damage_flash_timer =	1;
+  Damage_flash_bright = 0;
+  Damage_flash_timer =  1;
 
-	for ( i = 0; i < SUBSYSTEM_MAX; i++ ) {
-		Pl_hud_subsys_info[i].last_str = 1000.0f;
-		Pl_hud_subsys_info[i].flash_duration_timestamp = 1;
-		Pl_hud_next_flash_timestamp = 1;
-		Pl_hud_is_bright = 0;
-	}
+  for ( i = 0; i < SUBSYSTEM_MAX; i++ ) {
+    Pl_hud_subsys_info[i].last_str = 1000.0f;
+    Pl_hud_subsys_info[i].flash_duration_timestamp = 1;
+    Pl_hud_next_flash_timestamp = 1;
+    Pl_hud_is_bright = 0;
+  }
 }
 
 HudGaugeDamage::HudGaugeDamage():
@@ -1915,307 +1915,307 @@ HudGauge(HUD_OBJECT_DAMAGE, HUD_DAMAGE_GAUGE, false, false, (VM_EXTERNAL | VM_DE
 
 void HudGaugeDamage::initHeaderOffsets(int x, int y)
 {
-	header_offsets[0] = x;
-	header_offsets[1] = y;
+  header_offsets[0] = x;
+  header_offsets[1] = y;
 }
 
 void HudGaugeDamage::initHullIntegOffsets(int x, int y)
 {
-	hull_integ_offsets[0] = x;
-	hull_integ_offsets[1] = y;
+  hull_integ_offsets[0] = x;
+  hull_integ_offsets[1] = y;
 }
 
 void HudGaugeDamage::initHullIntegValueOffsetX(int x)
 {
-	hull_integ_val_offset_x = x;
+  hull_integ_val_offset_x = x;
 }
 
 void HudGaugeDamage::initMiddleFrameStartOffsetY(int y)
 {
-	middle_frame_start_offset_y = y;
+  middle_frame_start_offset_y = y;
 }
 
 void HudGaugeDamage::initSubsysIntegStartOffsets(int x, int y)
 {
-	subsys_integ_start_offsets[0] = x;
-	subsys_integ_start_offsets[1] = y;
+  subsys_integ_start_offsets[0] = x;
+  subsys_integ_start_offsets[1] = y;
 }
 
 void HudGaugeDamage::initSubsysIntegValueOffsetX(int x)
 {
-	subsys_integ_val_offset_x = x;
+  subsys_integ_val_offset_x = x;
 }
 
 void HudGaugeDamage::initBottomBgOffset(int offset)
 {
-	bottom_bg_offset = offset;
+  bottom_bg_offset = offset;
 }
 
 void HudGaugeDamage::initLineHeight(int h)
 {
-	line_h = h;
+  line_h = h;
 }
 
 void HudGaugeDamage::initBitmaps(const char *fname_top, const char *fname_middle, const char *fname_bottom)
 {
-	damage_top.first_frame = bm_load_animation(fname_top, &damage_top.num_frames);
-	if ( damage_top.first_frame == -1 ) {
-		Warning(LOCATION, "Could not load in the ani: %s\n", fname_top);
-	}
+  damage_top.first_frame = bm_load_animation(fname_top, &damage_top.num_frames);
+  if ( damage_top.first_frame == -1 ) {
+    Warning(LOCATION, "Could not load in the ani: %s\n", fname_top);
+  }
 
-	damage_middle.first_frame = bm_load_animation(fname_middle, &damage_middle.num_frames);
-	if ( damage_middle.first_frame == -1 ) {
-		Warning(LOCATION, "Could not load in the ani: %s\n", fname_middle);
-	}
+  damage_middle.first_frame = bm_load_animation(fname_middle, &damage_middle.num_frames);
+  if ( damage_middle.first_frame == -1 ) {
+    Warning(LOCATION, "Could not load in the ani: %s\n", fname_middle);
+  }
 
-	damage_bottom.first_frame = bm_load_animation(fname_bottom, &damage_bottom.num_frames);
-	if ( damage_bottom.first_frame == -1 ) {
-		Warning(LOCATION, "Could not load in the ani: %s\n", fname_bottom);
-	}
+  damage_bottom.first_frame = bm_load_animation(fname_bottom, &damage_bottom.num_frames);
+  if ( damage_bottom.first_frame == -1 ) {
+    Warning(LOCATION, "Could not load in the ani: %s\n", fname_bottom);
+  }
 }
 
 void HudGaugeDamage::initialize()
 {
-	Damage_flash_bright = false;
-	Damage_flash_timer = timestamp(1);
-	next_flash = timestamp(1);
-	flash_status = false;
+  Damage_flash_bright = false;
+  Damage_flash_timer = timestamp(1);
+  next_flash = timestamp(1);
+  flash_status = false;
 
-	HudGauge::initialize();
+  HudGauge::initialize();
 }
 
 void HudGaugeDamage::pageIn()
 {
-	bm_page_in_aabitmap(damage_top.first_frame, damage_top.num_frames);
-	bm_page_in_aabitmap(damage_middle.first_frame, damage_middle.num_frames);
-	bm_page_in_aabitmap(damage_bottom.first_frame, damage_bottom.num_frames);
+  bm_page_in_aabitmap(damage_top.first_frame, damage_top.num_frames);
+  bm_page_in_aabitmap(damage_middle.first_frame, damage_middle.num_frames);
+  bm_page_in_aabitmap(damage_bottom.first_frame, damage_bottom.num_frames);
 }
 
 void HudGaugeDamage::render(float frametime)
 {
-	model_subsystem	*psub;
-	ship_subsys			*pss;
-	int					screen_integrity, num, best_str, best_index;
-	float					strength, shield, integrity;
-	hud_subsys_damage	hud_subsys_list[SUBSYSTEM_MAX];	
+  model_subsystem  *psub;
+  ship_subsys      *pss;
+  int          screen_integrity, num, best_str, best_index;
+  float          strength, shield, integrity;
+  hud_subsys_damage  hud_subsys_list[SUBSYSTEM_MAX];  
 
-	if ( damage_top.first_frame == -1 ) {
-		return;
-	}
+  if ( damage_top.first_frame == -1 ) {
+    return;
+  }
 
-	if ( (The_mission.game_type & MISSION_TYPE_TRAINING) && Training_message_visible ){
-		return;
-	}
+  if ( (The_mission.game_type & MISSION_TYPE_TRAINING) && Training_message_visible ){
+    return;
+  }
 
-	if ( timestamp_elapsed(Damage_flash_timer) ) {
-		Damage_flash_timer = timestamp(DAMAGE_FLASH_TIME);
-		Damage_flash_bright = !Damage_flash_bright;
-	}
+  if ( timestamp_elapsed(Damage_flash_timer) ) {
+    Damage_flash_timer = timestamp(DAMAGE_FLASH_TIME);
+    Damage_flash_bright = !Damage_flash_bright;
+  }
 
-	num = 0;
-	for ( pss = GET_FIRST(&Player_ship->subsys_list); pss !=END_OF_LIST(&Player_ship->subsys_list); pss = GET_NEXT(pss) ) {
-		psub = pss->system_info;
-		strength = ship_get_subsystem_strength(Player_ship, psub->type);
-		if ( strength < 1 ) {
-			screen_integrity = fl2i(strength*100);
-			if ( screen_integrity == 0 ) {
-				if ( strength > 0 ) {
-					screen_integrity = 1;
-				}
-			}
+  num = 0;
+  for ( pss = GET_FIRST(&Player_ship->subsys_list); pss !=END_OF_LIST(&Player_ship->subsys_list); pss = GET_NEXT(pss) ) {
+    psub = pss->system_info;
+    strength = ship_get_subsystem_strength(Player_ship, psub->type);
+    if ( strength < 1 ) {
+      screen_integrity = fl2i(strength*100);
+      if ( screen_integrity == 0 ) {
+        if ( strength > 0 ) {
+          screen_integrity = 1;
+        }
+      }
 
-			if (strlen(psub->alt_dmg_sub_name))
-				hud_subsys_list[num].name = psub->alt_dmg_sub_name;
-			else {
-				hud_subsys_list[num].name = ship_subsys_get_name(pss);
-			}
+      if (strlen(psub->alt_dmg_sub_name))
+        hud_subsys_list[num].name = psub->alt_dmg_sub_name;
+      else {
+        hud_subsys_list[num].name = ship_subsys_get_name(pss);
+      }
 
-			hud_subsys_list[num].str  = screen_integrity;
-			hud_subsys_list[num].type = psub->type;
-			num++;
+      hud_subsys_list[num].str  = screen_integrity;
+      hud_subsys_list[num].type = psub->type;
+      num++;
 
-			if ( strength < Pl_hud_subsys_info[psub->type].last_str ) {
-				Pl_hud_subsys_info[psub->type].flash_duration_timestamp = timestamp(SUBSYS_DAMAGE_FLASH_DURATION);
-			}
-			Pl_hud_subsys_info[psub->type].last_str = strength;
+      if ( strength < Pl_hud_subsys_info[psub->type].last_str ) {
+        Pl_hud_subsys_info[psub->type].flash_duration_timestamp = timestamp(SUBSYS_DAMAGE_FLASH_DURATION);
+      }
+      Pl_hud_subsys_info[psub->type].last_str = strength;
 
-			// Don't display more than the max number of damaged subsystems.
-			if (num >= SUBSYSTEM_MAX)
-			{
-				break;
-			}
-		}
-	}
+      // Don't display more than the max number of damaged subsystems.
+      if (num >= SUBSYSTEM_MAX)
+      {
+        break;
+      }
+    }
+  }
 
-	// Build a list of damage values to display and then actually display them in a second pass
-	// This allows to hide the gauge when there is no damage
-	SCP_vector<DamageInfo> info_lines;
+  // Build a list of damage values to display and then actually display them in a second pass
+  // This allows to hide the gauge when there is no damage
+  SCP_vector<DamageInfo> info_lines;
 
-	auto sx = position[0] + subsys_integ_start_offsets[0];
-	auto sy = position[1] + subsys_integ_start_offsets[1];
-	auto bx = position[0];
-	auto by = position[1] + middle_frame_start_offset_y;
+  auto sx = position[0] + subsys_integ_start_offsets[0];
+  auto sy = position[1] + subsys_integ_start_offsets[1];
+  auto bx = position[0];
+  auto by = position[1] + middle_frame_start_offset_y;
 
-	int type;
-	for ( int i = 0; i < num; i++ ) {
-		best_str = 1000;
-		best_index = -1;
-		for ( int j = 0; j < num-i; j++ ) {
-			if ( hud_subsys_list[j].str < best_str ) {
-				best_str = hud_subsys_list[j].str;
-				best_index = j;
-			}
-		}
+  int type;
+  for ( int i = 0; i < num; i++ ) {
+    best_str = 1000;
+    best_index = -1;
+    for ( int j = 0; j < num-i; j++ ) {
+      if ( hud_subsys_list[j].str < best_str ) {
+        best_str = hud_subsys_list[j].str;
+        best_index = j;
+      }
+    }
 
-		Assert(best_index >= 0);
-		Assert(best_str >= 0);
+    Assert(best_index >= 0);
+    Assert(best_str >= 0);
 
-		DamageInfo info;
+    DamageInfo info;
 
-		info.draw_background = true;
-		info.background_x = bx;
-		info.background_y = by;
+    info.draw_background = true;
+    info.background_x = bx;
+    info.background_y = by;
 
-		type = hud_subsys_list[best_index].type;
-		if ( !timestamp_elapsed( Pl_hud_subsys_info[type].flash_duration_timestamp ) ) {
-			if ( timestamp_elapsed(next_flash) ) {
-				flash_status = !flash_status;
-				next_flash = timestamp(SUBSYS_DAMAGE_FLASH_INTERVAL);
-			}
-			
-			if ( flash_status ) {
-				int alpha_color = MIN(HUD_COLOR_ALPHA_MAX,HUD_color_alpha+HUD_BRIGHT_DELTA);
-				info.bright_index = alpha_color;
-			}
-		}
+    type = hud_subsys_list[best_index].type;
+    if ( !timestamp_elapsed( Pl_hud_subsys_info[type].flash_duration_timestamp ) ) {
+      if ( timestamp_elapsed(next_flash) ) {
+        flash_status = !flash_status;
+        next_flash = timestamp(SUBSYS_DAMAGE_FLASH_INTERVAL);
+      }
+      
+      if ( flash_status ) {
+        int alpha_color = MIN(HUD_COLOR_ALPHA_MAX,HUD_color_alpha+HUD_BRIGHT_DELTA);
+        info.bright_index = alpha_color;
+      }
+    }
 
-		// Draw the text
-		if ( best_str < 30 ) {
-			if ( best_str <= 0 ) {
-				if ( Damage_flash_bright ) {
-					info.color_override = &Color_bright_red;
-				} else {
-					info.color_override = &Color_red;
-				}
-			} else {
-				info.color_override = &Color_red;
-			}
-		}
+    // Draw the text
+    if ( best_str < 30 ) {
+      if ( best_str <= 0 ) {
+        if ( Damage_flash_bright ) {
+          info.color_override = &Color_bright_red;
+        } else {
+          info.color_override = &Color_red;
+        }
+      } else {
+        info.color_override = &Color_red;
+      }
+    }
 
-		const char *n_firstline;
-		n_firstline = strrchr(hud_subsys_list[best_index].name, '|');
-		if (n_firstline) {
-			// Print only the last line
-			n_firstline++;
-			info.name = n_firstline;
-		} else {
-			char temp_name[NAME_LENGTH];
-			strcpy_s(temp_name, hud_subsys_list[best_index].name);
-			hud_targetbox_truncate_subsys_name(temp_name);
-			info.name = temp_name;
-		}
+    const char *n_firstline;
+    n_firstline = strrchr(hud_subsys_list[best_index].name, '|');
+    if (n_firstline) {
+      // Print only the last line
+      n_firstline++;
+      info.name = n_firstline;
+    } else {
+      char temp_name[NAME_LENGTH];
+      strcpy_s(temp_name, hud_subsys_list[best_index].name);
+      hud_targetbox_truncate_subsys_name(temp_name);
+      info.name = temp_name;
+    }
 
-		char buf[128];
-		sprintf(buf, XSTR( "%d%%", 219), best_str);
-		hud_num_make_mono(buf, font_num);
+    char buf[128];
+    sprintf(buf, XSTR( "%d%%", 219), best_str);
+    hud_num_make_mono(buf, font_num);
 
-		int w, h;
-		gr_get_string_size(&w, &h, buf);
+    int w, h;
+    gr_get_string_size(&w, &h, buf);
 
-		info.value_x = position[0] + subsys_integ_val_offset_x - w;
-		info.value_y = sy;
-		info.strength = best_str;
+    info.value_x = position[0] + subsys_integ_val_offset_x - w;
+    info.value_y = sy;
+    info.strength = best_str;
 
-		info.name_x = sx;
-		info.name_y = sy;
+    info.name_x = sx;
+    info.name_y = sy;
 
-		by += line_h;
-		sy += line_h;
+    by += line_h;
+    sy += line_h;
 
-		info_lines.push_back(info);
+    info_lines.push_back(info);
 
-		// Remove it from hud_subsys_list
-		if ( best_index < (num-i-1) ) {
-			hud_subsys_list[best_index] = hud_subsys_list[num-i-1];
-		}
-	}
+    // Remove it from hud_subsys_list
+    if ( best_index < (num-i-1) ) {
+      hud_subsys_list[best_index] = hud_subsys_list[num-i-1];
+    }
+  }
 
-	hud_get_target_strength(Player_obj, &shield, &integrity);
-	screen_integrity = fl2i(integrity*100);
+  hud_get_target_strength(Player_obj, &shield, &integrity);
+  screen_integrity = fl2i(integrity*100);
 
-	// Show hull integrity if it's below 100% or if a subsystem is damaged
-	// The second case is just to make the display look complete
-	// The third case is there to make the gauge appear only if needed if the right option is set
-	if ( screen_integrity < 100 || !info_lines.empty() ) {
-		DamageInfo info;
+  // Show hull integrity if it's below 100% or if a subsystem is damaged
+  // The second case is just to make the display look complete
+  // The third case is there to make the gauge appear only if needed if the right option is set
+  if ( screen_integrity < 100 || !info_lines.empty() ) {
+    DamageInfo info;
 
-		info.name = XSTR( "Hull Integrity", 220);
+    info.name = XSTR( "Hull Integrity", 220);
 
-		if ( screen_integrity == 0 ) {
-			screen_integrity = 1;
-		}
-		info.strength = screen_integrity;
+    if ( screen_integrity == 0 ) {
+      screen_integrity = 1;
+    }
+    info.strength = screen_integrity;
 
-		char buf[128];
-		sprintf(buf, XSTR( "%d%%", 219), screen_integrity);
-		hud_num_make_mono(buf, font_num);
+    char buf[128];
+    sprintf(buf, XSTR( "%d%%", 219), screen_integrity);
+    hud_num_make_mono(buf, font_num);
 
-		int w, h;
-		gr_get_string_size(&w, &h, buf);
+    int w, h;
+    gr_get_string_size(&w, &h, buf);
 
-		if ( screen_integrity < 30 ) {
-			info.color_override = &Color_red;
-		}
+    if ( screen_integrity < 30 ) {
+      info.color_override = &Color_red;
+    }
 
-		info.name_x = position[0] + hull_integ_offsets[0];
-		info.name_y = position[1] + hull_integ_offsets[1];
+    info.name_x = position[0] + hull_integ_offsets[0];
+    info.name_y = position[1] + hull_integ_offsets[1];
 
-		info.value_x = position[0] + hull_integ_val_offset_x - w;
-		info.value_y = position[1] + hull_integ_offsets[1];
+    info.value_x = position[0] + hull_integ_val_offset_x - w;
+    info.value_y = position[1] + hull_integ_offsets[1];
 
-		// Insert at the top since hull is always first
-		info_lines.insert(info_lines.begin(), info);
-	}
+    // Insert at the top since hull is always first
+    info_lines.insert(info_lines.begin(), info);
+  }
 
-	if (info_lines.empty()) {
-		// Nothing to display, return before dawing anything
-		return;
-	}
+  if (info_lines.empty()) {
+    // Nothing to display, return before dawing anything
+    return;
+  }
 
-	setGaugeColor();
+  setGaugeColor();
 
-	// Draw the top of the damage pop-up
-	renderBitmap(damage_top.first_frame, position[0], position[1]);
-	renderString(position[0] + header_offsets[0], position[1] + header_offsets[1], XSTR( "damage", 218));
+  // Draw the top of the damage pop-up
+  renderBitmap(damage_top.first_frame, position[0], position[1]);
+  renderString(position[0] + header_offsets[0], position[1] + header_offsets[1], XSTR( "damage", 218));
 
-	// These variables keep track of where the background was drawn last so we can draw the bottom correctly
-	int last_bx = position[0];
-	int last_by = position[1] + middle_frame_start_offset_y;
-	for (auto& line : info_lines) {
-		if (line.draw_background) {
-			renderBitmap(damage_middle.first_frame, line.background_x, line.background_y);
-			last_bx = line.background_x;
-			last_by = line.background_y + line_h; // Add line_h here so that the footer is properly aligned
-		}
+  // These variables keep track of where the background was drawn last so we can draw the bottom correctly
+  int last_bx = position[0];
+  int last_by = position[1] + middle_frame_start_offset_y;
+  for (auto& line : info_lines) {
+    if (line.draw_background) {
+      renderBitmap(damage_middle.first_frame, line.background_x, line.background_y);
+      last_bx = line.background_x;
+      last_by = line.background_y + line_h; // Add line_h here so that the footer is properly aligned
+    }
 
-		char buf[128];
-		sprintf(buf, XSTR( "%d%%", 219), line.strength);
-		hud_num_make_mono(buf, font_num);
+    char buf[128];
+    sprintf(buf, XSTR( "%d%%", 219), line.strength);
+    hud_num_make_mono(buf, font_num);
 
-		if (line.color_override != nullptr) {
-			gr_set_color_fast(line.color_override);
-		} else {
-			setGaugeColor(line.bright_index);
-		}
+    if (line.color_override != nullptr) {
+      gr_set_color_fast(line.color_override);
+    } else {
+      setGaugeColor(line.bright_index);
+    }
 
-		renderString(line.name_x, line.name_y, line.name.c_str());
-		renderString(line.value_x, line.value_y, buf);
+    renderString(line.name_x, line.name_y, line.name.c_str());
+    renderString(line.value_x, line.value_y, buf);
 
-		setGaugeColor();
-	}
+    setGaugeColor();
+  }
 
-	setGaugeColor();
-	renderBitmap(damage_bottom.first_frame, last_bx, last_by + bottom_bg_offset);
+  setGaugeColor();
+  renderBitmap(damage_bottom.first_frame, last_bx, last_by + bottom_bg_offset);
 }
 
 /** 
@@ -2223,13 +2223,13 @@ void HudGaugeDamage::render(float frametime)
  */
 void hud_anim_init(hud_anim *ha, int sx, int sy, const char *filename)
 {
-	ha->first_frame		= -1;
-	ha->num_frames		= 0;
-	ha->total_time		= 0.0f;
-	ha->time_elapsed	= 0.0f;
-	ha->sx				= sx;
-	ha->sy				= sy;
-	strcpy_s(ha->filename, filename);
+  ha->first_frame    = -1;
+  ha->num_frames    = 0;
+  ha->total_time    = 0.0f;
+  ha->time_elapsed  = 0.0f;
+  ha->sx        = sx;
+  ha->sy        = sy;
+  strcpy_s(ha->filename, filename);
 }
 
 /**
@@ -2237,8 +2237,8 @@ void hud_anim_init(hud_anim *ha, int sx, int sy, const char *filename)
  */
 void hud_frames_init(hud_frames *hf)
 {
-	hf->first_frame		= -1;
-	hf->num_frames		= 0;
+  hf->first_frame    = -1;
+  hf->num_frames    = 0;
 }
 
 /**
@@ -2247,73 +2247,73 @@ void hud_frames_init(hud_frames *hf)
  */
 int hud_anim_load(hud_anim *ha)
 {
-	int		fps;
+  int    fps;
 
-	ha->first_frame = bm_load_animation(ha->filename, &ha->num_frames, &fps);
+  ha->first_frame = bm_load_animation(ha->filename, &ha->num_frames, &fps);
 
-	// Goober5000 - try to bypass the Volition bug
-	if ( (ha->first_frame == -1) && !stricmp(ha->filename, "FadeIconS-FreighterCW") )
-	{
-		ha->first_frame = bm_load_animation("FadeIconS-FreighterWC", &ha->num_frames, &fps);
-	}
+  // Goober5000 - try to bypass the Volition bug
+  if ( (ha->first_frame == -1) && !stricmp(ha->filename, "FadeIconS-FreighterCW") )
+  {
+    ha->first_frame = bm_load_animation("FadeIconS-FreighterWC", &ha->num_frames, &fps);
+  }
 
-	if ( ha->first_frame == -1 )
-	{
-		Warning(LOCATION, "Couldn't load hud animation for file '%s'", ha->filename);
-		return -1;
-	}
+  if ( ha->first_frame == -1 )
+  {
+    Warning(LOCATION, "Couldn't load hud animation for file '%s'", ha->filename);
+    return -1;
+  }
 
-	Assert(fps != 0);
-	ha->total_time = i2fl(ha->num_frames)/fps;
-	return 0;
+  Assert(fps != 0);
+  ha->total_time = i2fl(ha->num_frames)/fps;
+  return 0;
 }
 
 /**
  * @brief Render out a frame of a hud or briefing animation, based on how much time has elapsed
  * @note targetbox static was not implemented by :v:, also used for briefing icons & hud lock icons
  *
- * @param ha			Pointer to ::hud_anim info
- * @param frametime		Seconds elapsed since last frame
- * @param draw_alpha	Draw bitmap as alpha-bitmap (default 0)
- * @param loop			Anim should loop (default 1)
- * @param hold_last		Should last frame be held (default 0)
- * @param reverse		Play animation in reverse (default 0)
- * @param resize_mode		Resize for non-standard resolutions
- * @param mirror		Mirror along y-axis so icon points left instead of right
+ * @param ha      Pointer to ::hud_anim info
+ * @param frametime    Seconds elapsed since last frame
+ * @param draw_alpha  Draw bitmap as alpha-bitmap (default 0)
+ * @param loop      Anim should loop (default 1)
+ * @param hold_last    Should last frame be held (default 0)
+ * @param reverse    Play animation in reverse (default 0)
+ * @param resize_mode    Resize for non-standard resolutions
+ * @param mirror    Mirror along y-axis so icon points left instead of right
  *
  * @returns  1 on success, 0 on failure
  */
 int hud_anim_render(hud_anim *ha, float frametime, int draw_alpha, int loop, int hold_last, int reverse, int resize_mode, bool mirror)
 {
-	int framenum;
+  int framenum;
 
-	if ( ha->num_frames <= 0 ) {
-		if ( hud_anim_load(ha) == -1 )
-			return 0;
-	}
+  if ( ha->num_frames <= 0 ) {
+    if ( hud_anim_load(ha) == -1 )
+      return 0;
+  }
 
-	ha->time_elapsed += frametime;
-	if ( ha->time_elapsed > ha->total_time && loop == 0 && hold_last == 0) {
-		return 0;
-	}
+  ha->time_elapsed += frametime;
+  if ( ha->time_elapsed > ha->total_time && loop == 0 && hold_last == 0) {
+    return 0;
+  }
 
-	// Note; total_time for hud_anim is derived only from the fps, no need to pass it in
-	framenum = bm_get_anim_frame(ha->first_frame, ha->time_elapsed, 0.0f, loop != 0);
-	if (reverse) {
-		framenum = (ha->num_frames-1) - framenum;
-	}
+  // Note; total_time for hud_anim is derived only from the fps, no need to pass it in
+  framenum = bm_get_anim_frame(ha->first_frame, ha->time_elapsed, 0.0f, loop != 0);
+  if (reverse) {
+    framenum = (ha->num_frames-1) - framenum;
+  }
 
-	// Blit the bitmap for this frame
-	if(emp_should_blit_gauge()){
-		gr_set_bitmap(ha->first_frame + framenum);
-		if ( draw_alpha ){
-			gr_aabitmap(ha->sx, ha->sy, resize_mode, mirror);
-		} else {
-			gr_bitmap(ha->sx, ha->sy, resize_mode);
-		}
-	}
+  // Blit the bitmap for this frame
+  if(emp_should_blit_gauge()){
+    gr_set_bitmap(ha->first_frame + framenum);
+    if ( draw_alpha ){
+      gr_aabitmap(ha->sx, ha->sy, resize_mode, mirror);
+    } else {
+      gr_bitmap(ha->sx, ha->sy, resize_mode);
+    }
+  }
 
-	return 1;
+  return 1;
 }
 
 /**
@@ -2321,28 +2321,28 @@ int hud_anim_render(hud_anim *ha, float frametime, int draw_alpha, int loop, int
  */
 void hud_num_make_mono(char *num_str, int font_num)
 {
-	font::FSFont* fsFont = font::get_font(font_num);
+  font::FSFont* fsFont = font::get_font(font_num);
 
-	if (fsFont->getType() != font::VFNT_FONT)
-	{
-		// Only old volition fonts need this
-		return;
-	}
+  if (fsFont->getType() != font::VFNT_FONT)
+  {
+    // Only old volition fonts need this
+    return;
+  }
 
-	ubyte sc;
+  ubyte sc;
 
-	sc = lcl_get_font_index(font_num);
-	if (sc == 0) {
-		// specified font has no mono-spaced 1, make do with non-mono-spaced 1
-		return;
-	}
+  sc = lcl_get_font_index(font_num);
+  if (sc == 0) {
+    // specified font has no mono-spaced 1, make do with non-mono-spaced 1
+    return;
+  }
 
-	size_t len = strlen(num_str);
-	for (size_t i = 0; i < len; i++ ) {
-		if ( num_str[i] == '1' ) {
-			num_str[i] = (char)(sc + 1);
-		}
-	}
+  size_t len = strlen(num_str);
+  for (size_t i = 0; i < len; i++ ) {
+    if ( num_str[i] == '1' ) {
+      num_str[i] = (char)(sc + 1);
+    }
+  }
 }
 
 /**
@@ -2350,81 +2350,81 @@ void hud_num_make_mono(char *num_str, int font_num)
  */
 void hud_init_text_flash_gauge()
 {
-	strcpy_s(Hud_text_flash, "");
-	Hud_text_flash_timer = timestamp(0);
-	Hud_text_flash_interval = 0;
+  strcpy_s(Hud_text_flash, "");
+  Hud_text_flash_timer = timestamp(0);
+  Hud_text_flash_interval = 0;
 }
 
 void hud_start_text_flash(const char *txt, int t, int interval)
 {
-	// bogus
-	if(txt == NULL){
-		strcpy_s(Hud_text_flash, "");
-		return;
-	}
+  // bogus
+  if(txt == NULL){
+    strcpy_s(Hud_text_flash, "");
+    return;
+  }
 
-	// HACK. don't override EMP if its still going    :)
-	// An additional hack: don't interrupt other warnings if this is a missile launch alert (Swifty)
-	if(!timestamp_elapsed(Hud_text_flash_timer))
-		if( !stricmp(Hud_text_flash, NOX("Emp")) || !stricmp(txt, NOX("Launch")) )
-			return;
+  // HACK. don't override EMP if its still going    :)
+  // An additional hack: don't interrupt other warnings if this is a missile launch alert (Swifty)
+  if(!timestamp_elapsed(Hud_text_flash_timer))
+    if( !stricmp(Hud_text_flash, NOX("Emp")) || !stricmp(txt, NOX("Launch")) )
+      return;
 
-	strncpy(Hud_text_flash, txt, 500);
-	Hud_text_flash_timer = timestamp(t);
-	Hud_text_flash_interval = interval;
+  strncpy(Hud_text_flash, txt, 500);
+  Hud_text_flash_timer = timestamp(t);
+  Hud_text_flash_interval = interval;
 }
 
 HudGaugeTextWarnings::HudGaugeTextWarnings():
 HudGauge(HUD_OBJECT_TEXT_WARNINGS, HUD_TEXT_FLASH, true, false, (VM_EXTERNAL | VM_DEAD_VIEW | VM_WARP_CHASE | VM_PADLOCK_ANY | VM_OTHER_SHIP), 255, 255, 255)
 {
-	
+  
 }
 
 void HudGaugeTextWarnings::initialize()
 {
-	next_flash = timestamp(0);
-	flash_flags = false;
+  next_flash = timestamp(0);
+  flash_flags = false;
 
-	HudGauge::initialize();
+  HudGauge::initialize();
 }
 
 int HudGaugeTextWarnings::maybeTextFlash()
 {
-	if ( !timestamp_elapsed(Hud_text_flash_timer) ) {
-		if ( timestamp_elapsed(next_flash) ) {
-			next_flash = timestamp(Hud_text_flash_interval);
+  if ( !timestamp_elapsed(Hud_text_flash_timer) ) {
+    if ( timestamp_elapsed(next_flash) ) {
+      next_flash = timestamp(Hud_text_flash_interval);
 
-			// toggle between default and bright frames
-			flash_flags = !flash_flags;
-		}
-	}
+      // toggle between default and bright frames
+      flash_flags = !flash_flags;
+    }
+  }
 
-	return flash_flags;
+  return flash_flags;
 }
 
 void HudGaugeTextWarnings::render(float frametime)
 {
-	// note: Hud_text_flash globally allocated, address can't be NULL
-	if ( timestamp_elapsed(Hud_text_flash_timer) || Hud_text_flash[0] == '\0' ) {
-		return;
-	}
+  // note: Hud_text_flash globally allocated, address can't be NULL
+  if ( timestamp_elapsed(Hud_text_flash_timer) || Hud_text_flash[0] == '\0' ) {
+    return;
+  }
 
-	int w, h;
+  int w, h;
 
-	// string size
-	gr_get_string_size(&w, &h, Hud_text_flash);
+  // string size
+  gr_get_string_size(&w, &h, Hud_text_flash);
 
-	// set color
-	if(maybeTextFlash()){
-		setGaugeColor(HUD_C_DIM);
-		
-		// draw the box	
-		renderRect( (int)( (float)position[0] - (float)w / 2.0f - 1.0f), (int)((float)position[1] - 1.0f), w + 2, h + 1);
-	}
+  // set color
+  if(maybeTextFlash()){
+    setGaugeColor(HUD_C_DIM);
+    
+    // draw the box  
+    renderRect( (int)( (float)position[0] - (float)w / 2.0f - 1.0f), (int)((float)position[1] - 1.0f), w + 2, h + 1);
+  }
 
-	// string
-	setGaugeColor(HUD_C_BRIGHT);
-	renderString(fl2i((float)position[0] - ((float)w / 2.0f)), position[1], Hud_text_flash);
+  // string
+  setGaugeColor(HUD_C_BRIGHT);
+  renderString(fl2i((float)position[0] - ((float)w / 2.0f)), position[1], Hud_text_flash);
 }
 
 HudGaugeKills::HudGaugeKills():
@@ -2434,27 +2434,27 @@ HudGauge(HUD_OBJECT_KILLS, HUD_KILLS_GAUGE, false, false, (VM_EXTERNAL | VM_DEAD
 
 void HudGaugeKills::initBitmaps(const char *fname)
 {
-	Kills_gauge.first_frame = bm_load_animation(fname, &Kills_gauge.num_frames);
-	if ( Kills_gauge.first_frame == -1 ) {
-		Warning(LOCATION, "Could not load in the ani: %s\n", fname);
-	}
+  Kills_gauge.first_frame = bm_load_animation(fname, &Kills_gauge.num_frames);
+  if ( Kills_gauge.first_frame == -1 ) {
+    Warning(LOCATION, "Could not load in the ani: %s\n", fname);
+  }
 }
 
 void HudGaugeKills::initTextOffsets(int x, int y)
 {
-	text_offsets[0] = x;
-	text_offsets[1] = y;
+  text_offsets[0] = x;
+  text_offsets[1] = y;
 }
 
 void HudGaugeKills::initTextValueOffsets(int x, int y)
 {
-	text_value_offsets[0] = x;
-	text_value_offsets[1] = y;
+  text_value_offsets[0] = x;
+  text_value_offsets[1] = y;
 }
 
 void HudGaugeKills::pageIn()
 {
-	bm_page_in_aabitmap(Kills_gauge.first_frame, Kills_gauge.num_frames);
+  bm_page_in_aabitmap(Kills_gauge.first_frame, Kills_gauge.num_frames);
 }
 
 /**
@@ -2462,29 +2462,29 @@ void HudGaugeKills::pageIn()
  */
 void HudGaugeKills::render(float frametime)
 {
-	if ( Kills_gauge.first_frame < 0 ) {
-		return;
-	}
+  if ( Kills_gauge.first_frame < 0 ) {
+    return;
+  }
 
-	setGaugeColor();
+  setGaugeColor();
 
-	// Draw background
-	renderBitmap(Kills_gauge.first_frame, position[0], position[1]);	
-	renderString(position[0] + text_offsets[0], position[1] + text_offsets[1], XSTR( "kills:", 223));
+  // Draw background
+  renderBitmap(Kills_gauge.first_frame, position[0], position[1]);  
+  renderString(position[0] + text_offsets[0], position[1] + text_offsets[1], XSTR( "kills:", 223));
 
-	// Display how many kills the player has so far
-	char num_kills_string[32];
-	int	w,h;
+  // Display how many kills the player has so far
+  char num_kills_string[32];
+  int  w,h;
 
-	if ( !Player ) {
-		Int3();
-		return;
-	}
+  if ( !Player ) {
+    Int3();
+    return;
+  }
 
-	sprintf(num_kills_string, "%d", Player->stats.m_kill_count_ok);
+  sprintf(num_kills_string, "%d", Player->stats.m_kill_count_ok);
 
-	gr_get_string_size(&w, &h, num_kills_string);
-	renderString(position[0]+text_value_offsets[0]-w, position[1]+text_value_offsets[1], num_kills_string);
+  gr_get_string_size(&w, &h, num_kills_string);
+  renderString(position[0]+text_value_offsets[0]-w, position[1]+text_value_offsets[1], num_kills_string);
 }
 
 HudGaugeLag::HudGaugeLag():
@@ -2495,84 +2495,84 @@ HudGauge(HUD_OBJECT_LAG, HUD_LAG_GAUGE, false, false, (VM_EXTERNAL | VM_DEAD_VIE
 
 void HudGaugeLag::initBitmaps(const char *fname)
 {
-	Netlag_icon.first_frame = bm_load_animation(fname, &Netlag_icon.num_frames);
+  Netlag_icon.first_frame = bm_load_animation(fname, &Netlag_icon.num_frames);
 
-	if ( Netlag_icon.first_frame == -1 ) {
-		Warning(LOCATION, "Could not load in the netlag ani: %s\n", fname);
-	}
+  if ( Netlag_icon.first_frame == -1 ) {
+    Warning(LOCATION, "Could not load in the netlag ani: %s\n", fname);
+  }
 }
 
 void HudGaugeLag::pageIn()
 {
-	bm_page_in_aabitmap(Netlag_icon.first_frame, Netlag_icon.num_frames);
+  bm_page_in_aabitmap(Netlag_icon.first_frame, Netlag_icon.num_frames);
 }
 
 void HudGaugeLag::startFlashLag(int duration)
 {
-	flash_timer[0] = timestamp(duration);
+  flash_timer[0] = timestamp(duration);
 }
 
 bool HudGaugeLag::maybeFlashLag(bool flash_fast)
 {
-	bool draw_bright = false;
+  bool draw_bright = false;
 
-	if(!timestamp_elapsed(flash_timer[0])) {
-		if(timestamp_elapsed(flash_timer[1])) {
-			if(flash_fast) {
-				flash_timer[1] = timestamp(fl2i(TBOX_FLASH_INTERVAL/2.0f));
-			} else {
-				flash_timer[1] = timestamp(TBOX_FLASH_INTERVAL);
-			}
-			flash_flag = !flash_flag;
-		}
+  if(!timestamp_elapsed(flash_timer[0])) {
+    if(timestamp_elapsed(flash_timer[1])) {
+      if(flash_fast) {
+        flash_timer[1] = timestamp(fl2i(TBOX_FLASH_INTERVAL/2.0f));
+      } else {
+        flash_timer[1] = timestamp(TBOX_FLASH_INTERVAL);
+      }
+      flash_flag = !flash_flag;
+    }
 
-		if(flash_flag) {
-			draw_bright = true;
-		} 
-	}
+    if(flash_flag) {
+      draw_bright = true;
+    } 
+  }
 
-	return draw_bright;
+  return draw_bright;
 }
 
 void HudGaugeLag::render(float frametime)
 {
-	int lag_status;
+  int lag_status;
 
-	if( !(Game_mode & GM_MULTIPLAYER) ){
-		return;
-	}
+  if( !(Game_mode & GM_MULTIPLAYER) ){
+    return;
+  }
 
-	if ( Netlag_icon.first_frame == -1 ) {
-		Int3();
-		return;
-	}
+  if ( Netlag_icon.first_frame == -1 ) {
+    Int3();
+    return;
+  }
 
-	lag_status = multi_query_lag_status();
+  lag_status = multi_query_lag_status();
 
-	switch(lag_status) {
-	case 0:
-		// Draw the net lag icon flashing
-		startFlashLag();
-		if(maybeFlashLag()){
-			setGaugeColor(HUD_C_BRIGHT);
-		} else {
-			setGaugeColor();
-		}
-		renderBitmap(Netlag_icon.first_frame, position[0], position[1]);
-		break;
-	case 1:
-		// Draw the disconnected icon flashing fast
-		if(maybeFlashLag(true)){
-			setGaugeColor(HUD_C_BRIGHT);
-		} else {
-			setGaugeColor();
-		}
-		renderBitmap(Netlag_icon.first_frame+1, position[0], position[1]);
-		break;
-	default:
-		// Nothing to draw
-		return;
-	}
+  switch(lag_status) {
+  case 0:
+    // Draw the net lag icon flashing
+    startFlashLag();
+    if(maybeFlashLag()){
+      setGaugeColor(HUD_C_BRIGHT);
+    } else {
+      setGaugeColor();
+    }
+    renderBitmap(Netlag_icon.first_frame, position[0], position[1]);
+    break;
+  case 1:
+    // Draw the disconnected icon flashing fast
+    if(maybeFlashLag(true)){
+      setGaugeColor(HUD_C_BRIGHT);
+    } else {
+      setGaugeColor();
+    }
+    renderBitmap(Netlag_icon.first_frame+1, position[0], position[1]);
+    break;
+  default:
+    // Nothing to draw
+    return;
+  }
 }
 
 /**
@@ -2580,12 +2580,12 @@ void HudGaugeLag::render(float frametime)
  */
 void hud_support_view_init()
 {
-	Hud_support_view_fade = 1;
-	Hud_support_obj_sig = -1;
-	Hud_support_target_sig = -1;
-	Hud_support_objnum = -1;
-	Hud_support_view_active = 0;
-	Hud_support_view_abort = 0;
+  Hud_support_view_fade = 1;
+  Hud_support_obj_sig = -1;
+  Hud_support_target_sig = -1;
+  Hud_support_objnum = -1;
+  Hud_support_view_active = 0;
+  Hud_support_view_abort = 0;
 }
 
 /**
@@ -2593,8 +2593,8 @@ void hud_support_view_init()
  */
 void hud_support_view_start()
 {
-	Hud_support_view_active = 1;
-	Hud_support_view_fade = 1;
+  Hud_support_view_active = 1;
+  Hud_support_view_fade = 1;
 }
 
 /**
@@ -2604,23 +2604,23 @@ void hud_support_view_start()
  */
 void hud_support_view_stop(int stop_now)
 {
-	if ( stop_now ) {
-		Hud_support_view_active = 0;
-		Hud_support_view_fade = 1;
-		Hud_support_view_abort = 0;
-	} else {
-		Hud_support_view_fade = timestamp(2000);
-	}
+  if ( stop_now ) {
+    Hud_support_view_active = 0;
+    Hud_support_view_fade = 1;
+    Hud_support_view_abort = 0;
+  } else {
+    Hud_support_view_fade = timestamp(2000);
+  }
 
-	Hud_support_obj_sig = -1;
-	Hud_support_target_sig = -1;
-	Hud_support_objnum = -1;
+  Hud_support_obj_sig = -1;
+  Hud_support_target_sig = -1;
+  Hud_support_objnum = -1;
 }
 
 void hud_support_view_abort()
 {
-	hud_support_view_stop(0);
-	Hud_support_view_abort = 1;
+  hud_support_view_stop(0);
+  Hud_support_view_abort = 1;
 }
 
 /**
@@ -2635,69 +2635,69 @@ void hud_support_view_abort()
  */
 int hud_get_dock_time( object *docker_objp )
 {
-	ai_info	*aip;
-	object	*dockee_objp;
-	float		dist, rel_speed, docker_speed;
-	vec3d	rel_vel;
+  ai_info  *aip;
+  object  *dockee_objp;
+  float    dist, rel_speed, docker_speed;
+  vec3d  rel_vel;
 
-	aip = &Ai_info[Ships[docker_objp->instance].ai_index];
+  aip = &Ai_info[Ships[docker_objp->instance].ai_index];
 
-	// Get the dockee object pointer
-	if (aip->goal_objnum == -1) {
-		// This can happen when you target a support ship as it warps in
-		// just give a debug warning instead of a fault - taylor
-		mprintf(("'aip->goal_objnum == -1' in hud_get_dock_time(), line %i\n", __LINE__));
-		return 0;
-	}
+  // Get the dockee object pointer
+  if (aip->goal_objnum == -1) {
+    // This can happen when you target a support ship as it warps in
+    // just give a debug warning instead of a fault - taylor
+    mprintf(("'aip->goal_objnum == -1' in hud_get_dock_time(), line %i\n", __LINE__));
+    return 0;
+  }
 
-	dockee_objp = &Objects[aip->goal_objnum];
+  dockee_objp = &Objects[aip->goal_objnum];
 
-	// If the ship is docked, return 0
-	if ( dock_check_find_direct_docked_object(docker_objp, dockee_objp) )
-		return 0;
+  // If the ship is docked, return 0
+  if ( dock_check_find_direct_docked_object(docker_objp, dockee_objp) )
+    return 0;
 
-	vm_vec_sub(&rel_vel, &docker_objp->phys_info.vel, &dockee_objp->phys_info.vel);
-	rel_speed = vm_vec_mag_quick(&rel_vel);
+  vm_vec_sub(&rel_vel, &docker_objp->phys_info.vel, &dockee_objp->phys_info.vel);
+  rel_speed = vm_vec_mag_quick(&rel_vel);
 
-	dist = vm_vec_dist_quick(&dockee_objp->pos, &docker_objp->pos);
+  dist = vm_vec_dist_quick(&dockee_objp->pos, &docker_objp->pos);
 
-	docker_speed = docker_objp->phys_info.speed;
+  docker_speed = docker_objp->phys_info.speed;
 
-	if ( rel_speed <= docker_speed/2.0f) {	// This means the player is moving away fast from the support ship.
-		return (int) (dist/docker_speed);
-	} else {
-		float	d1;
-		float	d = dist;
-		float	time = 0.0f;
-		
-		if (rel_speed < 20.0f)
-			rel_speed = 20.0f;
+  if ( rel_speed <= docker_speed/2.0f) {  // This means the player is moving away fast from the support ship.
+    return (int) (dist/docker_speed);
+  } else {
+    float  d1;
+    float  d = dist;
+    float  time = 0.0f;
+    
+    if (rel_speed < 20.0f)
+      rel_speed = 20.0f;
 
-		// When far away, use max speed, not current speed.  Might not have sped up yet.
-		if (d > 100.0f) {
-			time += (d - 100.0f)/docker_objp->phys_info.max_vel.xyz.z;
-		}
+    // When far away, use max speed, not current speed.  Might not have sped up yet.
+    if (d > 100.0f) {
+      time += (d - 100.0f)/docker_objp->phys_info.max_vel.xyz.z;
+    }
 
-		// For mid-range, use current speed.
-		if (d > 60.0f) {
-			d1 = MIN(d, 100.0f);
+    // For mid-range, use current speed.
+    if (d > 60.0f) {
+      d1 = MIN(d, 100.0f);
 
-			time += (d1 - 60.0f)/rel_speed;
-		}
+      time += (d1 - 60.0f)/rel_speed;
+    }
 
-		// For nearby, ship will have to slow down a bit for docking maneuver.
-		if (d > 30.0f) {
-			d1 = MIN(d, 60.0f);
+    // For nearby, ship will have to slow down a bit for docking maneuver.
+    if (d > 30.0f) {
+      d1 = MIN(d, 60.0f);
 
-			time += (d1 - 30.0f)/5.0f;
-		}
+      time += (d1 - 30.0f)/5.0f;
+    }
 
-		// For very nearby, ship moves quite slowly.
-		d1 = MIN(d, 30.0f);
-		time += d1/7.5f;
+    // For very nearby, ship moves quite slowly.
+    d1 = MIN(d, 30.0f);
+    time += d1/7.5f;
 
-		return fl2i(time);
-	}
+    return fl2i(time);
+  }
 }
 
 /**
@@ -2708,81 +2708,81 @@ int hud_get_dock_time( object *docker_objp )
  */
 int hud_support_find_closest( int objnum )
 {
-	ship_obj		*sop;
-	ai_info		*aip;
-	object		*objp;
-	int i;
+  ship_obj    *sop;
+  ai_info    *aip;
+  object    *objp;
+  int i;
 
-	objp = &Objects[objnum];
+  objp = &Objects[objnum];
 
-	sop = GET_FIRST(&Ship_obj_list);
-	while(sop != END_OF_LIST(&Ship_obj_list)){
-		if ( Ship_info[Ships[Objects[sop->objnum].instance].ship_info_index].flags[Ship::Info_Flags::Support] ) {
-			int pship_index, sindex;
+  sop = GET_FIRST(&Ship_obj_list);
+  while(sop != END_OF_LIST(&Ship_obj_list)){
+    if ( Ship_info[Ships[Objects[sop->objnum].instance].ship_info_index].flags[Ship::Info_Flags::Support] ) {
+      int pship_index, sindex;
 
-			// make sure support ship is not dying
+      // make sure support ship is not dying
             auto shipp = &Ships[Objects[sop->objnum].instance];
             
-			if ( !(shipp->flags[Ship::Ship_Flags::Dying] || shipp->flags[Ship::Ship_Flags::Exploded]) ) {
+      if ( !(shipp->flags[Ship::Ship_Flags::Dying] || shipp->flags[Ship::Ship_Flags::Exploded]) ) {
 
-				Assert( objp->type == OBJ_SHIP );
-				aip = &Ai_info[Ships[Objects[sop->objnum].instance].ai_index];
-				pship_index = objp->instance;
+        Assert( objp->type == OBJ_SHIP );
+        aip = &Ai_info[Ships[Objects[sop->objnum].instance].ai_index];
+        pship_index = objp->instance;
 
-				// we must check all goals for this support ship -- not just the first one
-				for ( i = 0; i < MAX_AI_GOALS; i++ ) {
+        // we must check all goals for this support ship -- not just the first one
+        for ( i = 0; i < MAX_AI_GOALS; i++ ) {
 
-					// we can use == in the next statement (and should) since a ship will only ever be
-					// following one order at a time.
-					if ( aip->goals[i].ai_mode == AI_GOAL_REARM_REPAIR ) {
-						Assert( aip->goals[i].target_name );
-						sindex = ship_name_lookup( aip->goals[i].target_name );
-						if ( sindex == pship_index )
-							return sop->objnum;
-					}
-				}
-			}
-		}
-		sop = GET_NEXT(sop);
-	}
+          // we can use == in the next statement (and should) since a ship will only ever be
+          // following one order at a time.
+          if ( aip->goals[i].ai_mode == AI_GOAL_REARM_REPAIR ) {
+            Assert( aip->goals[i].target_name );
+            sindex = ship_name_lookup( aip->goals[i].target_name );
+            if ( sindex == pship_index )
+              return sop->objnum;
+          }
+        }
+      }
+    }
+    sop = GET_NEXT(sop);
+  }
 
-	return -1;
+  return -1;
 }
 
 void hud_support_view_update()
 {
-	if ( !Hud_support_view_active ) {
-		return;
-	}
+  if ( !Hud_support_view_active ) {
+    return;
+  }
 
-	if((Game_mode & GM_MULTIPLAYER) && ((Net_player->flags & NETINFO_FLAG_OBSERVER) || (Player_obj->type == OBJ_OBSERVER))){
-		return;
-	}
+  if((Game_mode & GM_MULTIPLAYER) && ((Net_player->flags & NETINFO_FLAG_OBSERVER) || (Player_obj->type == OBJ_OBSERVER))){
+    return;
+  }
 
-	// If we haven't determined yet who the rearm ship is, try to!
-	if (Hud_support_objnum == -1) {
-		Hud_support_objnum = hud_support_find_closest( OBJ_INDEX(Player_obj) );
-		if ( Hud_support_objnum >= 0 ) {
-			Hud_support_obj_sig = Objects[Hud_support_objnum].signature;
-			Hud_support_target_sig = Player_obj->signature;
-		}
-	} else {
-		// Check to see if support ship is still alive
-		if ( (Objects[Hud_support_objnum].signature != Hud_support_obj_sig) || (Hud_support_target_sig != Player_obj->signature) ) {
-			hud_support_view_stop(1);
-			return;
-		}
-	}
+  // If we haven't determined yet who the rearm ship is, try to!
+  if (Hud_support_objnum == -1) {
+    Hud_support_objnum = hud_support_find_closest( OBJ_INDEX(Player_obj) );
+    if ( Hud_support_objnum >= 0 ) {
+      Hud_support_obj_sig = Objects[Hud_support_objnum].signature;
+      Hud_support_target_sig = Player_obj->signature;
+    }
+  } else {
+    // Check to see if support ship is still alive
+    if ( (Objects[Hud_support_objnum].signature != Hud_support_obj_sig) || (Hud_support_target_sig != Player_obj->signature) ) {
+      hud_support_view_stop(1);
+      return;
+    }
+  }
 
-	if ( Hud_support_view_fade > 1 ) {
-		if ( timestamp_elapsed(Hud_support_view_fade) ) {
+  if ( Hud_support_view_fade > 1 ) {
+    if ( timestamp_elapsed(Hud_support_view_fade) ) {
 
-			Hud_support_view_abort = 0;
-			Hud_support_view_active = 0;
-			Hud_support_view_fade = 1;
-			Hud_support_objnum = -1;
-		}
-	}
+      Hud_support_view_abort = 0;
+      Hud_support_view_active = 0;
+      Hud_support_view_fade = 1;
+      Hud_support_objnum = -1;
+    }
+  }
 }
 
 HudGaugeSupport::HudGaugeSupport():
@@ -2792,180 +2792,180 @@ HudGauge(HUD_OBJECT_SUPPORT, HUD_SUPPORT_GAUGE, false, false, (VM_EXTERNAL | VM_
 
 void HudGaugeSupport::initHeaderOffsets(int x, int y)
 {
-	Header_offsets[0] = x;
-	Header_offsets[1] = y;
+  Header_offsets[0] = x;
+  Header_offsets[1] = y;
 }
 
 void HudGaugeSupport::initTextValueOffsetY(int y)
 {
-	text_val_offset_y = y;
+  text_val_offset_y = y;
 }
 
 void HudGaugeSupport::initTextDockOffsetX(int x)
 {
-	text_dock_offset_x = x;
+  text_dock_offset_x = x;
 }
 
 void HudGaugeSupport::initTextDockValueOffsetX(int x)
 {
-	text_dock_val_offset_x = x;
+  text_dock_val_offset_x = x;
 }
 
 void HudGaugeSupport::initBitmaps(const char *fname)
 {
-	background.first_frame = bm_load_animation(fname, &background.num_frames);
-	if ( background.first_frame == -1 ) {
-		Warning(LOCATION, "Could not load in ani: %s\n", fname);
-	}
+  background.first_frame = bm_load_animation(fname, &background.num_frames);
+  if ( background.first_frame == -1 ) {
+    Warning(LOCATION, "Could not load in ani: %s\n", fname);
+  }
 }
 
 void HudGaugeSupport::pageIn()
 {
-	bm_page_in_aabitmap( background.first_frame, background.num_frames);
+  bm_page_in_aabitmap( background.first_frame, background.num_frames);
 }
 
 void HudGaugeSupport::render(float frametime)
 {
-	int	show_time, w, h;
-	char	outstr[64];
+  int  show_time, w, h;
+  char  outstr[64];
 
-	if ( !Hud_support_view_active ) {
-		return;
-	}
+  if ( !Hud_support_view_active ) {
+    return;
+  }
 
-	// Don't render this gauge for multiplayer observers
-	if((Game_mode & GM_MULTIPLAYER) && ((Net_player->flags & NETINFO_FLAG_OBSERVER) || (Player_obj->type == OBJ_OBSERVER))){
-		return;
-	}
+  // Don't render this gauge for multiplayer observers
+  if((Game_mode & GM_MULTIPLAYER) && ((Net_player->flags & NETINFO_FLAG_OBSERVER) || (Player_obj->type == OBJ_OBSERVER))){
+    return;
+  }
 
-	if ( Hud_support_objnum >= 0 ) {
-		// Check to see if support ship is still alive
-		if ( (Objects[Hud_support_objnum].signature != Hud_support_obj_sig) || (Hud_support_target_sig != Player_obj->signature) ) {
-			return;
-		}
-	}
+  if ( Hud_support_objnum >= 0 ) {
+    // Check to see if support ship is still alive
+    if ( (Objects[Hud_support_objnum].signature != Hud_support_obj_sig) || (Hud_support_target_sig != Player_obj->signature) ) {
+      return;
+    }
+  }
 
-	bm_get_info(background.first_frame, &w, &h);
+  bm_get_info(background.first_frame, &w, &h);
 
-	// Set hud color
-	setGaugeColor();
+  // Set hud color
+  setGaugeColor();
 
-	renderBitmap(background.first_frame, position[0], position[1]);	
+  renderBitmap(background.first_frame, position[0], position[1]);  
 
-	renderString(position[0] + Header_offsets[0], position[1] + Header_offsets[1], XSTR( "support", 224));
+  renderString(position[0] + Header_offsets[0], position[1] + Header_offsets[1], XSTR( "support", 224));
 
-	if ( Hud_support_view_fade > 1 ) {
-		if ( !timestamp_elapsed(Hud_support_view_fade) ) {
-			if ( Hud_support_view_abort){
-				renderStringAlignCenter(position[0], position[1] + text_val_offset_y, w, XSTR( "aborted", 225));
-			} else {
-				renderStringAlignCenter(position[0], position[1] + text_val_offset_y, w, XSTR( "complete", 1407));
-			}
-		}
-		return;
-	}
+  if ( Hud_support_view_fade > 1 ) {
+    if ( !timestamp_elapsed(Hud_support_view_fade) ) {
+      if ( Hud_support_view_abort){
+        renderStringAlignCenter(position[0], position[1] + text_val_offset_y, w, XSTR( "aborted", 225));
+      } else {
+        renderStringAlignCenter(position[0], position[1] + text_val_offset_y, w, XSTR( "complete", 1407));
+      }
+    }
+    return;
+  }
 
-	show_time = 0;
-	if (Player_ai->ai_flags[AI::AI_Flags::Being_repaired]) {
-		Assert(Player_ship->ship_max_hull_strength > 0);
-		
-		if (!Cmdline_rearm_timer)
-		{
-			int i;
-			bool repairing = false;
-			for (i = 0; i < SUBSYSTEM_MAX; i++)
-			{
-				if (Player_ship->subsys_info[i].type_count > 0) 
-				{
-					if (ship_get_subsystem_strength(Player_ship, i) < 1.0f)
-					{
-						repairing = true;
-						break;
-					}
-				}
-			}
+  show_time = 0;
+  if (Player_ai->ai_flags[AI::AI_Flags::Being_repaired]) {
+    Assert(Player_ship->ship_max_hull_strength > 0);
+    
+    if (!Cmdline_rearm_timer)
+    {
+      int i;
+      bool repairing = false;
+      for (i = 0; i < SUBSYSTEM_MAX; i++)
+      {
+        if (Player_ship->subsys_info[i].type_count > 0) 
+        {
+          if (ship_get_subsystem_strength(Player_ship, i) < 1.0f)
+          {
+            repairing = true;
+            break;
+          }
+        }
+      }
 
-			if (repairing)
-				strcpy_s(outstr, XSTR("repairing", 227));
-			else
-				strcpy_s(outstr, XSTR("rearming", 228));
-		}
-		else
-		{
-			if (Player_rearm_eta > 0)
-			{
-				int min, sec, hund;
-		
-				min = (int)Player_rearm_eta / 60;
-				sec = (int)Player_rearm_eta % 60;
-				hund = (int)(Player_rearm_eta * 100) % 100;
+      if (repairing)
+        strcpy_s(outstr, XSTR("repairing", 227));
+      else
+        strcpy_s(outstr, XSTR("rearming", 228));
+    }
+    else
+    {
+      if (Player_rearm_eta > 0)
+      {
+        int min, sec, hund;
+    
+        min = (int)Player_rearm_eta / 60;
+        sec = (int)Player_rearm_eta % 60;
+        hund = (int)(Player_rearm_eta * 100) % 100;
 
-				sprintf(outstr, "%02d:%02d.%02d", min, sec, hund);
-			}
-			else
-			{
-				sprintf(outstr, "Waiting...");
-			}	
-		}
-		renderStringAlignCenter(position[0], position[1] + text_val_offset_y, w, outstr);
-	}
-	else if (Player_ai->ai_flags[AI::AI_Flags::Repair_obstructed]) {
-		strcpy_s(outstr, XSTR( "obstructed", 229));
-		renderStringAlignCenter(position[0], position[1] + text_val_offset_y, w, outstr);
-	} else {
-		if ( Hud_support_objnum == -1 ) {
-			if (The_mission.support_ships.arrival_location == ARRIVE_FROM_DOCK_BAY)
-			{
-				strcpy_s(outstr, XSTR( "exiting hangar", 1622));
-			}
-			else
-			{
-				strcpy_s(outstr, XSTR( "warping in", 230));
-			}
-			renderStringAlignCenter(position[0], position[1] + text_val_offset_y, w, outstr);
-		} else {
-			ai_info *aip;
+        sprintf(outstr, "%02d:%02d.%02d", min, sec, hund);
+      }
+      else
+      {
+        sprintf(outstr, "Waiting...");
+      }  
+    }
+    renderStringAlignCenter(position[0], position[1] + text_val_offset_y, w, outstr);
+  }
+  else if (Player_ai->ai_flags[AI::AI_Flags::Repair_obstructed]) {
+    strcpy_s(outstr, XSTR( "obstructed", 229));
+    renderStringAlignCenter(position[0], position[1] + text_val_offset_y, w, outstr);
+  } else {
+    if ( Hud_support_objnum == -1 ) {
+      if (The_mission.support_ships.arrival_location == ARRIVE_FROM_DOCK_BAY)
+      {
+        strcpy_s(outstr, XSTR( "exiting hangar", 1622));
+      }
+      else
+      {
+        strcpy_s(outstr, XSTR( "warping in", 230));
+      }
+      renderStringAlignCenter(position[0], position[1] + text_val_offset_y, w, outstr);
+    } else {
+      ai_info *aip;
 
-			// Display "busy" when support ship isn't actually enroute to me
-			aip = &Ai_info[Ships[Objects[Hud_support_objnum].instance].ai_index];
-			if ( aip->goal_objnum != OBJ_INDEX(Player_obj) ) {
-				strcpy_s(outstr, XSTR( "busy", 231));
-				show_time = 0;
+      // Display "busy" when support ship isn't actually enroute to me
+      aip = &Ai_info[Ships[Objects[Hud_support_objnum].instance].ai_index];
+      if ( aip->goal_objnum != OBJ_INDEX(Player_obj) ) {
+        strcpy_s(outstr, XSTR( "busy", 231));
+        show_time = 0;
 
-			} else {
-				strcpy_s(outstr, XSTR( "dock in:", 232));
-				show_time = 1;
-			}		
+      } else {
+        strcpy_s(outstr, XSTR( "dock in:", 232));
+        show_time = 1;
+      }    
 
-			renderString(position[0] + text_dock_offset_x, position[1] + text_val_offset_y, outstr);
-		}
-	}
+      renderString(position[0] + text_dock_offset_x, position[1] + text_val_offset_y, outstr);
+    }
+  }
 
-	if ( show_time ) {
-		int seconds, minutes;
+  if ( show_time ) {
+    int seconds, minutes;
 
-		Assert( Hud_support_objnum != -1 );
+    Assert( Hud_support_objnum != -1 );
 
-		// Ensure support ship is still alive
-		if ( (Objects[Hud_support_objnum].signature != Hud_support_obj_sig) || (Hud_support_target_sig != Player_obj->signature) ) {
-			seconds = 0;
-		} else {
-			seconds = hud_get_dock_time( &Objects[Hud_support_objnum] );
-		}
+    // Ensure support ship is still alive
+    if ( (Objects[Hud_support_objnum].signature != Hud_support_obj_sig) || (Hud_support_target_sig != Player_obj->signature) ) {
+      seconds = 0;
+    } else {
+      seconds = hud_get_dock_time( &Objects[Hud_support_objnum] );
+    }
 
-		if ( seconds >= 0 ) {
-			minutes = seconds/60;
-			seconds = seconds%60;
-			if ( minutes > 99 ) {
-				minutes = 99;
-				seconds = 99;
-			}
-		} else {
-			minutes = 99;
-			seconds = 99;
-		}
-		renderPrintf(position[0] + text_dock_val_offset_x, position[1] + text_val_offset_y, NOX("%02d:%02d"), minutes, seconds);
-	}
+    if ( seconds >= 0 ) {
+      minutes = seconds/60;
+      seconds = seconds%60;
+      if ( minutes > 99 ) {
+        minutes = 99;
+        seconds = 99;
+      }
+    } else {
+      minutes = 99;
+      seconds = 99;
+    }
+    renderPrintf(position[0] + text_dock_val_offset_x, position[1] + text_val_offset_y, NOX("%02d:%02d"), minutes, seconds);
+  }
 }
 
 /**
@@ -2973,8 +2973,8 @@ void HudGaugeSupport::render(float frametime)
  */
 void hud_set_default_color()
 {
-	Assert(HUD_color_alpha >= 0 && HUD_color_alpha < HUD_NUM_COLOR_LEVELS);
-	gr_set_color_fast(&HUD_color_defaults[HUD_color_alpha]);
+  Assert(HUD_color_alpha >= 0 && HUD_color_alpha < HUD_NUM_COLOR_LEVELS);
+  gr_set_color_fast(&HUD_color_defaults[HUD_color_alpha]);
 }
 
 /**
@@ -2982,9 +2982,9 @@ void hud_set_default_color()
  */
 void hud_set_bright_color()
 {
-	int alpha_color;
-	alpha_color = MIN(HUD_COLOR_ALPHA_MAX,HUD_color_alpha+HUD_BRIGHT_DELTA);
-	gr_set_color_fast(&HUD_color_defaults[alpha_color]);
+  int alpha_color;
+  alpha_color = MIN(HUD_COLOR_ALPHA_MAX,HUD_color_alpha+HUD_BRIGHT_DELTA);
+  gr_set_color_fast(&HUD_color_defaults[alpha_color]);
 }
 
 /**
@@ -2992,45 +2992,45 @@ void hud_set_bright_color()
  */
 void hud_set_dim_color()
 {
-	if ( HUD_color_alpha > 2 ) {
-		gr_set_color_fast(&HUD_color_defaults[2]);
-	}
+  if ( HUD_color_alpha > 2 ) {
+    gr_set_color_fast(&HUD_color_defaults[2]);
+  }
 }
 
 /**
  * @brief Will set the color to the IFF color based on the team
  *
- * @param objp			Object to test for team color to base on
- * @param is_bright		Default parameter (value 0) which uses bright version of IFF color
+ * @param objp      Object to test for team color to base on
+ * @param is_bright    Default parameter (value 0) which uses bright version of IFF color
  */
 void hud_set_iff_color(object *objp, int is_bright)
 {
-	color *use_color;
+  color *use_color;
 
-	if (ship_is_tagged(objp))
-	{
-		use_color = iff_get_color(IFF_COLOR_TAGGED, is_bright);
-	}
-	else
-	{
-		if (objp->type == OBJ_ASTEROID)
-		{
-			if (OBJ_INDEX(objp) == Player_ai->target_objnum)
-			{
-				use_color = iff_get_color_by_team(Iff_traitor, Player_ship->team, is_bright);
-			}
-			else
-			{
-				use_color = iff_get_color(IFF_COLOR_SELECTION, is_bright);
-			}
-		}
-		else
-		{
-			use_color = iff_get_color_by_team_and_object(obj_team(objp), Player_ship->team, is_bright, objp);
-		}
-	}
+  if (ship_is_tagged(objp))
+  {
+    use_color = iff_get_color(IFF_COLOR_TAGGED, is_bright);
+  }
+  else
+  {
+    if (objp->type == OBJ_ASTEROID)
+    {
+      if (OBJ_INDEX(objp) == Player_ai->target_objnum)
+      {
+        use_color = iff_get_color_by_team(Iff_traitor, Player_ship->team, is_bright);
+      }
+      else
+      {
+        use_color = iff_get_color(IFF_COLOR_SELECTION, is_bright);
+      }
+    }
+    else
+    {
+      use_color = iff_get_color_by_team_and_object(obj_team(objp), Player_ship->team, is_bright, objp);
+    }
+  }
 
-	gr_set_color_fast(use_color);
+  gr_set_color_fast(use_color);
 }
 
 /**
@@ -3038,22 +3038,22 @@ void hud_set_iff_color(object *objp, int is_bright)
  */
 void hud_gauge_flash_init()
 {
-	int i;
-	for ( i=0; i<NUM_HUD_GAUGES; i++ ) {
-		HUD_gauge_flash_duration[i]=timestamp(0);
-		HUD_gauge_flash_next[i]=timestamp(0);
-	}
-	HUD_gauge_bright=0;
+  int i;
+  for ( i=0; i<NUM_HUD_GAUGES; i++ ) {
+    HUD_gauge_flash_duration[i]=timestamp(0);
+    HUD_gauge_flash_next[i]=timestamp(0);
+  }
+  HUD_gauge_bright=0;
 }
 
 #define NUM_VM_OTHER_SHIP_GAUGES 5
 static int Vm_other_ship_gauges[NUM_VM_OTHER_SHIP_GAUGES] = 
 {
-	HUD_CENTER_RETICLE,
-	HUD_TARGET_MONITOR,
-	HUD_TARGET_MONITOR_EXTRA_DATA,
-	HUD_MESSAGE_LINES,
-	HUD_TALKING_HEAD
+  HUD_CENTER_RETICLE,
+  HUD_TARGET_MONITOR,
+  HUD_TARGET_MONITOR_EXTRA_DATA,
+  HUD_MESSAGE_LINES,
+  HUD_TALKING_HEAD
 };
 
 /**
@@ -3061,19 +3061,19 @@ static int Vm_other_ship_gauges[NUM_VM_OTHER_SHIP_GAUGES] =
  */
 int hud_gauge_active(int gauge_index)
 {
-	Assert(gauge_index >=0 && gauge_index < NUM_HUD_GAUGES);
+  Assert(gauge_index >=0 && gauge_index < NUM_HUD_GAUGES);
 
-	// AL: Special code: Only show two gauges when not viewing from own ship
-	if ( Viewer_mode & VM_OTHER_SHIP ) {
-		for ( int i = 0; i < NUM_VM_OTHER_SHIP_GAUGES; i++ ) {
-			if ( gauge_index == Vm_other_ship_gauges[i] ) {
-				return 1;
-			}
-		}
-		return 0;
-	}
+  // AL: Special code: Only show two gauges when not viewing from own ship
+  if ( Viewer_mode & VM_OTHER_SHIP ) {
+    for ( int i = 0; i < NUM_VM_OTHER_SHIP_GAUGES; i++ ) {
+      if ( gauge_index == Vm_other_ship_gauges[i] ) {
+        return 1;
+      }
+    }
+    return 0;
+  }
 
-	return hud_config_show_flag_is_set(gauge_index);
+  return hud_config_show_flag_is_set(gauge_index);
 }
 
 /**
@@ -3081,8 +3081,8 @@ int hud_gauge_active(int gauge_index)
  */
 int hud_gauge_is_popup(int gauge_index)
 {
-	Assert(gauge_index >=0 && gauge_index < NUM_HUD_GAUGES);
-	return hud_config_popup_flag_is_set(gauge_index);
+  Assert(gauge_index >=0 && gauge_index < NUM_HUD_GAUGES);
+  return hud_config_popup_flag_is_set(gauge_index);
 }
 
 /**
@@ -3091,28 +3091,28 @@ int hud_gauge_is_popup(int gauge_index)
  */
 void hud_gauge_popup_start(int gauge_index, int time) 
 {
-	Assert(gauge_index >=0 && gauge_index < NUM_HUD_GAUGES);
-	if ( !hud_gauge_is_popup(gauge_index) ) {
-		return;
-	}
+  Assert(gauge_index >=0 && gauge_index < NUM_HUD_GAUGES);
+  if ( !hud_gauge_is_popup(gauge_index) ) {
+    return;
+  }
 
-	size_t num_gauges, i;
+  size_t num_gauges, i;
 
-	if(!Ship_info[Player_ship->ship_info_index].hud_gauges.empty()) {
-		num_gauges = Ship_info[Player_ship->ship_info_index].hud_gauges.size();
+  if(!Ship_info[Player_ship->ship_info_index].hud_gauges.empty()) {
+    num_gauges = Ship_info[Player_ship->ship_info_index].hud_gauges.size();
 
-		for(i = 0; i < num_gauges; i++) {
-			if(Ship_info[Player_ship->ship_info_index].hud_gauges[i]->getConfigType() == gauge_index)
-				Ship_info[Player_ship->ship_info_index].hud_gauges[i]->startPopUp(time);
-		}
-	} else {
-		num_gauges = default_hud_gauges.size();
+    for(i = 0; i < num_gauges; i++) {
+      if(Ship_info[Player_ship->ship_info_index].hud_gauges[i]->getConfigType() == gauge_index)
+        Ship_info[Player_ship->ship_info_index].hud_gauges[i]->startPopUp(time);
+    }
+  } else {
+    num_gauges = default_hud_gauges.size();
 
-		for(i = 0; i < num_gauges; i++) {
-			if(default_hud_gauges[i]->getConfigType() == gauge_index)
-				default_hud_gauges[i]->startPopUp(time);
-		}
-	}
+    for(i = 0; i < num_gauges; i++) {
+      if(default_hud_gauges[i]->getConfigType() == gauge_index)
+        default_hud_gauges[i]->startPopUp(time);
+    }
+  }
 }
 
 /**
@@ -3121,28 +3121,28 @@ void hud_gauge_popup_start(int gauge_index, int time)
  */
 void hud_gauge_start_flash(int gauge_index)
 {
-	Assert(gauge_index >=0 && gauge_index < NUM_HUD_GAUGES);
+  Assert(gauge_index >=0 && gauge_index < NUM_HUD_GAUGES);
 
-	size_t num_gauges, i; 
+  size_t num_gauges, i; 
 
-	HUD_gauge_flash_duration[gauge_index] = timestamp(HUD_GAUGE_FLASH_DURATION);
-	HUD_gauge_flash_next[gauge_index] = 1;
+  HUD_gauge_flash_duration[gauge_index] = timestamp(HUD_GAUGE_FLASH_DURATION);
+  HUD_gauge_flash_next[gauge_index] = 1;
  
-	if(!Ship_info[Player_ship->ship_info_index].hud_gauges.empty()) {
-		num_gauges = Ship_info[Player_ship->ship_info_index].hud_gauges.size();
+  if(!Ship_info[Player_ship->ship_info_index].hud_gauges.empty()) {
+    num_gauges = Ship_info[Player_ship->ship_info_index].hud_gauges.size();
 
-		for(i = 0; i < num_gauges; i++) {
-			if(Ship_info[Player_ship->ship_info_index].hud_gauges[i]->getConfigType() == gauge_index)
-				Ship_info[Player_ship->ship_info_index].hud_gauges[i]->startFlashSexp();
-		}
-	} else {
-		num_gauges = default_hud_gauges.size();
+    for(i = 0; i < num_gauges; i++) {
+      if(Ship_info[Player_ship->ship_info_index].hud_gauges[i]->getConfigType() == gauge_index)
+        Ship_info[Player_ship->ship_info_index].hud_gauges[i]->startFlashSexp();
+    }
+  } else {
+    num_gauges = default_hud_gauges.size();
 
-		for(i = 0; i < num_gauges; i++) {
-			if(default_hud_gauges[i]->getConfigType() == gauge_index)
-				default_hud_gauges[i]->startFlashSexp();
-		}
-	}
+    for(i = 0; i < num_gauges; i++) {
+      if(default_hud_gauges[i]->getConfigType() == gauge_index)
+        default_hud_gauges[i]->startFlashSexp();
+    }
+  }
 }
 
 /**
@@ -3150,69 +3150,69 @@ void hud_gauge_start_flash(int gauge_index)
  */
 void hud_set_gauge_color(int gauge_index, int bright_index)
 {
-	int flash_status = hud_gauge_maybe_flash(gauge_index);
-	color *use_color = &HUD_config.clr[gauge_index];
-	int alpha;
+  int flash_status = hud_gauge_maybe_flash(gauge_index);
+  color *use_color = &HUD_config.clr[gauge_index];
+  int alpha;
 
-	// If we're drawing it as bright
-	if(bright_index != HUD_C_NONE){
-		switch(bright_index){
-		case HUD_C_DIM:
-			alpha = HUD_contrast ? HUD_NEW_ALPHA_DIM_HI : HUD_NEW_ALPHA_DIM;
-			gr_init_alphacolor(use_color, use_color->red, use_color->green, use_color->blue, alpha);
-			break;
+  // If we're drawing it as bright
+  if(bright_index != HUD_C_NONE){
+    switch(bright_index){
+    case HUD_C_DIM:
+      alpha = HUD_contrast ? HUD_NEW_ALPHA_DIM_HI : HUD_NEW_ALPHA_DIM;
+      gr_init_alphacolor(use_color, use_color->red, use_color->green, use_color->blue, alpha);
+      break;
 
-		case HUD_C_NORMAL:
-			alpha = HUD_contrast ? HUD_NEW_ALPHA_NORMAL_HI : HUD_NEW_ALPHA_NORMAL;
-			gr_init_alphacolor(use_color, use_color->red, use_color->green, use_color->blue, alpha);
-			break;
+    case HUD_C_NORMAL:
+      alpha = HUD_contrast ? HUD_NEW_ALPHA_NORMAL_HI : HUD_NEW_ALPHA_NORMAL;
+      gr_init_alphacolor(use_color, use_color->red, use_color->green, use_color->blue, alpha);
+      break;
 
-		case HUD_C_BRIGHT:
-			alpha = HUD_contrast ? HUD_NEW_ALPHA_BRIGHT_HI : HUD_NEW_ALPHA_BRIGHT;
-			gr_init_alphacolor(use_color, use_color->red, use_color->green, use_color->blue, alpha);
-			break;
+    case HUD_C_BRIGHT:
+      alpha = HUD_contrast ? HUD_NEW_ALPHA_BRIGHT_HI : HUD_NEW_ALPHA_BRIGHT;
+      gr_init_alphacolor(use_color, use_color->red, use_color->green, use_color->blue, alpha);
+      break;
 
-		// Intensity
-		default: 
-			Assert((bright_index >= 0) && (bright_index < HUD_NUM_COLOR_LEVELS));
-			if(bright_index < 0){
-				bright_index = 0;
-			}
-			if(bright_index >= HUD_NUM_COLOR_LEVELS){
-				bright_index = HUD_NUM_COLOR_LEVELS - 1;
-			}
+    // Intensity
+    default: 
+      Assert((bright_index >= 0) && (bright_index < HUD_NUM_COLOR_LEVELS));
+      if(bright_index < 0){
+        bright_index = 0;
+      }
+      if(bright_index >= HUD_NUM_COLOR_LEVELS){
+        bright_index = HUD_NUM_COLOR_LEVELS - 1;
+      }
 
-			// alpha = 255 - (255 / (bright_index + 1));
-			// alpha = (int)((float)alpha * 1.5f);
-			int level = 255 / (HUD_NUM_COLOR_LEVELS);
-			alpha = level * bright_index;
-			if(alpha > 255){
-				alpha = 255;
-			}
-			if(alpha < 0){
-				alpha = 0;
-			}
-			gr_init_alphacolor(use_color, use_color->red, use_color->green, use_color->blue, alpha);
-			break;
-		}
-	} else {
-		switch(flash_status) {
-		case 0:
-			alpha = HUD_contrast ? HUD_NEW_ALPHA_DIM_HI : HUD_NEW_ALPHA_DIM;
-			gr_init_alphacolor(use_color, use_color->red, use_color->green, use_color->blue, alpha);
-			break;
-		case 1:			
-			alpha = HUD_contrast ? HUD_NEW_ALPHA_BRIGHT_HI : HUD_NEW_ALPHA_BRIGHT;
-			gr_init_alphacolor(use_color, use_color->red, use_color->green, use_color->blue, alpha);
-			break;
-		default:			
-			alpha = HUD_contrast ? HUD_NEW_ALPHA_NORMAL_HI : HUD_NEW_ALPHA_NORMAL;	
-			gr_init_alphacolor(use_color, use_color->red, use_color->green, use_color->blue, alpha);
-			break;
-		}
-	}
+      // alpha = 255 - (255 / (bright_index + 1));
+      // alpha = (int)((float)alpha * 1.5f);
+      int level = 255 / (HUD_NUM_COLOR_LEVELS);
+      alpha = level * bright_index;
+      if(alpha > 255){
+        alpha = 255;
+      }
+      if(alpha < 0){
+        alpha = 0;
+      }
+      gr_init_alphacolor(use_color, use_color->red, use_color->green, use_color->blue, alpha);
+      break;
+    }
+  } else {
+    switch(flash_status) {
+    case 0:
+      alpha = HUD_contrast ? HUD_NEW_ALPHA_DIM_HI : HUD_NEW_ALPHA_DIM;
+      gr_init_alphacolor(use_color, use_color->red, use_color->green, use_color->blue, alpha);
+      break;
+    case 1:      
+      alpha = HUD_contrast ? HUD_NEW_ALPHA_BRIGHT_HI : HUD_NEW_ALPHA_BRIGHT;
+      gr_init_alphacolor(use_color, use_color->red, use_color->green, use_color->blue, alpha);
+      break;
+    default:      
+      alpha = HUD_contrast ? HUD_NEW_ALPHA_NORMAL_HI : HUD_NEW_ALPHA_NORMAL;  
+      gr_init_alphacolor(use_color, use_color->red, use_color->green, use_color->blue, alpha);
+      break;
+    }
+  }
 
-	gr_set_color_fast(use_color);	
+  gr_set_color_fast(use_color);  
 }
 
 /**
@@ -3222,21 +3222,21 @@ void hud_set_gauge_color(int gauge_index, int bright_index)
  */
 int hud_gauge_maybe_flash(int gauge_index)
 {
-	Assert(gauge_index >=0 && gauge_index < NUM_HUD_GAUGES);
-	int flash_status=-1;
-	if ( !timestamp_elapsed(HUD_gauge_flash_duration[gauge_index]) ) {
-		if ( timestamp_elapsed(HUD_gauge_flash_next[gauge_index]) ) {
-			HUD_gauge_flash_next[gauge_index] = timestamp(HUD_GAUGE_FLASH_INTERVAL);
-			HUD_gauge_bright ^= (1<<gauge_index);	// toggle between default and bright frames
-		}
+  Assert(gauge_index >=0 && gauge_index < NUM_HUD_GAUGES);
+  int flash_status=-1;
+  if ( !timestamp_elapsed(HUD_gauge_flash_duration[gauge_index]) ) {
+    if ( timestamp_elapsed(HUD_gauge_flash_next[gauge_index]) ) {
+      HUD_gauge_flash_next[gauge_index] = timestamp(HUD_GAUGE_FLASH_INTERVAL);
+      HUD_gauge_bright ^= (1<<gauge_index);  // toggle between default and bright frames
+    }
 
-		if ( HUD_gauge_bright & (1<<gauge_index) ) {
-			flash_status=1;
-		} else {
-			flash_status=0;
-		}
-	}
-	return flash_status;
+    if ( HUD_gauge_bright & (1<<gauge_index) ) {
+      flash_status=1;
+    } else {
+      flash_status=0;
+    }
+  }
+  return flash_status;
 }
 
 /**
@@ -3244,59 +3244,59 @@ int hud_gauge_maybe_flash(int gauge_index)
  */
 void hud_objective_message_init()
 {
-	Objective_display.display_timer=timestamp(0);
+  Objective_display.display_timer=timestamp(0);
 }
 
 void hud_update_objective_message()
 {
-	// Find out if we should display the subspace status notification
-	if ( (Player->control_mode == PCM_WARPOUT_STAGE1) || (Player->control_mode == PCM_WARPOUT_STAGE2) || (Player->control_mode == PCM_WARPOUT_STAGE3) 
-		|| (Sexp_hud_display_warpout > 0) ) {
-		if (!hud_subspace_notify_active()) {
-			// Keep sound from being played 1e06 times
-			hud_start_subspace_notify();
-		}
-	} else {
-		if ( timestamp_elapsed(HUD_abort_subspace_timer) ) {
-			hud_stop_subspace_notify();
-		}
-	}
+  // Find out if we should display the subspace status notification
+  if ( (Player->control_mode == PCM_WARPOUT_STAGE1) || (Player->control_mode == PCM_WARPOUT_STAGE2) || (Player->control_mode == PCM_WARPOUT_STAGE3) 
+    || (Sexp_hud_display_warpout > 0) ) {
+    if (!hud_subspace_notify_active()) {
+      // Keep sound from being played 1e06 times
+      hud_start_subspace_notify();
+    }
+  } else {
+    if ( timestamp_elapsed(HUD_abort_subspace_timer) ) {
+      hud_stop_subspace_notify();
+    }
+  }
 
-	if ( (Sexp_hud_display_warpout > 1) && hud_subspace_notify_active() ) {
-		if ( Sexp_hud_display_warpout < timestamp()) {
-			Sexp_hud_display_warpout = 0;
-		}
-	}
-	
-	// Find out if we should display the objective status notification
-	if ( timestamp_elapsed(Objective_display.display_timer) ) {
-		hud_stop_objective_notify();
-	} else if (!hud_objective_notify_active() && !hud_subspace_notify_active()) {
-		hud_start_objective_notify();
-	}
+  if ( (Sexp_hud_display_warpout > 1) && hud_subspace_notify_active() ) {
+    if ( Sexp_hud_display_warpout < timestamp()) {
+      Sexp_hud_display_warpout = 0;
+    }
+  }
+  
+  // Find out if we should display the objective status notification
+  if ( timestamp_elapsed(Objective_display.display_timer) ) {
+    hud_stop_objective_notify();
+  } else if (!hud_objective_notify_active() && !hud_subspace_notify_active()) {
+    hud_start_objective_notify();
+  }
 }
 
 /**
  * @brief Add objective status on the HUD
  *
- * @param type		Type of goal, one of: ::PRIMARY_GOAL, ::SECONDARY_GOAL, ::BONUS_GOAL
- * @param status	Status of goal, one of:	::GOAL_FAILED, ::GOAL_COMPLETE, ::GOAL_INCOMPLETE
+ * @param type    Type of goal, one of: ::PRIMARY_GOAL, ::SECONDARY_GOAL, ::BONUS_GOAL
+ * @param status  Status of goal, one of:  ::GOAL_FAILED, ::GOAL_COMPLETE, ::GOAL_INCOMPLETE
  * @todo Play a sound?
  */
 void hud_add_objective_messsage(int type, int status)
 {
-	Objective_display.display_timer=timestamp(7000);
-	Objective_display.goal_type=type;
-	Objective_display.goal_status=status;
+  Objective_display.display_timer=timestamp(7000);
+  Objective_display.goal_type=type;
+  Objective_display.goal_status=status;
 
-	// if this is a multiplayer tvt game
-	if(MULTI_TEAM && (Net_player != NULL)) {
-		mission_goal_fetch_num_resolved(type, &Objective_display.goal_nresolved, &Objective_display.goal_ntotal, Net_player->p_info.team);
-	} else {
-		mission_goal_fetch_num_resolved(type, &Objective_display.goal_nresolved, &Objective_display.goal_ntotal);
-	}
+  // if this is a multiplayer tvt game
+  if(MULTI_TEAM && (Net_player != NULL)) {
+    mission_goal_fetch_num_resolved(type, &Objective_display.goal_nresolved, &Objective_display.goal_ntotal, Net_player->p_info.team);
+  } else {
+    mission_goal_fetch_num_resolved(type, &Objective_display.goal_nresolved, &Objective_display.goal_ntotal);
+  }
 
-	// TODO: play a sound?
+  // TODO: play a sound?
 }
 
 HudGaugeObjectiveNotify::HudGaugeObjectiveNotify():
@@ -3307,125 +3307,125 @@ HudGauge(HUD_OBJECT_OBJ_NOTIFY, HUD_OBJECTIVES_NOTIFY_GAUGE, false, false, VM_EX
 
 void HudGaugeObjectiveNotify::initObjTextOffsetY(int y)
 {
-	Objective_text_offset_y = y;
+  Objective_text_offset_y = y;
 }
 
 void HudGaugeObjectiveNotify::initObjValueOffsetY(int y)
 {
-	Objective_text_val_offset_y = y;
+  Objective_text_val_offset_y = y;
 }
 
 void HudGaugeObjectiveNotify::initSubspaceTextOffsetY(int y)
 {
-	Subspace_text_offset_y = y;
+  Subspace_text_offset_y = y;
 }
 
 void HudGaugeObjectiveNotify::initSubspaceValueOffsetY(int y)
 {
-	Subspace_text_val_offset_y = y;
+  Subspace_text_val_offset_y = y;
 }
 
 void HudGaugeObjectiveNotify::initRedAlertTextOffsetY(int y)
 {
-	Red_text_offset_y = y;
+  Red_text_offset_y = y;
 }
 
 void HudGaugeObjectiveNotify::initRedAlertValueOffsetY(int y)
 {
-	Red_text_val_offset_y = y;
+  Red_text_val_offset_y = y;
 }
 
 void HudGaugeObjectiveNotify::initBitmaps(const char *fname)
 {
-	Objective_display_gauge.first_frame = bm_load_animation(fname, &Objective_display_gauge.num_frames);
-	if ( Objective_display_gauge.first_frame == -1 ) {
-		Warning(LOCATION, "Could not load in ani: %s\n", fname);
-	}
+  Objective_display_gauge.first_frame = bm_load_animation(fname, &Objective_display_gauge.num_frames);
+  if ( Objective_display_gauge.first_frame == -1 ) {
+    Warning(LOCATION, "Could not load in ani: %s\n", fname);
+  }
 }
 
 void HudGaugeObjectiveNotify::initialize()
 {
-	flash_timer[0] = timestamp(1);
-	flash_timer[1] = timestamp(1);
-	flash_flag = false;
+  flash_timer[0] = timestamp(1);
+  flash_timer[1] = timestamp(1);
+  flash_flag = false;
 
-	HudGauge::initialize();
+  HudGauge::initialize();
 }
 
 void HudGaugeObjectiveNotify::pageIn()
 {
-	bm_page_in_aabitmap( Objective_display_gauge.first_frame, Objective_display_gauge.num_frames);
+  bm_page_in_aabitmap( Objective_display_gauge.first_frame, Objective_display_gauge.num_frames);
 }
 
 void HudGaugeObjectiveNotify::startFlashNotify(int duration)
 {
-	flash_timer[0] = timestamp(duration);
+  flash_timer[0] = timestamp(duration);
 }
 
 bool HudGaugeObjectiveNotify::maybeFlashNotify(bool flash_fast)
 {
-	bool draw_bright = false;
+  bool draw_bright = false;
 
-	if(!timestamp_elapsed(flash_timer[0])) {
-		if(timestamp_elapsed(flash_timer[1])) {
-			if(flash_fast) {
-				flash_timer[1] = timestamp(fl2i(TBOX_FLASH_INTERVAL/2.0f));
-			} else {
-				flash_timer[1] = timestamp(TBOX_FLASH_INTERVAL);
-			}
-			flash_flag = !flash_flag;
-		}
+  if(!timestamp_elapsed(flash_timer[0])) {
+    if(timestamp_elapsed(flash_timer[1])) {
+      if(flash_fast) {
+        flash_timer[1] = timestamp(fl2i(TBOX_FLASH_INTERVAL/2.0f));
+      } else {
+        flash_timer[1] = timestamp(TBOX_FLASH_INTERVAL);
+      }
+      flash_flag = !flash_flag;
+    }
 
-		if(flash_flag) {
-			draw_bright = true;
-		} 
-	}
+    if(flash_flag) {
+      draw_bright = true;
+    } 
+  }
 
-	return draw_bright;
+  return draw_bright;
 }
 
 void HudGaugeObjectiveNotify::render(float frametime)
 {
-	renderSubspace();
-	renderRedAlert();
-	renderObjective();
+  renderSubspace();
+  renderRedAlert();
+  renderObjective();
 }
 
 void HudGaugeObjectiveNotify::renderSubspace()
 {
-	int w, h;
-	int warp_aborted = 0;
+  int w, h;
+  int warp_aborted = 0;
 
-	if ( (Player->control_mode != PCM_WARPOUT_STAGE1) && (Player->control_mode != PCM_WARPOUT_STAGE2) && (Player->control_mode != PCM_WARPOUT_STAGE3) 
-		&& (Sexp_hud_display_warpout <= 0) ) {
-		if ( !timestamp_elapsed(HUD_abort_subspace_timer) ) {
-			warp_aborted = 1;
-		}
-	}
+  if ( (Player->control_mode != PCM_WARPOUT_STAGE1) && (Player->control_mode != PCM_WARPOUT_STAGE2) && (Player->control_mode != PCM_WARPOUT_STAGE3) 
+    && (Sexp_hud_display_warpout <= 0) ) {
+    if ( !timestamp_elapsed(HUD_abort_subspace_timer) ) {
+      warp_aborted = 1;
+    }
+  }
 
-	if ( !hud_subspace_notify_active() ) {
-		return;
-	}
+  if ( !hud_subspace_notify_active() ) {
+    return;
+  }
 
-	if ( Objective_display_gauge.first_frame < 0 ) {
-		return;
-	}
+  if ( Objective_display_gauge.first_frame < 0 ) {
+    return;
+  }
 
-	// Blit the background	
-	setGaugeColor();
-	renderBitmap(Objective_display_gauge.first_frame, position[0], position[1]);
+  // Blit the background  
+  setGaugeColor();
+  renderBitmap(Objective_display_gauge.first_frame, position[0], position[1]);
 
-	startFlashNotify();
-	maybeFlashNotify() ? setGaugeColor(HUD_C_BRIGHT) : setGaugeColor();
+  startFlashNotify();
+  maybeFlashNotify() ? setGaugeColor(HUD_C_BRIGHT) : setGaugeColor();
 
-	bm_get_info(Objective_display_gauge.first_frame, &w, &h);
+  bm_get_info(Objective_display_gauge.first_frame, &w, &h);
 
-	renderStringAlignCenter(position[0], position[1] + Subspace_text_offset_y, w, XSTR( "subspace drive", 233));
-	if ( warp_aborted ) {
-		renderStringAlignCenter(position[0], position[1] + Subspace_text_val_offset_y, w, XSTR( "aborted", 225));
-	} else {
-		renderStringAlignCenter(position[0], position[1] + Subspace_text_val_offset_y, w, XSTR( "engaged", 234));
-	}
+  renderStringAlignCenter(position[0], position[1] + Subspace_text_offset_y, w, XSTR( "subspace drive", 233));
+  if ( warp_aborted ) {
+    renderStringAlignCenter(position[0], position[1] + Subspace_text_val_offset_y, w, XSTR( "aborted", 225));
+  } else {
+    renderStringAlignCenter(position[0], position[1] + Subspace_text_val_offset_y, w, XSTR( "engaged", 234));
+  }
 }
 
 /**
@@ -3433,150 +3433,150 @@ void HudGaugeObjectiveNotify::renderSubspace()
  */
 void HudGaugeObjectiveNotify::renderRedAlert()
 {
-	int w, h;
+  int w, h;
 
-	if ( !red_alert_in_progress() ) {
-		return;
-	}
+  if ( !red_alert_in_progress() ) {
+    return;
+  }
 
-	if ( Objective_display_gauge.first_frame < 0 ) {
-		return;
-	}
+  if ( Objective_display_gauge.first_frame < 0 ) {
+    return;
+  }
 
-	if ( hud_subspace_notify_active() ) {
-		return;
-	}
+  if ( hud_subspace_notify_active() ) {
+    return;
+  }
 
-	if ( hud_objective_notify_active() ) {
-		return;
-	}
+  if ( hud_objective_notify_active() ) {
+    return;
+  }
 
-	// Blit the background
-	gr_set_color_fast(&Color_red);		// Color box red, because it's an emergency
+  // Blit the background
+  gr_set_color_fast(&Color_red);    // Color box red, because it's an emergency
 
-	renderBitmap(Objective_display_gauge.first_frame, position[0], position[1]);
+  renderBitmap(Objective_display_gauge.first_frame, position[0], position[1]);
 
-	startFlashNotify();
-	if(maybeFlashNotify()) {
-		gr_set_color_fast(&Color_red);
-	} else {
-		gr_set_color_fast(&Color_bright_red);
-	}
+  startFlashNotify();
+  if(maybeFlashNotify()) {
+    gr_set_color_fast(&Color_red);
+  } else {
+    gr_set_color_fast(&Color_bright_red);
+  }
 
-	bm_get_info(Objective_display_gauge.first_frame, &w, &h);
+  bm_get_info(Objective_display_gauge.first_frame, &w, &h);
 
-	renderStringAlignCenter(position[0], position[1] + Red_text_offset_y, w, XSTR( "downloading new", 235));
-	renderStringAlignCenter(position[0], position[1] + Red_text_val_offset_y, w, XSTR( "orders...", 236));
+  renderStringAlignCenter(position[0], position[1] + Red_text_offset_y, w, XSTR( "downloading new", 235));
+  renderStringAlignCenter(position[0], position[1] + Red_text_val_offset_y, w, XSTR( "orders...", 236));
 
-	// TODO: play a sound?
+  // TODO: play a sound?
 }
 
 void HudGaugeObjectiveNotify::renderObjective()
 {
-	int w, h;
-	char buf[128];
+  int w, h;
+  char buf[128];
 
-	if ( timestamp_elapsed(Objective_display.display_timer) ) {
-		return;
-	}
+  if ( timestamp_elapsed(Objective_display.display_timer) ) {
+    return;
+  }
 
-	if ( Objective_display_gauge.first_frame < 0 ) {
-		return;
-	}
+  if ( Objective_display_gauge.first_frame < 0 ) {
+    return;
+  }
 
-	if ( hud_subspace_notify_active() ) {
-		return;
-	}
-	
-	// Blit the background
-	setGaugeColor();
-	renderBitmap(Objective_display_gauge.first_frame, position[0], position[1]);	
+  if ( hud_subspace_notify_active() ) {
+    return;
+  }
+  
+  // Blit the background
+  setGaugeColor();
+  renderBitmap(Objective_display_gauge.first_frame, position[0], position[1]);  
 
-	startFlashNotify();
-	if(maybeFlashNotify()){
-		setGaugeColor(HUD_C_BRIGHT);
-	} else {
-		setGaugeColor();
-	}
+  startFlashNotify();
+  if(maybeFlashNotify()){
+    setGaugeColor(HUD_C_BRIGHT);
+  } else {
+    setGaugeColor();
+  }
 
-	bm_get_info(Objective_display_gauge.first_frame, &w, &h);
+  bm_get_info(Objective_display_gauge.first_frame, &w, &h);
 
-	// Draw the correct goal type
-	switch(Objective_display.goal_type) {
-	case PRIMARY_GOAL:
-		renderStringAlignCenter(position[0], position[1] + Objective_text_offset_y, w, XSTR( "primary objective", 237));
-		break;
-	case SECONDARY_GOAL:
-		renderStringAlignCenter(position[0], position[1] + Objective_text_offset_y, w, XSTR( "secondary objective", 238));
-		break;
-	case BONUS_GOAL:
-		renderStringAlignCenter(position[0], position[1] + Objective_text_offset_y, w, XSTR( "bonus objective", 239));
-		break;
-	}
+  // Draw the correct goal type
+  switch(Objective_display.goal_type) {
+  case PRIMARY_GOAL:
+    renderStringAlignCenter(position[0], position[1] + Objective_text_offset_y, w, XSTR( "primary objective", 237));
+    break;
+  case SECONDARY_GOAL:
+    renderStringAlignCenter(position[0], position[1] + Objective_text_offset_y, w, XSTR( "secondary objective", 238));
+    break;
+  case BONUS_GOAL:
+    renderStringAlignCenter(position[0], position[1] + Objective_text_offset_y, w, XSTR( "bonus objective", 239));
+    break;
+  }
 
-	// Show the status
-	switch(Objective_display.goal_type) {
-	case PRIMARY_GOAL:
-	case SECONDARY_GOAL:
-		switch(Objective_display.goal_status) {
-		case GOAL_FAILED:
-			sprintf(buf, XSTR( "failed (%d/%d)", 240), Objective_display.goal_nresolved, Objective_display.goal_ntotal);
-			renderStringAlignCenter(position[0], position[1] + Objective_text_val_offset_y, w, buf);
-			break;
-		default:
-			sprintf(buf, XSTR( "complete (%d/%d)", 241), Objective_display.goal_nresolved, Objective_display.goal_ntotal);
-			renderStringAlignCenter(position[0], position[1] + Objective_text_val_offset_y, w, buf);
-			break;
-		}		
-		break;
-	case BONUS_GOAL:
-		switch(Objective_display.goal_status) {
-		case GOAL_FAILED:
-			renderStringAlignCenter(position[0], position[1] + Objective_text_val_offset_y, w, XSTR( "failed", 242));
-			break;
-		default:
-			renderStringAlignCenter(position[0], position[1] + Objective_text_val_offset_y, w, XSTR( "complete", 226));
-			break;
-		}		
-		break;
-	}
+  // Show the status
+  switch(Objective_display.goal_type) {
+  case PRIMARY_GOAL:
+  case SECONDARY_GOAL:
+    switch(Objective_display.goal_status) {
+    case GOAL_FAILED:
+      sprintf(buf, XSTR( "failed (%d/%d)", 240), Objective_display.goal_nresolved, Objective_display.goal_ntotal);
+      renderStringAlignCenter(position[0], position[1] + Objective_text_val_offset_y, w, buf);
+      break;
+    default:
+      sprintf(buf, XSTR( "complete (%d/%d)", 241), Objective_display.goal_nresolved, Objective_display.goal_ntotal);
+      renderStringAlignCenter(position[0], position[1] + Objective_text_val_offset_y, w, buf);
+      break;
+    }    
+    break;
+  case BONUS_GOAL:
+    switch(Objective_display.goal_status) {
+    case GOAL_FAILED:
+      renderStringAlignCenter(position[0], position[1] + Objective_text_val_offset_y, w, XSTR( "failed", 242));
+      break;
+    default:
+      renderStringAlignCenter(position[0], position[1] + Objective_text_val_offset_y, w, XSTR( "complete", 226));
+      break;
+    }    
+    break;
+  }
 }
 
 void hud_subspace_notify_abort()
 {
-	HUD_abort_subspace_timer = timestamp(1500);
+  HUD_abort_subspace_timer = timestamp(1500);
 }
 
 void hud_stop_subspace_notify()
 {
-	Subspace_notify_active=0;
+  Subspace_notify_active=0;
 }
 
 void hud_start_subspace_notify()
 {
 
-	Subspace_notify_active=1;
+  Subspace_notify_active=1;
 }
 
 int hud_subspace_notify_active()
 {
-	return Subspace_notify_active;
+  return Subspace_notify_active;
 }
 
 void hud_stop_objective_notify()
 {
-	Objective_notify_active = 0;
+  Objective_notify_active = 0;
 }
 
 void hud_start_objective_notify()
 {
-	snd_play(&(Snds[SND_DIRECTIVE_COMPLETE]));
-	Objective_notify_active = 1;
+  snd_play(&(Snds[SND_DIRECTIVE_COMPLETE]));
+  Objective_notify_active = 1;
 }
 
 int hud_objective_notify_active()
 {
-	return Objective_notify_active;
+  return Objective_notify_active;
 }
 
 /** 
@@ -3591,46 +3591,46 @@ int hud_objective_notify_active()
  */
 void HUD_set_offsets(object *viewer_obj, int wiggedy_wack, matrix *eye_orient)
 {
-	if ( (viewer_obj == Player_obj) && wiggedy_wack ){		
-		vec3d tmp;
-		vertex pt;
+  if ( (viewer_obj == Player_obj) && wiggedy_wack ){    
+    vec3d tmp;
+    vertex pt;
 
-		HUD_offset_x = 0.0f;
-		HUD_offset_y = 0.0f;
+    HUD_offset_x = 0.0f;
+    HUD_offset_y = 0.0f;
 
-		vm_vec_scale_add( &tmp, &Eye_position, &eye_orient->vec.fvec, 100.0f );
-		
-		(void) g3_rotate_vertex(&pt,&tmp);
+    vm_vec_scale_add( &tmp, &Eye_position, &eye_orient->vec.fvec, 100.0f );
+    
+    (void) g3_rotate_vertex(&pt,&tmp);
 
-		g3_project_vertex(&pt);
+    g3_project_vertex(&pt);
 
-		gr_unsize_screen_posf( &pt.screen.xyw.x, &pt.screen.xyw.y );
-		HUD_offset_x -= 0.45f * (i2fl(gr_screen.clip_width_unscaled)*0.5f - pt.screen.xyw.x);
-		HUD_offset_y -= 0.45f * (i2fl(gr_screen.clip_height_unscaled)*0.5f - pt.screen.xyw.y);
+    gr_unsize_screen_posf( &pt.screen.xyw.x, &pt.screen.xyw.y );
+    HUD_offset_x -= 0.45f * (i2fl(gr_screen.clip_width_unscaled)*0.5f - pt.screen.xyw.x);
+    HUD_offset_y -= 0.45f * (i2fl(gr_screen.clip_height_unscaled)*0.5f - pt.screen.xyw.y);
 
-		if ( HUD_offset_x > 100.0f )	{
-			HUD_offset_x = 100.0f;
-		} else if ( HUD_offset_x < -100.0f )	{
-			HUD_offset_x += 100.0f;
-		}
+    if ( HUD_offset_x > 100.0f )  {
+      HUD_offset_x = 100.0f;
+    } else if ( HUD_offset_x < -100.0f )  {
+      HUD_offset_x += 100.0f;
+    }
 
-		if ( HUD_offset_y > 100.0f )	{
-			HUD_offset_y = 100.0f;
-		} else if ( HUD_offset_y < -100.0f )	{
-			HUD_offset_y += 100.0f;
-		}
+    if ( HUD_offset_y > 100.0f )  {
+      HUD_offset_y = 100.0f;
+    } else if ( HUD_offset_y < -100.0f )  {
+      HUD_offset_y += 100.0f;
+    }
 
-	} else {
-		HUD_offset_x = 0.0f;
-		HUD_offset_y = 0.0f;
-	}
+  } else {
+    HUD_offset_x = 0.0f;
+    HUD_offset_y = 0.0f;
+  }
 
-	if ( Viewer_mode & ( VM_TOPDOWN | VM_CHASE ) ) {
-		HUD_nose_x = 0;
-		HUD_nose_y = 0;
-	} else {
-		HUD_get_nose_coordinates(&HUD_nose_x, &HUD_nose_y);
-	}
+  if ( Viewer_mode & ( VM_TOPDOWN | VM_CHASE ) ) {
+    HUD_nose_x = 0;
+    HUD_nose_y = 0;
+  } else {
+    HUD_get_nose_coordinates(&HUD_nose_x, &HUD_nose_y);
+  }
 }
 
 /**
@@ -3638,49 +3638,49 @@ void HUD_set_offsets(object *viewer_obj, int wiggedy_wack, matrix *eye_orient)
  */
 void HUD_get_nose_coordinates(int *x, int *y)
 {
-	vertex	v0;
-	vec3d	p0;
+  vertex  v0;
+  vec3d  p0;
 
-	float x_nose;
-	float y_nose;
-	float x_center = gr_screen.clip_center_x;
-	float y_center = gr_screen.clip_center_y;
+  float x_nose;
+  float y_nose;
+  float x_center = gr_screen.clip_center_x;
+  float y_center = gr_screen.clip_center_y;
 
-	*x = 0;
-	*y = 0;
-	
-	vm_vec_scale_add(&p0, &Player_obj->pos, &Player_obj->orient.vec.fvec, 10000.0f);
-	g3_rotate_vertex(&v0, &p0);
+  *x = 0;
+  *y = 0;
+  
+  vm_vec_scale_add(&p0, &Player_obj->pos, &Player_obj->orient.vec.fvec, 10000.0f);
+  g3_rotate_vertex(&v0, &p0);
 
-	if (v0.codes == 0) {
-		g3_project_vertex(&v0);
+  if (v0.codes == 0) {
+    g3_project_vertex(&v0);
 
-		if ( !(v0.codes & PF_OVERFLOW) ) {
-			x_nose = v0.screen.xyw.x;
-			y_nose = v0.screen.xyw.y;
-		} else {
-			// Means that the ship forward vector is not going through the frame buffer.
-			// We're assigning a high negative value so that the the bitmaps will be drawn offscreen so that
-			// we can give the illusion that the player is looking away from the slewable HUD reticle.
-			*x = -100000;
-			*y = -100000;
-			return;
-		}
-	} else {
-		// Means that the ship forward vector is not going through the frame buffer.
-		// We're assigning a high negative value so that the the bitmaps will be drawn offscreen so that
-		// we can give the illusion that the player is looking away from the slewable HUD reticle.
-		*x = -100000;
-		*y = -100000;
-		return;
-	}
+    if ( !(v0.codes & PF_OVERFLOW) ) {
+      x_nose = v0.screen.xyw.x;
+      y_nose = v0.screen.xyw.y;
+    } else {
+      // Means that the ship forward vector is not going through the frame buffer.
+      // We're assigning a high negative value so that the the bitmaps will be drawn offscreen so that
+      // we can give the illusion that the player is looking away from the slewable HUD reticle.
+      *x = -100000;
+      *y = -100000;
+      return;
+    }
+  } else {
+    // Means that the ship forward vector is not going through the frame buffer.
+    // We're assigning a high negative value so that the the bitmaps will be drawn offscreen so that
+    // we can give the illusion that the player is looking away from the slewable HUD reticle.
+    *x = -100000;
+    *y = -100000;
+    return;
+  }
 
-	gr_unsize_screen_posf(&x_nose, &y_nose);
-	gr_unsize_screen_posf(&x_center, &y_center);
+  gr_unsize_screen_posf(&x_nose, &y_nose);
+  gr_unsize_screen_posf(&x_center, &y_center);
 
-	*x = fl2i(x_nose - x_center);
-	*y = fl2i(y_nose - y_center);
-	return;
+  *x = fl2i(x_nose - x_center);
+  *y = fl2i(y_nose - y_center);
+  return;
 }
 
 /**
@@ -3688,10 +3688,10 @@ void HUD_get_nose_coordinates(int *x, int *y)
  */
 void HUD_reset_clip()
 {
-	int hx = fl2i(HUD_offset_x);
-	int hy = fl2i(HUD_offset_y);
+  int hx = fl2i(HUD_offset_x);
+  int hy = fl2i(HUD_offset_y);
 
-	gr_set_clip(hx, hy, gr_screen.max_w_unscaled, gr_screen.max_h_unscaled);
+  gr_set_clip(hx, hy, gr_screen.max_w_unscaled, gr_screen.max_h_unscaled);
 }
 
 /**
@@ -3699,10 +3699,10 @@ void HUD_reset_clip()
  */
 void HUD_set_clip(int x, int y, int w, int h)
 {
-	int hx = fl2i(HUD_offset_x);
-	int hy = fl2i(HUD_offset_y);
+  int hx = fl2i(HUD_offset_x);
+  int hy = fl2i(HUD_offset_y);
 
-	gr_set_clip(hx+x, hy+y, w, h);
+  gr_set_clip(hx+x, hy+y, w, h);
 }
 
 /**
@@ -3711,38 +3711,38 @@ void HUD_set_clip(int x, int y, int w, int h)
  */
 void hud_save_restore_camera_data(int save)
 {
-	static vec3d	save_view_position;
-	static float	save_view_zoom;
-	static matrix	save_view_matrix;
-	static matrix	save_eye_matrix;
-	static vec3d	save_eye_position;
+  static vec3d  save_view_position;
+  static float  save_view_zoom;
+  static matrix  save_view_matrix;
+  static matrix  save_eye_matrix;
+  static vec3d  save_eye_position;
 
-	if ( save ) {
-		save_view_position		= View_position;
-		save_view_zoom			= View_zoom;
-		save_view_matrix		= View_matrix;
-		save_eye_matrix			= Eye_matrix;
-		save_eye_position		= Eye_position;
-	}
-	else {
-		// restore global view variables
-		View_position	= save_view_position;
-		View_zoom		= save_view_zoom;
-		View_matrix		= save_view_matrix;
-		Eye_matrix		= save_eye_matrix;
-		Eye_position	= save_eye_position;
-	}
+  if ( save ) {
+    save_view_position    = View_position;
+    save_view_zoom      = View_zoom;
+    save_view_matrix    = View_matrix;
+    save_eye_matrix      = Eye_matrix;
+    save_eye_position    = Eye_position;
+  }
+  else {
+    // restore global view variables
+    View_position  = save_view_position;
+    View_zoom    = save_view_zoom;
+    View_matrix    = save_view_matrix;
+    Eye_matrix    = save_eye_matrix;
+    Eye_position  = save_eye_position;
+  }
 }
 
 
 void hud_toggle_contrast()
 {
-	HUD_contrast = !HUD_contrast;
+  HUD_contrast = !HUD_contrast;
 }
 
 void hud_set_contrast(int high)
 {
-	HUD_contrast = high;
+  HUD_contrast = high;
 }
 
 // Paging functions for the rest of the HUD code
@@ -3753,52 +3753,52 @@ extern void hudtarget_page_in();
  */
 void hud_page_in()
 {
-	// Go through all hud gauges to page them in 
-	size_t j, num_gauges = 0;
-	for (auto it = Ship_info.cbegin(); it != Ship_info.cend(); ++it) {
-		if(it->hud_enabled) {
-			if(!it->hud_gauges.empty()) {
-				num_gauges = it->hud_gauges.size();
+  // Go through all hud gauges to page them in 
+  size_t j, num_gauges = 0;
+  for (auto it = Ship_info.cbegin(); it != Ship_info.cend(); ++it) {
+    if(it->hud_enabled) {
+      if(!it->hud_gauges.empty()) {
+        num_gauges = it->hud_gauges.size();
 
-				for(j = 0; j < num_gauges; j++) {
-					it->hud_gauges[j]->pageIn();
-				}
-			}
-		}
-	}
+        for(j = 0; j < num_gauges; j++) {
+          it->hud_gauges[j]->pageIn();
+        }
+      }
+    }
+  }
 
-	num_gauges = default_hud_gauges.size();
+  num_gauges = default_hud_gauges.size();
 
-	for(j = 0; j < num_gauges; j++) {
-		default_hud_gauges[j]->pageIn();
-	}
+  for(j = 0; j < num_gauges; j++) {
+    default_hud_gauges[j]->pageIn();
+  }
 }
 
 HudGauge* hud_get_gauge(const char* name)
 {
-	const char* gauge_name;
-	size_t j;
+  const char* gauge_name;
+  size_t j;
 
-	// go through all gauges and return the gauge that matches
-	if(!Ship_info[Player_ship->ship_info_index].hud_gauges.empty()) {
-		for(j = 0; j < Ship_info[Player_ship->ship_info_index].hud_gauges.size(); j++) {
+  // go through all gauges and return the gauge that matches
+  if(!Ship_info[Player_ship->ship_info_index].hud_gauges.empty()) {
+    for(j = 0; j < Ship_info[Player_ship->ship_info_index].hud_gauges.size(); j++) {
 
-			gauge_name = Ship_info[Player_ship->ship_info_index].hud_gauges[j]->getCustomGaugeName();
-			if(!strcmp(name, gauge_name)) {
-				return Ship_info[Player_ship->ship_info_index].hud_gauges[j];
-			}
-		}
-	} else {
-		for(j = 0; j < default_hud_gauges.size(); j++) {
+      gauge_name = Ship_info[Player_ship->ship_info_index].hud_gauges[j]->getCustomGaugeName();
+      if(!strcmp(name, gauge_name)) {
+        return Ship_info[Player_ship->ship_info_index].hud_gauges[j];
+      }
+    }
+  } else {
+    for(j = 0; j < default_hud_gauges.size(); j++) {
 
-			gauge_name = default_hud_gauges[j]->getCustomGaugeName();
-			if(!strcmp(name, gauge_name)) {
-				return default_hud_gauges[j];
-			}
-		}
-	}
+      gauge_name = default_hud_gauges[j]->getCustomGaugeName();
+      if(!strcmp(name, gauge_name)) {
+        return default_hud_gauges[j];
+      }
+    }
+  }
 
-	return NULL;
+  return NULL;
 }
 
 HudGaugeMultiMsg::HudGaugeMultiMsg():
@@ -3808,7 +3808,7 @@ HudGauge(HUD_OBJECT_MULTI_MSG, HUD_MESSAGE_LINES, false, true, 0, 255, 255, 255)
 
 bool HudGaugeMultiMsg::canRender() 
 {
-	return true;
+  return true;
 }
 
 /**
@@ -3816,16 +3816,16 @@ bool HudGaugeMultiMsg::canRender()
  */
 void HudGaugeMultiMsg::render(float frametime)
 {
-	char txt[MULTI_MSG_MAX_TEXT_LEN+20];
+  char txt[MULTI_MSG_MAX_TEXT_LEN+20];
 
-	// clear the text
-	memset(txt,0,MULTI_MSG_MAX_TEXT_LEN+20);
+  // clear the text
+  memset(txt,0,MULTI_MSG_MAX_TEXT_LEN+20);
 
-	// if there is valid multiplayer message text to be displayed
-	if(multi_msg_message_text(txt)){
-		gr_set_color_fast(&Color_normal);
-		renderString(position[0], position[1], txt);
-	}
+  // if there is valid multiplayer message text to be displayed
+  if(multi_msg_message_text(txt)){
+    gr_set_color_fast(&Color_normal);
+    renderString(position[0], position[1], txt);
+  }
 }
 
 HudGaugeVoiceStatus::HudGaugeVoiceStatus():
@@ -3835,33 +3835,33 @@ HudGauge(HUD_OBJECT_VOICE_STATUS, HUD_MESSAGE_LINES, false, true, VM_EXTERNAL | 
 
 void HudGaugeVoiceStatus::render(float frametime)
 {
-	if(!(Game_mode & GM_MULTIPLAYER)){
-		return;
-	}
-	
-	// if we are currently playing a rtvoice sound stream from another player back
-	switch(multi_voice_status()){
-	// the player has been denied the voice token
-	case MULTI_VOICE_STATUS_DENIED:
-		// show a red indicator or something
-		renderString(position[0], position[1], XSTR( "[voice denied]", 243));
-		break;
+  if(!(Game_mode & GM_MULTIPLAYER)){
+    return;
+  }
+  
+  // if we are currently playing a rtvoice sound stream from another player back
+  switch(multi_voice_status()){
+  // the player has been denied the voice token
+  case MULTI_VOICE_STATUS_DENIED:
+    // show a red indicator or something
+    renderString(position[0], position[1], XSTR( "[voice denied]", 243));
+    break;
 
-	// the player is currently recording
-	case MULTI_VOICE_STATUS_RECORDING:
-		renderString(position[0], position[1], XSTR( "[recording voice]", 244));
-		break;
-		
-	// the player is current playing back voice from someone
-	case MULTI_VOICE_STATUS_PLAYING:
-		renderString(position[0], position[1], XSTR( "[playing voice]", 245));
-		break;
+  // the player is currently recording
+  case MULTI_VOICE_STATUS_RECORDING:
+    renderString(position[0], position[1], XSTR( "[recording voice]", 244));
+    break;
+    
+  // the player is current playing back voice from someone
+  case MULTI_VOICE_STATUS_PLAYING:
+    renderString(position[0], position[1], XSTR( "[playing voice]", 245));
+    break;
 
-	// nothing voice related is happening on my machine
-	case MULTI_VOICE_STATUS_IDLE:
-		// probably shouldn't be displaying anything
-		break;
-	}	
+  // nothing voice related is happening on my machine
+  case MULTI_VOICE_STATUS_IDLE:
+    // probably shouldn't be displaying anything
+    break;
+  }  
 }
 
 HudGaugePing::HudGaugePing():
@@ -3875,30 +3875,30 @@ HudGauge(HUD_OBJECT_PING, HUD_LAG_GAUGE, false, false, 0, 255, 255, 255)
  */
 void HudGaugePing::render(float frametime)
 {
-	// If we shouldn't be displaying a ping time, return here
-	if(!multi_show_ingame_ping()){
-		return;
-	}
-	
-	// If we're in multiplayer mode, display our ping time to the server
-	if(MULTIPLAYER_CLIENT && (Net_player != NULL)){
-		char ping_str[50];
-		memset(ping_str,0,50);
+  // If we shouldn't be displaying a ping time, return here
+  if(!multi_show_ingame_ping()){
+    return;
+  }
+  
+  // If we're in multiplayer mode, display our ping time to the server
+  if(MULTIPLAYER_CLIENT && (Net_player != NULL)){
+    char ping_str[50];
+    memset(ping_str,0,50);
 
-		// If our ping is positive, display it
-		if((Netgame.server != NULL) && (Netgame.server->s_info.ping.ping_avg > 0)){
-			// Get the string
-			if(Netgame.server->s_info.ping.ping_avg >= 1000){
-				strcpy_s(ping_str,XSTR("> 1 sec",628));
-			} else {
-				sprintf(ping_str,XSTR("%d ms",629),Netgame.server->s_info.ping.ping_avg);
-			}
+    // If our ping is positive, display it
+    if((Netgame.server != NULL) && (Netgame.server->s_info.ping.ping_avg > 0)){
+      // Get the string
+      if(Netgame.server->s_info.ping.ping_avg >= 1000){
+        strcpy_s(ping_str,XSTR("> 1 sec",628));
+      } else {
+        sprintf(ping_str,XSTR("%d ms",629),Netgame.server->s_info.ping.ping_avg);
+      }
 
-			// Blit the string out
-			hud_set_default_color();
-			renderString(position[0], position[1], ping_str);
-		}
-	}
+      // Blit the string out
+      hud_set_default_color();
+      renderString(position[0], position[1], ping_str);
+    }
+  }
 }
 
 HudGaugeSupernova::HudGaugeSupernova():
@@ -3908,20 +3908,20 @@ HudGauge(HUD_OBJECT_SUPERNOVA, HUD_DIRECTIVES_VIEW, false, false, 0, 255, 255, 2
 
 void HudGaugeSupernova::render(float frametime)
 {
-	float time_left;
+  float time_left;
 
-	// if there's a supernova coming
-	time_left = supernova_time_left();
-	if(time_left < 0.0f){
-		return;
-	}
+  // if there's a supernova coming
+  time_left = supernova_time_left();
+  if(time_left < 0.0f){
+    return;
+  }
 
-	gr_set_color_fast(&Color_bright_red);
-	if (Lcl_pl) {
-		renderPrintf(position[0], position[1], "Wybuch supernowej: %.2f s", time_left);
-	} else {
-		renderPrintf(position[0], position[1], "Supernova Warning: %.2f s", time_left);
-	}
+  gr_set_color_fast(&Color_bright_red);
+  if (Lcl_pl) {
+    renderPrintf(position[0], position[1], "Wybuch supernowej: %.2f s", time_left);
+  } else {
+    renderPrintf(position[0], position[1], "Supernova Warning: %.2f s", time_left);
+  }
 }
 
 HudGaugeFlightPath::HudGaugeFlightPath():
@@ -3931,55 +3931,55 @@ HudGauge(HUD_OBJECT_FLIGHT_PATH, HUD_CENTER_RETICLE, false, false, VM_EXTERNAL |
 
 void HudGaugeFlightPath::initBitmap(const char *fname)
 {
-	Marker.first_frame = bm_load_animation(fname, &Marker.num_frames);
+  Marker.first_frame = bm_load_animation(fname, &Marker.num_frames);
 
-	if ( Marker.first_frame < 0 ) {
-		Warning(LOCATION,"Cannot load hud ani: %s\n", fname);
-	}
+  if ( Marker.first_frame < 0 ) {
+    Warning(LOCATION,"Cannot load hud ani: %s\n", fname);
+  }
 }
 
 void HudGaugeFlightPath::initHalfSize(int w, int h)
 {
-	Marker_half[0] = w;
-	Marker_half[1] = h;
+  Marker_half[0] = w;
+  Marker_half[1] = h;
 }
 
 void HudGaugeFlightPath::render(float frametime)
 {
-	object *obj;
-	vec3d p0,v;
-	vertex v0;
-	int sx, sy;
+  object *obj;
+  vec3d p0,v;
+  vertex v0;
+  int sx, sy;
 
-	bool in_frame = g3_in_frame() > 0;
-	if(!in_frame) {
-		g3_start_frame(0);
-	}
+  bool in_frame = g3_in_frame() > 0;
+  if(!in_frame) {
+    g3_start_frame(0);
+  }
 
-	obj = Player_obj;
+  obj = Player_obj;
 
-	vm_vec_scale_add( &v, &obj->phys_info.vel, &obj->orient.vec.fvec, 1.0f );
-	vm_vec_normalize( &v );
-			
-	vm_vec_scale_add( &p0, &obj->pos, &v, 1000000.0f );
+  vm_vec_scale_add( &v, &obj->phys_info.vel, &obj->orient.vec.fvec, 1.0f );
+  vm_vec_normalize( &v );
+      
+  vm_vec_scale_add( &p0, &obj->pos, &v, 1000000.0f );
 
-	g3_rotate_vertex( &v0, &p0 );
+  g3_rotate_vertex( &v0, &p0 );
 
-	if (v0.codes == 0) { // on screen
-		g3_project_vertex(&v0);
+  if (v0.codes == 0) { // on screen
+    g3_project_vertex(&v0);
 
-		if (!(v0.flags & PF_OVERFLOW)) {
-			if ( Marker.first_frame >= 0 ) {
-				sx = fl2i(v0.screen.xyw.x);
-				sy = fl2i(v0.screen.xyw.y);
+    if (!(v0.flags & PF_OVERFLOW)) {
+      if ( Marker.first_frame >= 0 ) {
+        sx = fl2i(v0.screen.xyw.x);
+        sy = fl2i(v0.screen.xyw.y);
 
-				unsize(&sx, &sy);
-				renderBitmap(Marker.first_frame, sx - Marker_half[0], sy - Marker_half[1]);
-			}
-		}
-	}
-	
-	if(!in_frame) {
-		g3_end_frame();
-	}
+        unsize(&sx, &sy);
+        renderBitmap(Marker.first_frame, sx - Marker_half[0], sy - Marker_half[1]);
+      }
+    }
+  }
+  
+  if(!in_frame) {
+    g3_end_frame();
+  }
 }

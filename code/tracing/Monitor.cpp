@@ -8,7 +8,7 @@ namespace tracing {
 MonitorBase::MonitorBase(const char* name) : _name(name), _tracing_cat(name, false) {
 }
 void MonitorBase::valueChanged(float newVal) {
-	tracing::counter::value(_tracing_cat, newVal);
+  tracing::counter::value(_tracing_cat, newVal);
 }
 
 }

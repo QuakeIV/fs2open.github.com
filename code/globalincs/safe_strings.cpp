@@ -27,88 +27,88 @@
  */
 errno_t scp_strcpy_s( const char* file, int line, char* strDest, size_t sizeInBytes, const char* strSource )
 {
-	char* pDest;
-	const char* pSource;
-	size_t bufferLeft = sizeInBytes;
-	
-	if ( !strDest || !strSource )
-	{
-		if ( strDest )
-			*strDest = '\0';
-		__safe_strings_error_handler( EINVAL );
-		return EINVAL;
-	}
+  char* pDest;
+  const char* pSource;
+  size_t bufferLeft = sizeInBytes;
+  
+  if ( !strDest || !strSource )
+  {
+    if ( strDest )
+      *strDest = '\0';
+    __safe_strings_error_handler( EINVAL );
+    return EINVAL;
+  }
 
-	if ( sizeInBytes == 0 )
-	{
-		*strDest = '\0';
-		__safe_strings_error_handler( ERANGE );
-		return ERANGE;
-	}
+  if ( sizeInBytes == 0 )
+  {
+    *strDest = '\0';
+    __safe_strings_error_handler( ERANGE );
+    return ERANGE;
+  }
 
-	pDest = strDest;
-	pSource = strSource;
-	
-	while ((*pDest++ = *pSource++) != 0 && --bufferLeft > 0);
+  pDest = strDest;
+  pSource = strSource;
+  
+  while ((*pDest++ = *pSource++) != 0 && --bufferLeft > 0);
 
-	if ( bufferLeft == 0 )
-	{
-		*strDest = '\0';
-		__safe_strings_error_handler( ERANGE );
-		return ERANGE;
-	}
+  if ( bufferLeft == 0 )
+  {
+    *strDest = '\0';
+    __safe_strings_error_handler( ERANGE );
+    return ERANGE;
+  }
 
-	return 0;
+  return 0;
 }
 
 errno_t scp_strcat_s( const char* file, int line, char* strDest, size_t sizeInBytes, const char* strSource )
 {
-	char* pDest;
-	const char* pSource;
-	size_t bufferLeft = sizeInBytes;
+  char* pDest;
+  const char* pSource;
+  size_t bufferLeft = sizeInBytes;
 
-	if ( !strDest || !strSource )
-	{
-		if ( strDest )
-			*strDest = '\0';
-		__safe_strings_error_handler( EINVAL );
-		return EINVAL;
-	}
+  if ( !strDest || !strSource )
+  {
+    if ( strDest )
+      *strDest = '\0';
+    __safe_strings_error_handler( EINVAL );
+    return EINVAL;
+  }
 
-	if ( bufferLeft == 0 )
-	{
-		*strDest = '\0';
-		__safe_strings_error_handler( ERANGE );
-		return ERANGE;
-	}
+  if ( bufferLeft == 0 )
+  {
+    *strDest = '\0';
+    __safe_strings_error_handler( ERANGE );
+    return ERANGE;
+  }
 
-	/* Find the terminating NULL of the input string */
-	pDest = strDest;
-	pSource = strSource;
-	while ( *pDest )
-	{
-		pDest++;
-		bufferLeft--;
-	}
+  /* Find the terminating NULL of the input string */
+  pDest = strDest;
+  pSource = strSource;
+  while ( *pDest )
+  {
+    pDest++;
+    bufferLeft--;
+  }
 
-	if ( bufferLeft == 0 )
-	{
-		*strDest = '\0';
-		__safe_strings_error_handler( ERANGE );
-		return ERANGE;
-	}
+  if ( bufferLeft == 0 )
+  {
+    *strDest = '\0';
+    __safe_strings_error_handler( ERANGE );
+    return ERANGE;
+  }
 
-	/* Concatenate the strings */
-	while ((*pDest++ = *pSource++) != 0 && --bufferLeft > 0);
+  /* Concatenate the strings */
+  while ((*pDest++ = *pSource++) != 0 && --bufferLeft > 0);
 
-	if ( bufferLeft == 0 )
-	{
-		*strDest = '\0';
-		__safe_strings_error_handler( ERANGE );
-		return ERANGE;
-	}
+  if ( bufferLeft == 0 )
+  {
+    *strDest = '\0';
+    __safe_strings_error_handler( ERANGE );
+    return ERANGE;
+  }
 
-	return 0;
+  return 0;
 }
 
 #endif

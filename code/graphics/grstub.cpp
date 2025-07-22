@@ -20,17 +20,17 @@
 
 uint gr_stub_lock()
 {
-	return 1;
+  return 1;
 }
 
 int gr_stub_create_vertex_buffer(bool static_buffer)
 {
-	return -1;
+  return -1;
 }
 
 int gr_stub_create_index_buffer(bool static_buffer)
 {
-	return -1;
+  return -1;
 }
 
 void gr_stub_delete_buffer(int handle)
@@ -40,22 +40,22 @@ void gr_stub_delete_buffer(int handle)
 
 int gr_stub_preload(int bitmap_num, int is_aabitmap)
 {
-	return 0;
+  return 0;
 }
 
 int gr_stub_save_screen()
 {
-	return 1;
+  return 1;
 }
 
 int gr_stub_zbuffer_get()
 {
-	return 0;
+  return 0;
 }
 
 int gr_stub_zbuffer_set(int mode)
 {
-	return 0;
+  return 0;
 }
 
 void gr_set_fill_mode_stub(int mode)
@@ -231,12 +231,12 @@ void gr_stub_set_clip(int x, int y, int w, int h, int resize_mode)
 
 int gr_stub_set_cull(int cull)
 {
-	return 0;
+  return 0;
 }
 
 int gr_stub_set_color_buffer(int mode)
 {
-	return 0;
+  return 0;
 }
 
 void gr_stub_set_gamma(float gamma)
@@ -305,7 +305,7 @@ void gr_stub_zbuffer_clear(int mode)
 
 int gr_stub_stencil_set(int mode)
 {
-	return 0;
+  return 0;
 }
 
 void gr_stub_stencil_clear()
@@ -314,7 +314,7 @@ void gr_stub_stencil_clear()
 
 int gr_stub_alpha_mask_set(int mode, float alpha)
 {
-	return 0;
+  return 0;
 }
 
 /*void gr_stub_shade(int x,int y,int w,int h)
@@ -400,12 +400,12 @@ void gr_stub_get_bitmap_from_texture(void* data_out, int bitmap_num)
 
 int gr_stub_bm_make_render_target(int n, int *width, int *height, int *bpp, int *mm_lvl, int flags)
 {
-	return 0;
+  return 0;
 }
 
 int gr_stub_bm_set_render_target(int n, int face)
 {
-	return 0;
+  return 0;
 }
 
 void gr_stub_bm_create(int n)
@@ -426,11 +426,11 @@ void gr_stub_bm_page_in_start()
 
 bool gr_stub_bm_data(int n, bitmap* bm)
 {
-	return true;
+  return true;
 }
 
 int gr_stub_maybe_create_shader(shader_type shader_t, unsigned int flags) {
-	return -1;
+  return -1;
 }
 
 void gr_stub_shadow_map_start(matrix4 *shadow_view_matrix, const matrix* light_matrix)
@@ -483,7 +483,7 @@ void gr_stub_render_primitives_distortion(distortion_material* material_info, pr
 
 bool gr_stub_is_capable(gr_capability capability)
 {
-	return false;
+  return false;
 }
 
 void gr_stub_push_debug_group(const char*){
@@ -494,7 +494,7 @@ void gr_stub_pop_debug_group(){
 
 int gr_stub_create_query_object()
 {
-	return -1;
+  return -1;
 }
 
 void gr_stub_query_value(int obj, QueryType type)
@@ -503,12 +503,12 @@ void gr_stub_query_value(int obj, QueryType type)
 
 bool gr_stub_query_value_available(int obj)
 {
-	return false;
+  return false;
 }
 
 std::uint64_t gr_stub_get_query_value(int obj)
 {
-	return 0;
+  return 0;
 }
 
 void gr_stub_delete_query_object(int obj)
@@ -517,192 +517,192 @@ void gr_stub_delete_query_object(int obj)
 
 bool gr_stub_init() 
 {
-	if (gr_screen.res != GR_640) {
-		gr_screen.res = GR_640;
-		gr_screen.max_w = 640;
-		gr_screen.max_h = 480;
-	}
+  if (gr_screen.res != GR_640) {
+    gr_screen.res = GR_640;
+    gr_screen.max_w = 640;
+    gr_screen.max_h = 480;
+  }
 
-	Gr_red.bits = 8;
-	Gr_red.shift = 16;
-	Gr_red.scale = 1;
-	Gr_red.mask = 0xff0000;
-	Gr_t_red = Gr_red;
+  Gr_red.bits = 8;
+  Gr_red.shift = 16;
+  Gr_red.scale = 1;
+  Gr_red.mask = 0xff0000;
+  Gr_t_red = Gr_red;
 
-	Gr_green.bits = 8;
-	Gr_green.shift = 8;
-	Gr_green.scale = 1;
-	Gr_green.mask = 0xff00;
-	Gr_t_green = Gr_green;
+  Gr_green.bits = 8;
+  Gr_green.shift = 8;
+  Gr_green.scale = 1;
+  Gr_green.mask = 0xff00;
+  Gr_t_green = Gr_green;
 
-	Gr_blue.bits = 8;
-	Gr_blue.shift = 0;
-	Gr_blue.scale = 1;
-	Gr_blue.mask = 0xff;
-	Gr_t_blue = Gr_blue;
+  Gr_blue.bits = 8;
+  Gr_blue.shift = 0;
+  Gr_blue.scale = 1;
+  Gr_blue.mask = 0xff;
+  Gr_t_blue = Gr_blue;
 
-	// function pointers...
-	gr_screen.gf_flip				= gr_stub_flip;
-	gr_screen.gf_set_clip			= gr_stub_set_clip;
-	gr_screen.gf_reset_clip			= gr_stub_reset_clip;
-	
-	gr_screen.gf_clear				= gr_stub_clear;
-//	gr_screen.gf_bitmap				= gr_stub_bitmap;
-	gr_screen.gf_bitmap_ex			= gr_stub_bitmap_ex;
-	gr_screen.gf_aabitmap			= gr_stub_aabitmap;
-	gr_screen.gf_aabitmap_ex		= gr_stub_aabitmap_ex;
-	
-//	gr_screen.gf_rect				= gr_stub_rect;
-//	gr_screen.gf_shade				= gr_stub_shade;
-	gr_screen.gf_string				= gr_stub_string;
-	gr_screen.gf_circle				= gr_stub_circle;
-	gr_screen.gf_unfilled_circle	= gr_stub_unfilled_circle;
-	gr_screen.gf_curve				= gr_stub_curve;
+  // function pointers...
+  gr_screen.gf_flip        = gr_stub_flip;
+  gr_screen.gf_set_clip      = gr_stub_set_clip;
+  gr_screen.gf_reset_clip      = gr_stub_reset_clip;
+  
+  gr_screen.gf_clear        = gr_stub_clear;
+//  gr_screen.gf_bitmap        = gr_stub_bitmap;
+  gr_screen.gf_bitmap_ex      = gr_stub_bitmap_ex;
+  gr_screen.gf_aabitmap      = gr_stub_aabitmap;
+  gr_screen.gf_aabitmap_ex    = gr_stub_aabitmap_ex;
+  
+//  gr_screen.gf_rect        = gr_stub_rect;
+//  gr_screen.gf_shade        = gr_stub_shade;
+  gr_screen.gf_string        = gr_stub_string;
+  gr_screen.gf_circle        = gr_stub_circle;
+  gr_screen.gf_unfilled_circle  = gr_stub_unfilled_circle;
+  gr_screen.gf_curve        = gr_stub_curve;
 
-	gr_screen.gf_line				= gr_stub_line;
-	gr_screen.gf_aaline				= gr_stub_aaline;
-	gr_screen.gf_pixel				= gr_stub_pixel;
+  gr_screen.gf_line        = gr_stub_line;
+  gr_screen.gf_aaline        = gr_stub_aaline;
+  gr_screen.gf_pixel        = gr_stub_pixel;
 
-	gr_screen.gf_gradient			= gr_stub_gradient;
+  gr_screen.gf_gradient      = gr_stub_gradient;
 
-	gr_screen.gf_print_screen		= gr_stub_print_screen;
+  gr_screen.gf_print_screen    = gr_stub_print_screen;
 
-	gr_screen.gf_flash				= gr_stub_flash;
-	gr_screen.gf_flash_alpha		= gr_stub_flash_alpha;
-	
-	gr_screen.gf_zbuffer_get		= gr_stub_zbuffer_get;
-	gr_screen.gf_zbuffer_set		= gr_stub_zbuffer_set;
-	gr_screen.gf_zbuffer_clear		= gr_stub_zbuffer_clear;
+  gr_screen.gf_flash        = gr_stub_flash;
+  gr_screen.gf_flash_alpha    = gr_stub_flash_alpha;
+  
+  gr_screen.gf_zbuffer_get    = gr_stub_zbuffer_get;
+  gr_screen.gf_zbuffer_set    = gr_stub_zbuffer_set;
+  gr_screen.gf_zbuffer_clear    = gr_stub_zbuffer_clear;
 
-	gr_screen.gf_stencil_set		= gr_stub_stencil_set;
-	gr_screen.gf_stencil_clear		= gr_stub_stencil_clear;
+  gr_screen.gf_stencil_set    = gr_stub_stencil_set;
+  gr_screen.gf_stencil_clear    = gr_stub_stencil_clear;
 
-	gr_screen.gf_alpha_mask_set		= gr_stub_alpha_mask_set;
-	
-	gr_screen.gf_save_screen		= gr_stub_save_screen;
-	gr_screen.gf_restore_screen		= gr_stub_restore_screen;
-	gr_screen.gf_free_screen		= gr_stub_free_screen;
-	
-	gr_screen.gf_set_gamma			= gr_stub_set_gamma;
+  gr_screen.gf_alpha_mask_set    = gr_stub_alpha_mask_set;
+  
+  gr_screen.gf_save_screen    = gr_stub_save_screen;
+  gr_screen.gf_restore_screen    = gr_stub_restore_screen;
+  gr_screen.gf_free_screen    = gr_stub_free_screen;
+  
+  gr_screen.gf_set_gamma      = gr_stub_set_gamma;
 
-	gr_screen.gf_fog_set			= gr_stub_fog_set;	
+  gr_screen.gf_fog_set      = gr_stub_fog_set;  
 
-	// UnknownPlayer : Don't recognize this - MAY NEED DEBUGGING
-	gr_screen.gf_get_region			= gr_stub_get_region;
+  // UnknownPlayer : Don't recognize this - MAY NEED DEBUGGING
+  gr_screen.gf_get_region      = gr_stub_get_region;
 
-	// now for the bitmap functions
-	gr_screen.gf_bm_free_data			= gr_stub_bm_free_data;
-	gr_screen.gf_bm_create				= gr_stub_bm_create;
-	gr_screen.gf_bm_init				= gr_stub_bm_init;
-	gr_screen.gf_bm_page_in_start		= gr_stub_bm_page_in_start;
-	gr_screen.gf_bm_data				= gr_stub_bm_data;
-	gr_screen.gf_bm_make_render_target	= gr_stub_bm_make_render_target;
-	gr_screen.gf_bm_set_render_target	= gr_stub_bm_set_render_target;
+  // now for the bitmap functions
+  gr_screen.gf_bm_free_data      = gr_stub_bm_free_data;
+  gr_screen.gf_bm_create        = gr_stub_bm_create;
+  gr_screen.gf_bm_init        = gr_stub_bm_init;
+  gr_screen.gf_bm_page_in_start    = gr_stub_bm_page_in_start;
+  gr_screen.gf_bm_data        = gr_stub_bm_data;
+  gr_screen.gf_bm_make_render_target  = gr_stub_bm_make_render_target;
+  gr_screen.gf_bm_set_render_target  = gr_stub_bm_set_render_target;
 
-	gr_screen.gf_set_cull			= gr_stub_set_cull;
-	gr_screen.gf_set_color_buffer	= gr_stub_set_color_buffer;
+  gr_screen.gf_set_cull      = gr_stub_set_cull;
+  gr_screen.gf_set_color_buffer  = gr_stub_set_color_buffer;
 
-	gr_screen.gf_set_clear_color	= gr_stub_set_clear_color;
+  gr_screen.gf_set_clear_color  = gr_stub_set_clear_color;
 
-	gr_screen.gf_preload			= gr_stub_preload;
+  gr_screen.gf_preload      = gr_stub_preload;
 
-	gr_screen.gf_push_texture_matrix		= gr_stub_push_texture_matrix;
-	gr_screen.gf_pop_texture_matrix			= gr_stub_pop_texture_matrix;
-	gr_screen.gf_translate_texture_matrix	= gr_stub_translate_texture_matrix;
+  gr_screen.gf_push_texture_matrix    = gr_stub_push_texture_matrix;
+  gr_screen.gf_pop_texture_matrix      = gr_stub_pop_texture_matrix;
+  gr_screen.gf_translate_texture_matrix  = gr_stub_translate_texture_matrix;
 
-	gr_screen.gf_set_texture_addressing	= gr_stub_set_texture_addressing;
-	gr_screen.gf_zbias					= gr_stub_zbias_stub;
-	gr_screen.gf_set_fill_mode			= gr_set_fill_mode_stub;
-	gr_screen.gf_set_texture_panning	= gr_stub_set_texture_panning;
+  gr_screen.gf_set_texture_addressing  = gr_stub_set_texture_addressing;
+  gr_screen.gf_zbias          = gr_stub_zbias_stub;
+  gr_screen.gf_set_fill_mode      = gr_set_fill_mode_stub;
+  gr_screen.gf_set_texture_panning  = gr_stub_set_texture_panning;
 
-	gr_screen.gf_create_vertex_buffer	= gr_stub_create_vertex_buffer;
-	gr_screen.gf_create_index_buffer	= gr_stub_create_index_buffer;
-	gr_screen.gf_delete_buffer		= gr_stub_delete_buffer;
+  gr_screen.gf_create_vertex_buffer  = gr_stub_create_vertex_buffer;
+  gr_screen.gf_create_index_buffer  = gr_stub_create_index_buffer;
+  gr_screen.gf_delete_buffer    = gr_stub_delete_buffer;
 
-	gr_screen.gf_update_transform_buffer	= gr_stub_update_transform_buffer;
-	gr_screen.gf_update_buffer_data		= gr_stub_update_buffer_data;
-	gr_screen.gf_set_transform_buffer_offset	= gr_stub_set_transform_buffer_offset;
+  gr_screen.gf_update_transform_buffer  = gr_stub_update_transform_buffer;
+  gr_screen.gf_update_buffer_data    = gr_stub_update_buffer_data;
+  gr_screen.gf_set_transform_buffer_offset  = gr_stub_set_transform_buffer_offset;
 
-	gr_screen.gf_render_stream_buffer		= gr_stub_render_stream_buffer;
+  gr_screen.gf_render_stream_buffer    = gr_stub_render_stream_buffer;
 
-	gr_screen.gf_start_instance_matrix			= gr_stub_start_instance_matrix;
-	gr_screen.gf_end_instance_matrix			= gr_stub_end_instance_matrix;
-	gr_screen.gf_start_angles_instance_matrix	= gr_stub_start_instance_angles;
+  gr_screen.gf_start_instance_matrix      = gr_stub_start_instance_matrix;
+  gr_screen.gf_end_instance_matrix      = gr_stub_end_instance_matrix;
+  gr_screen.gf_start_angles_instance_matrix  = gr_stub_start_instance_angles;
 
-	gr_screen.gf_set_light			= gr_stub_set_light;
-	gr_screen.gf_reset_lighting		= gr_stub_reset_lighting;
-	gr_screen.gf_set_ambient_light	= gr_stub_set_ambient_light;
+  gr_screen.gf_set_light      = gr_stub_set_light;
+  gr_screen.gf_reset_lighting    = gr_stub_reset_lighting;
+  gr_screen.gf_set_ambient_light  = gr_stub_set_ambient_light;
 
-	gr_screen.gf_post_process_set_effect	= gr_stub_post_process_set_effect;
-	gr_screen.gf_post_process_set_defaults	= gr_stub_post_process_set_defaults;
+  gr_screen.gf_post_process_set_effect  = gr_stub_post_process_set_effect;
+  gr_screen.gf_post_process_set_defaults  = gr_stub_post_process_set_defaults;
 
-	gr_screen.gf_post_process_begin		= gr_stub_post_process_begin;
-	gr_screen.gf_post_process_end		= gr_stub_post_process_end;
-	gr_screen.gf_post_process_save_zbuffer	= gr_stub_post_process_save_zbuffer;
-	gr_screen.gf_post_process_restore_zbuffer = [](){};
+  gr_screen.gf_post_process_begin    = gr_stub_post_process_begin;
+  gr_screen.gf_post_process_end    = gr_stub_post_process_end;
+  gr_screen.gf_post_process_save_zbuffer  = gr_stub_post_process_save_zbuffer;
+  gr_screen.gf_post_process_restore_zbuffer = [](){};
 
-	gr_screen.gf_scene_texture_begin = gr_stub_scene_texture_begin;
-	gr_screen.gf_scene_texture_end = gr_stub_scene_texture_end;
-	gr_screen.gf_copy_effect_texture = gr_stub_copy_effect_texture;
+  gr_screen.gf_scene_texture_begin = gr_stub_scene_texture_begin;
+  gr_screen.gf_scene_texture_end = gr_stub_scene_texture_end;
+  gr_screen.gf_copy_effect_texture = gr_stub_copy_effect_texture;
 
-	gr_screen.gf_deferred_lighting_begin = gr_stub_deferred_lighting_begin;
-	gr_screen.gf_deferred_lighting_end = gr_stub_deferred_lighting_end;
-	gr_screen.gf_deferred_lighting_finish = gr_stub_deferred_lighting_finish;
+  gr_screen.gf_deferred_lighting_begin = gr_stub_deferred_lighting_begin;
+  gr_screen.gf_deferred_lighting_end = gr_stub_deferred_lighting_end;
+  gr_screen.gf_deferred_lighting_finish = gr_stub_deferred_lighting_finish;
 
-	gr_screen.gf_start_clip_plane	= gr_stub_start_clip_plane;
-	gr_screen.gf_end_clip_plane		= gr_stub_end_clip_plane;
+  gr_screen.gf_start_clip_plane  = gr_stub_start_clip_plane;
+  gr_screen.gf_end_clip_plane    = gr_stub_end_clip_plane;
 
-	gr_screen.gf_lighting			= gr_stub_set_lighting;
+  gr_screen.gf_lighting      = gr_stub_set_lighting;
 
-	gr_screen.gf_set_proj_matrix	= gr_stub_set_projection_matrix;
-	gr_screen.gf_end_proj_matrix	= gr_stub_end_projection_matrix;
+  gr_screen.gf_set_proj_matrix  = gr_stub_set_projection_matrix;
+  gr_screen.gf_end_proj_matrix  = gr_stub_end_projection_matrix;
 
-	gr_screen.gf_set_view_matrix	= gr_stub_set_view_matrix;
-	gr_screen.gf_end_view_matrix	= gr_stub_end_view_matrix;
+  gr_screen.gf_set_view_matrix  = gr_stub_set_view_matrix;
+  gr_screen.gf_end_view_matrix  = gr_stub_end_view_matrix;
 
-	gr_screen.gf_push_scale_matrix	= gr_stub_push_scale_matrix;
-	gr_screen.gf_pop_scale_matrix	= gr_stub_pop_scale_matrix;
-	
-	gr_screen.gf_set_line_width		= gr_stub_set_line_width;
+  gr_screen.gf_push_scale_matrix  = gr_stub_push_scale_matrix;
+  gr_screen.gf_pop_scale_matrix  = gr_stub_pop_scale_matrix;
+  
+  gr_screen.gf_set_line_width    = gr_stub_set_line_width;
 
-	gr_screen.gf_sphere				= gr_stub_draw_sphere;
+  gr_screen.gf_sphere        = gr_stub_draw_sphere;
 
-	gr_screen.gf_shadow_map_start	= gr_stub_shadow_map_start;
-	gr_screen.gf_shadow_map_end		= gr_stub_shadow_map_end;
+  gr_screen.gf_shadow_map_start  = gr_stub_shadow_map_start;
+  gr_screen.gf_shadow_map_end    = gr_stub_shadow_map_end;
 
-	gr_screen.gf_render_shield_impact = gr_stub_render_shield_impact;
+  gr_screen.gf_render_shield_impact = gr_stub_render_shield_impact;
 
-	gr_screen.gf_maybe_create_shader = gr_stub_maybe_create_shader;
-	
-	gr_screen.gf_clear_states	= gr_stub_clear_states;
-	
-	gr_screen.gf_update_texture = gr_stub_update_texture;
-	gr_screen.gf_get_bitmap_from_texture = gr_stub_get_bitmap_from_texture;
+  gr_screen.gf_maybe_create_shader = gr_stub_maybe_create_shader;
+  
+  gr_screen.gf_clear_states  = gr_stub_clear_states;
+  
+  gr_screen.gf_update_texture = gr_stub_update_texture;
+  gr_screen.gf_get_bitmap_from_texture = gr_stub_get_bitmap_from_texture;
 
-	gr_screen.gf_render_model = gr_stub_render_model;
-	gr_screen.gf_render_primitives	= gr_stub_render_primitives;
-	gr_screen.gf_render_primitives_immediate = gr_stub_render_primitives_immediate;
-	gr_screen.gf_render_primitives_2d	= gr_stub_render_primitives_2d;
-	gr_screen.gf_render_primitives_2d_immediate = gr_stub_render_primitives_2d_immediate;
-	gr_screen.gf_render_primitives_particle	= gr_stub_render_primitives_particle;
-	gr_screen.gf_render_primitives_distortion = gr_stub_render_primitives_distortion;
+  gr_screen.gf_render_model = gr_stub_render_model;
+  gr_screen.gf_render_primitives  = gr_stub_render_primitives;
+  gr_screen.gf_render_primitives_immediate = gr_stub_render_primitives_immediate;
+  gr_screen.gf_render_primitives_2d  = gr_stub_render_primitives_2d;
+  gr_screen.gf_render_primitives_2d_immediate = gr_stub_render_primitives_2d_immediate;
+  gr_screen.gf_render_primitives_particle  = gr_stub_render_primitives_particle;
+  gr_screen.gf_render_primitives_distortion = gr_stub_render_primitives_distortion;
 
-	gr_screen.gf_is_capable = gr_stub_is_capable;
+  gr_screen.gf_is_capable = gr_stub_is_capable;
 
-	gr_screen.gf_push_debug_group = gr_stub_push_debug_group;
-	gr_screen.gf_pop_debug_group = gr_stub_pop_debug_group;
+  gr_screen.gf_push_debug_group = gr_stub_push_debug_group;
+  gr_screen.gf_pop_debug_group = gr_stub_pop_debug_group;
 
-	gr_screen.gf_create_query_object = gr_stub_create_query_object;
-	gr_screen.gf_query_value = gr_stub_query_value;
-	gr_screen.gf_query_value_available = gr_stub_query_value_available;
-	gr_screen.gf_get_query_value = gr_stub_get_query_value;
-	gr_screen.gf_delete_query_object = gr_stub_delete_query_object;
+  gr_screen.gf_create_query_object = gr_stub_create_query_object;
+  gr_screen.gf_query_value = gr_stub_query_value;
+  gr_screen.gf_query_value_available = gr_stub_query_value_available;
+  gr_screen.gf_get_query_value = gr_stub_get_query_value;
+  gr_screen.gf_delete_query_object = gr_stub_delete_query_object;
 
-	gr_screen.gf_create_viewport = [](const os::ViewPortProperties& props) {
-		return std::unique_ptr<os::Viewport>();
-	};
-	gr_screen.gf_use_viewport = [](os::Viewport*) {
-	};
+  gr_screen.gf_create_viewport = [](const os::ViewPortProperties& props) {
+    return std::unique_ptr<os::Viewport>();
+  };
+  gr_screen.gf_use_viewport = [](os::Viewport*) {
+  };
 
-	return true;
+  return true;
 }

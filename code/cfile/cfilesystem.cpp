@@ -20,7 +20,7 @@
 #include <io.h>
 #include <direct.h>
 #include <windows.h>
-#include <winbase.h>		/* needed for memory mapping of file functions */
+#include <winbase.h>    /* needed for memory mapping of file functions */
 #endif
 
 #ifdef SCP_UNIX
@@ -49,27 +49,27 @@ SCP_string Pilot_file_path;
 
 //  Created by:
 //    specifying hard drive tree
-//    searching for pack files on hard drive		// Found by searching all known paths
+//    searching for pack files on hard drive    // Found by searching all known paths
 //    specifying cd-rom tree
 //    searching for pack files on CD-rom tree
 typedef struct cf_root {
-	char				path[CF_MAX_PATHNAME_LENGTH];		// Contains something like c:\projects\freespace or c:\projects\freespace\freespace.vp
-	int				roottype;								// CF_ROOTTYPE_PATH  = Path, CF_ROOTTYPE_PACK =Pack file
+  char        path[CF_MAX_PATHNAME_LENGTH];    // Contains something like c:\projects\freespace or c:\projects\freespace\freespace.vp
+  int        roottype;                // CF_ROOTTYPE_PATH  = Path, CF_ROOTTYPE_PACK =Pack file
 } cf_root;
 
 // convenient type for sorting (see cf_build_pack_list())
 typedef struct cf_root_sort { 
-	char				path[CF_MAX_PATHNAME_LENGTH];
-	int				roottype;
-	int				cf_type;
+  char        path[CF_MAX_PATHNAME_LENGTH];
+  int        roottype;
+  int        cf_type;
 } cf_root_sort;
 
 #define CF_NUM_ROOTS_PER_BLOCK   32
-#define CF_MAX_ROOT_BLOCKS			256				// Can store 32*256 = 8192 Roots
-#define CF_MAX_ROOTS					(CF_NUM_ROOTS_PER_BLOCK * CF_MAX_ROOT_BLOCKS)
+#define CF_MAX_ROOT_BLOCKS      256        // Can store 32*256 = 8192 Roots
+#define CF_MAX_ROOTS          (CF_NUM_ROOTS_PER_BLOCK * CF_MAX_ROOT_BLOCKS)
 
 typedef struct cf_root_block {
-	cf_root			roots[CF_NUM_ROOTS_PER_BLOCK];
+  cf_root      roots[CF_NUM_ROOTS_PER_BLOCK];
 } cf_root_block;
 
 static int Num_roots = 0;
@@ -79,20 +79,20 @@ static int Num_path_roots = 0;
 
 // Created by searching all roots in order.   This means Files is then sorted by precedence.
 typedef struct cf_file {
-	char	name_ext[CF_MAX_FILENAME_LENGTH];	// Filename and extension
-	int		root_index;							// Where in Roots this is located
-	int		pathtype_index;						// Where in Paths this is located
-	time_t	write_time;							// When it was last written
-	int		size;								// How big it is in bytes
-	int		pack_offset;						// For pack files, where it is at.   0 if not in a pack file.  This can be used to tell if in a pack file.
-	char*	real_name;							// For real files, the full path
+  char  name_ext[CF_MAX_FILENAME_LENGTH];  // Filename and extension
+  int    root_index;              // Where in Roots this is located
+  int    pathtype_index;            // Where in Paths this is located
+  time_t  write_time;              // When it was last written
+  int    size;                // How big it is in bytes
+  int    pack_offset;            // For pack files, where it is at.   0 if not in a pack file.  This can be used to tell if in a pack file.
+  char*  real_name;              // For real files, the full path
 } cf_file;
 
 #define CF_NUM_FILES_PER_BLOCK   512
-#define CF_MAX_FILE_BLOCKS			128						// Can store 512*128 = 65536 files
+#define CF_MAX_FILE_BLOCKS      128            // Can store 512*128 = 65536 files
 
 typedef struct cf_file_block {
-	cf_file						files[CF_NUM_FILES_PER_BLOCK];
+  cf_file            files[CF_NUM_FILES_PER_BLOCK];
 } cf_file_block;
 
 static uint Num_files = 0;
@@ -101,29 +101,29 @@ static cf_file_block  *File_blocks[CF_MAX_FILE_BLOCKS];
 // Return a pointer to to file 'index'.
 cf_file *cf_get_file(int index)
 {
-	int block = index / CF_NUM_FILES_PER_BLOCK;
-	int offset = index % CF_NUM_FILES_PER_BLOCK;
+  int block = index / CF_NUM_FILES_PER_BLOCK;
+  int offset = index % CF_NUM_FILES_PER_BLOCK;
 
-	return &File_blocks[block]->files[offset];
+  return &File_blocks[block]->files[offset];
 }
 
 // Create a new file and return a pointer to it.
 cf_file *cf_create_file()
 {
-	Assertion(Num_files < CF_NUM_FILES_PER_BLOCK * CF_MAX_FILE_BLOCKS, "Too many files found. CFile cannot handle more than %d files.\n", CF_NUM_FILES_PER_BLOCK * CF_MAX_FILE_BLOCKS);
+  Assertion(Num_files < CF_NUM_FILES_PER_BLOCK * CF_MAX_FILE_BLOCKS, "Too many files found. CFile cannot handle more than %d files.\n", CF_NUM_FILES_PER_BLOCK * CF_MAX_FILE_BLOCKS);
 
-	uint block = Num_files / CF_NUM_FILES_PER_BLOCK;
-	uint offset = Num_files % CF_NUM_FILES_PER_BLOCK;
-	
-	if ( File_blocks[block] == NULL )	{
-		File_blocks[block] = (cf_file_block *)vm_malloc( sizeof(cf_file_block) );
-		Assert( File_blocks[block] != NULL);
-		memset(File_blocks[block], 0, sizeof(cf_file_block));
-	}
+  uint block = Num_files / CF_NUM_FILES_PER_BLOCK;
+  uint offset = Num_files % CF_NUM_FILES_PER_BLOCK;
+  
+  if ( File_blocks[block] == NULL )  {
+    File_blocks[block] = (cf_file_block *)vm_malloc( sizeof(cf_file_block) );
+    Assert( File_blocks[block] != NULL);
+    memset(File_blocks[block], 0, sizeof(cf_file_block));
+  }
 
-	Num_files++;
+  Num_files++;
 
-	return &File_blocks[block]->files[offset];
+  return &File_blocks[block]->files[offset];
 }
 
 extern int cfile_inited;
@@ -131,331 +131,331 @@ extern int cfile_inited;
 // Create a new root and return a pointer to it.  The structure is assumed unitialized.
 cf_root *cf_get_root(int n)
 {
-	int block = n / CF_NUM_ROOTS_PER_BLOCK;
-	int offset = n % CF_NUM_ROOTS_PER_BLOCK;
+  int block = n / CF_NUM_ROOTS_PER_BLOCK;
+  int offset = n % CF_NUM_ROOTS_PER_BLOCK;
 
-	if (!cfile_inited)
-		return NULL;
+  if (!cfile_inited)
+    return NULL;
 
-	return &Root_blocks[block]->roots[offset];
+  return &Root_blocks[block]->roots[offset];
 }
 
 
 // Create a new root and return a pointer to it.  The structure is assumed unitialized.
 cf_root *cf_create_root()
 {
-	int block = Num_roots / CF_NUM_ROOTS_PER_BLOCK;
-	int offset = Num_roots % CF_NUM_ROOTS_PER_BLOCK;
-	
-	if ( Root_blocks[block] == NULL )	{
-		Root_blocks[block] = (cf_root_block *)vm_malloc( sizeof(cf_root_block) );
-		Assert(Root_blocks[block] != NULL);
-	}
+  int block = Num_roots / CF_NUM_ROOTS_PER_BLOCK;
+  int offset = Num_roots % CF_NUM_ROOTS_PER_BLOCK;
+  
+  if ( Root_blocks[block] == NULL )  {
+    Root_blocks[block] = (cf_root_block *)vm_malloc( sizeof(cf_root_block) );
+    Assert(Root_blocks[block] != NULL);
+  }
 
-	Num_roots++;
+  Num_roots++;
 
-	return &Root_blocks[block]->roots[offset];
+  return &Root_blocks[block]->roots[offset];
 }
 
 // return the # of packfiles which exist
 int cf_get_packfile_count(cf_root *root)
 {
-	SCP_string filespec;
-	int i;
-	int packfile_count;
+  SCP_string filespec;
+  int i;
+  int packfile_count;
 
-	// count up how many packfiles we're gonna have
-	packfile_count = 0;
-	for (i=CF_TYPE_ROOT; i<CF_MAX_PATH_TYPES; i++ )
-	{
-		filespec = root->path;
-		
-		if(strlen(Pathtypes[i].path))
-		{
-			filespec += Pathtypes[ i ].path;
-			if ( filespec[ filespec.length( ) - 1 ] != DIR_SEPARATOR_CHAR )
-			{
-				filespec += DIR_SEPARATOR_STR;
-			}
-		}
+  // count up how many packfiles we're gonna have
+  packfile_count = 0;
+  for (i=CF_TYPE_ROOT; i<CF_MAX_PATH_TYPES; i++ )
+  {
+    filespec = root->path;
+    
+    if(strlen(Pathtypes[i].path))
+    {
+      filespec += Pathtypes[ i ].path;
+      if ( filespec[ filespec.length( ) - 1 ] != DIR_SEPARATOR_CHAR )
+      {
+        filespec += DIR_SEPARATOR_STR;
+      }
+    }
 
 #if defined _WIN32
-		filespec += "*.vp";
+    filespec += "*.vp";
 
-		intptr_t find_handle;
-		_finddata_t find;
-		
-		find_handle = _findfirst( filespec.c_str( ), &find );
+    intptr_t find_handle;
+    _finddata_t find;
+    
+    find_handle = _findfirst( filespec.c_str( ), &find );
 
- 		if (find_handle != -1) {
-			do {
-				if (!(find.attrib & _A_SUBDIR)) {
-					packfile_count++;
-				}
+     if (find_handle != -1) {
+      do {
+        if (!(find.attrib & _A_SUBDIR)) {
+          packfile_count++;
+        }
 
-			} while (!_findnext(find_handle, &find));
+      } while (!_findnext(find_handle, &find));
 
-			_findclose( find_handle );
-		}	
+      _findclose( find_handle );
+    }  
 #elif defined SCP_UNIX
-		filespec += "*.[vV][pP]";
+    filespec += "*.[vV][pP]";
 
-		glob_t globinfo;
-		memset(&globinfo, 0, sizeof(globinfo));
-		int status = glob(filespec.c_str( ), 0, NULL, &globinfo);
-		if (status == 0) {
-			for (unsigned int j = 0;  j < globinfo.gl_pathc;  j++) {
-				// Determine if this is a regular file
-				struct stat statbuf;
-				memset(&statbuf, 0, sizeof(statbuf));
-				stat(globinfo.gl_pathv[j], &statbuf);
-				if (S_ISREG(statbuf.st_mode)) {
-					packfile_count++;
-				}
-			}
-			globfree(&globinfo);
-		}
+    glob_t globinfo;
+    memset(&globinfo, 0, sizeof(globinfo));
+    int status = glob(filespec.c_str( ), 0, NULL, &globinfo);
+    if (status == 0) {
+      for (unsigned int j = 0;  j < globinfo.gl_pathc;  j++) {
+        // Determine if this is a regular file
+        struct stat statbuf;
+        memset(&statbuf, 0, sizeof(statbuf));
+        stat(globinfo.gl_pathv[j], &statbuf);
+        if (S_ISREG(statbuf.st_mode)) {
+          packfile_count++;
+        }
+      }
+      globfree(&globinfo);
+    }
 #endif
-	}
+  }
 
-	return packfile_count;
+  return packfile_count;
 }
 
 // packfile sort function
 bool cf_packfile_sort_func(const cf_root_sort &r1, const cf_root_sort &r2)
 {
-	// if the 2 directory types are the same, do a string compare
-	if (r1.cf_type == r2.cf_type) {
-		return (stricmp(r1.path, r2.path) < 0);
-	}
+  // if the 2 directory types are the same, do a string compare
+  if (r1.cf_type == r2.cf_type) {
+    return (stricmp(r1.path, r2.path) < 0);
+  }
 
-	// otherwise return them in order of CF_TYPE_* precedence
-	return (r1.cf_type < r2.cf_type);
+  // otherwise return them in order of CF_TYPE_* precedence
+  return (r1.cf_type < r2.cf_type);
 }
 
 // Go through a root and look for pack files
 void cf_build_pack_list( cf_root *root )
 {
-	char filespec[MAX_PATH_LEN];
-	int i;
-	cf_root_sort *temp_roots_sort, *rptr_sort;
-	int temp_root_count, root_index;
+  char filespec[MAX_PATH_LEN];
+  int i;
+  cf_root_sort *temp_roots_sort, *rptr_sort;
+  int temp_root_count, root_index;
 
-	// determine how many packfiles there are
-	temp_root_count = cf_get_packfile_count(root);
+  // determine how many packfiles there are
+  temp_root_count = cf_get_packfile_count(root);
 
-	if (temp_root_count <= 0)
-		return;
+  if (temp_root_count <= 0)
+    return;
 
-	// allocate a temporary array of temporary roots so we can easily sort them
-	temp_roots_sort = (cf_root_sort*)vm_malloc(sizeof(cf_root_sort) * temp_root_count);
+  // allocate a temporary array of temporary roots so we can easily sort them
+  temp_roots_sort = (cf_root_sort*)vm_malloc(sizeof(cf_root_sort) * temp_root_count);
 
-	if (temp_roots_sort == NULL) {
-		Int3();
-		return;
-	}
+  if (temp_roots_sort == NULL) {
+    Int3();
+    return;
+  }
 
-	// now just setup all the root info
-	root_index = 0;
-	for (i = CF_TYPE_ROOT; i < CF_MAX_PATH_TYPES; i++) {
-		strcpy_s( filespec, root->path );
-		
-		if ( strlen(Pathtypes[i].path) ) {
-			strcat_s( filespec, Pathtypes[i].path );
+  // now just setup all the root info
+  root_index = 0;
+  for (i = CF_TYPE_ROOT; i < CF_MAX_PATH_TYPES; i++) {
+    strcpy_s( filespec, root->path );
+    
+    if ( strlen(Pathtypes[i].path) ) {
+      strcat_s( filespec, Pathtypes[i].path );
 
-			if ( filespec[strlen(filespec)-1] != DIR_SEPARATOR_CHAR )
-				strcat_s( filespec, DIR_SEPARATOR_STR );
-		}
+      if ( filespec[strlen(filespec)-1] != DIR_SEPARATOR_CHAR )
+        strcat_s( filespec, DIR_SEPARATOR_STR );
+    }
 
 #if defined _WIN32
-		strcat_s( filespec, "*.vp" );
+    strcat_s( filespec, "*.vp" );
 
-		intptr_t find_handle;
-		_finddata_t find;
-		
-		find_handle = _findfirst( filespec, &find );
+    intptr_t find_handle;
+    _finddata_t find;
+    
+    find_handle = _findfirst( filespec, &find );
 
- 		if (find_handle != -1) {
-			do {
-				// add the new item
-				if (!(find.attrib & _A_SUBDIR)) {					
-					Assert(root_index < temp_root_count);
+     if (find_handle != -1) {
+      do {
+        // add the new item
+        if (!(find.attrib & _A_SUBDIR)) {          
+          Assert(root_index < temp_root_count);
 
-					// get a temp pointer
-					rptr_sort = &temp_roots_sort[root_index++];
+          // get a temp pointer
+          rptr_sort = &temp_roots_sort[root_index++];
 
-					// fill in all the proper info
-					strcpy_s(rptr_sort->path, root->path);
-					
-					if(strlen(Pathtypes[i].path)) {
+          // fill in all the proper info
+          strcpy_s(rptr_sort->path, root->path);
+          
+          if(strlen(Pathtypes[i].path)) {
 
-						strcat_s(rptr_sort->path, Pathtypes[i].path );
-						strcat_s(rptr_sort->path, DIR_SEPARATOR_STR);
-					}
-					
-					strcat_s(rptr_sort->path, find.name );
-					rptr_sort->roottype = CF_ROOTTYPE_PACK;
-					rptr_sort->cf_type = i;
-				}
+            strcat_s(rptr_sort->path, Pathtypes[i].path );
+            strcat_s(rptr_sort->path, DIR_SEPARATOR_STR);
+          }
+          
+          strcat_s(rptr_sort->path, find.name );
+          rptr_sort->roottype = CF_ROOTTYPE_PACK;
+          rptr_sort->cf_type = i;
+        }
 
-			} while (!_findnext(find_handle, &find));
+      } while (!_findnext(find_handle, &find));
 
-			_findclose( find_handle );
-		}	
+      _findclose( find_handle );
+    }  
 #elif defined SCP_UNIX
-		strcat_s( filespec, "*.[vV][pP]" );
-		glob_t globinfo;
+    strcat_s( filespec, "*.[vV][pP]" );
+    glob_t globinfo;
 
-		memset(&globinfo, 0, sizeof(globinfo));
+    memset(&globinfo, 0, sizeof(globinfo));
 
-		int status = glob(filespec, 0, NULL, &globinfo);
+    int status = glob(filespec, 0, NULL, &globinfo);
 
-		if (status == 0) {
-			for (uint j = 0;  j < globinfo.gl_pathc;  j++) {
-				// Determine if this is a regular file
-				struct stat statbuf;
-				memset(&statbuf, 0, sizeof(statbuf));
-				stat(globinfo.gl_pathv[j], &statbuf);
+    if (status == 0) {
+      for (uint j = 0;  j < globinfo.gl_pathc;  j++) {
+        // Determine if this is a regular file
+        struct stat statbuf;
+        memset(&statbuf, 0, sizeof(statbuf));
+        stat(globinfo.gl_pathv[j], &statbuf);
 
-				if ( S_ISREG(statbuf.st_mode) ) {
-					Assert(root_index < temp_root_count);
+        if ( S_ISREG(statbuf.st_mode) ) {
+          Assert(root_index < temp_root_count);
 
-					// get a temp pointer
-					rptr_sort = &temp_roots_sort[root_index++];
+          // get a temp pointer
+          rptr_sort = &temp_roots_sort[root_index++];
 
-					// fill in all the proper info
-					strcpy_s(rptr_sort->path, globinfo.gl_pathv[j] );
-					rptr_sort->roottype = CF_ROOTTYPE_PACK;
-					rptr_sort->cf_type = i;
-				}
-			}
+          // fill in all the proper info
+          strcpy_s(rptr_sort->path, globinfo.gl_pathv[j] );
+          rptr_sort->roottype = CF_ROOTTYPE_PACK;
+          rptr_sort->cf_type = i;
+        }
+      }
 
-			globfree(&globinfo);
-		}
+      globfree(&globinfo);
+    }
 #endif
-	}
+  }
 
-	// these should always be the same
-	Assert(root_index == temp_root_count);
+  // these should always be the same
+  Assert(root_index == temp_root_count);
 
-	// sort the roots
-	std::sort(temp_roots_sort, temp_roots_sort + temp_root_count, cf_packfile_sort_func);
+  // sort the roots
+  std::sort(temp_roots_sort, temp_roots_sort + temp_root_count, cf_packfile_sort_func);
 
-	// now insert them all into the real root list properly
-	cf_root *new_root;
-	for (i = 0; i < temp_root_count; i++) {
-		new_root = cf_create_root();
-		strcpy_s( new_root->path, root->path );
+  // now insert them all into the real root list properly
+  cf_root *new_root;
+  for (i = 0; i < temp_root_count; i++) {
+    new_root = cf_create_root();
+    strcpy_s( new_root->path, root->path );
 
 #ifndef NDEBUG
-		uint chksum = 0;
-		cf_chksum_pack(temp_roots_sort[i].path, &chksum);
-		mprintf(("Found root pack '%s' with a checksum of 0x%08x\n", temp_roots_sort[i].path, chksum));
+    uint chksum = 0;
+    cf_chksum_pack(temp_roots_sort[i].path, &chksum);
+    mprintf(("Found root pack '%s' with a checksum of 0x%08x\n", temp_roots_sort[i].path, chksum));
 #endif
 
-		// mwa -- 4/2/98 put in the next 2 lines because the path name needs to be there
-		// to find the files.
-		strcpy_s(new_root->path, temp_roots_sort[i].path);		
-		new_root->roottype = CF_ROOTTYPE_PACK;		
-	}
+    // mwa -- 4/2/98 put in the next 2 lines because the path name needs to be there
+    // to find the files.
+    strcpy_s(new_root->path, temp_roots_sort[i].path);    
+    new_root->roottype = CF_ROOTTYPE_PACK;    
+  }
 
-	// free up the temp list
-	vm_free(temp_roots_sort);
+  // free up the temp list
+  vm_free(temp_roots_sort);
 }
 
 static char normalize_directory_separator(char in)
 {
-	if (in == '/')
-	{
-		return DIR_SEPARATOR_CHAR;
-	}
+  if (in == '/')
+  {
+    return DIR_SEPARATOR_CHAR;
+  }
 
-	return in;
+  return in;
 }
 
 static void cf_add_mod_roots(const char* rootDirectory)
 {
-	if (Cmdline_mod)
-	{
-		for (const char* cur_pos=Cmdline_mod; strlen(cur_pos) != 0; cur_pos+= (strlen(cur_pos)+1))
-		{
-			SCP_stringstream ss;
-			ss << rootDirectory;
+  if (Cmdline_mod)
+  {
+    for (const char* cur_pos=Cmdline_mod; strlen(cur_pos) != 0; cur_pos+= (strlen(cur_pos)+1))
+    {
+      SCP_stringstream ss;
+      ss << rootDirectory;
 
-			if (rootDirectory[strlen(rootDirectory) - 1] != DIR_SEPARATOR_CHAR)
-			{
-				ss << DIR_SEPARATOR_CHAR;
-			}
+      if (rootDirectory[strlen(rootDirectory) - 1] != DIR_SEPARATOR_CHAR)
+      {
+        ss << DIR_SEPARATOR_CHAR;
+      }
 
-			ss << cur_pos << DIR_SEPARATOR_STR;
+      ss << cur_pos << DIR_SEPARATOR_STR;
 
-			SCP_string rootPath = ss.str();
-			if (rootPath.size() + 1 >= CF_MAX_PATHNAME_LENGTH) {
-				Error(LOCATION, "The length of mod directory path '%s' exceeds the maximum of %d!\n", rootPath.c_str(), CF_MAX_PATHNAME_LENGTH);
-			}
+      SCP_string rootPath = ss.str();
+      if (rootPath.size() + 1 >= CF_MAX_PATHNAME_LENGTH) {
+        Error(LOCATION, "The length of mod directory path '%s' exceeds the maximum of %d!\n", rootPath.c_str(), CF_MAX_PATHNAME_LENGTH);
+      }
 
-			// normalize the path to the native path format
-			std::transform(rootPath.begin(), rootPath.end(), rootPath.begin(), normalize_directory_separator);
+      // normalize the path to the native path format
+      std::transform(rootPath.begin(), rootPath.end(), rootPath.begin(), normalize_directory_separator);
 
-			cf_root* root = cf_create_root();
+      cf_root* root = cf_create_root();
 
-			strncpy(root->path, rootPath.c_str(),  CF_MAX_PATHNAME_LENGTH-1);
+      strncpy(root->path, rootPath.c_str(),  CF_MAX_PATHNAME_LENGTH-1);
 
-			root->roottype = CF_ROOTTYPE_PATH;
-			cf_build_pack_list(root);
-		}
-	}
+      root->roottype = CF_ROOTTYPE_PATH;
+      cf_build_pack_list(root);
+    }
+  }
 }
 
 void cf_build_root_list(const char *cdrom_dir)
 {
-	Num_roots = 0;
-	Num_path_roots = 0;
+  Num_roots = 0;
+  Num_path_roots = 0;
 
-	cf_root	*root = nullptr;
+  cf_root  *root = nullptr;
 
-	char working_directory[CF_MAX_PATHNAME_LENGTH];
-	
-	if ( !_getcwd(working_directory, CF_MAX_PATHNAME_LENGTH ) ) {
-		Error(LOCATION, "Can't get current working directory -- %d", errno );
-	}
-	
-	cf_add_mod_roots(working_directory);
+  char working_directory[CF_MAX_PATHNAME_LENGTH];
+  
+  if ( !_getcwd(working_directory, CF_MAX_PATHNAME_LENGTH ) ) {
+    Error(LOCATION, "Can't get current working directory -- %d", errno );
+  }
+  
+  cf_add_mod_roots(working_directory);
 
-	root = cf_create_root();
-	
-	strcpy_s(root->path, working_directory);
+  root = cf_create_root();
+  
+  strcpy_s(root->path, working_directory);
 
-	size_t path_len = strlen(root->path);
+  size_t path_len = strlen(root->path);
 
-	// do we already have a slash? as in the case of a root directory install
-	if ( (path_len < (CF_MAX_PATHNAME_LENGTH-1)) && (root->path[path_len-1] != DIR_SEPARATOR_CHAR) ) {
-		strcat_s(root->path, DIR_SEPARATOR_STR);		// put trailing backslash on for easier path construction
-	}
+  // do we already have a slash? as in the case of a root directory install
+  if ( (path_len < (CF_MAX_PATHNAME_LENGTH-1)) && (root->path[path_len-1] != DIR_SEPARATOR_CHAR) ) {
+    strcat_s(root->path, DIR_SEPARATOR_STR);    // put trailing backslash on for easier path construction
+  }
 
-	root->roottype = CF_ROOTTYPE_PATH;
+  root->roottype = CF_ROOTTYPE_PATH;
 
-	// If the path wasn't set before use the working directory
-	if ( Pilot_file_path.empty() )
-		Pilot_file_path = root->path;
-
-   //======================================================
-	// Next, check any VP files under the current directory.
-	cf_build_pack_list(root);
-
+  // If the path wasn't set before use the working directory
+  if ( Pilot_file_path.empty() )
+    Pilot_file_path = root->path;
 
    //======================================================
-	// Check the real CD if one...
-	if ( cdrom_dir && (strlen(cdrom_dir) < CF_MAX_PATHNAME_LENGTH) )	{
-		root = cf_create_root();
-		strcpy_s( root->path, cdrom_dir );
-		root->roottype = CF_ROOTTYPE_PATH;
+  // Next, check any VP files under the current directory.
+  cf_build_pack_list(root);
 
-		//======================================================
-		// Next, check any VP files in the CD-ROM directory.
-		cf_build_pack_list(root);
 
-	}
+   //======================================================
+  // Check the real CD if one...
+  if ( cdrom_dir && (strlen(cdrom_dir) < CF_MAX_PATHNAME_LENGTH) )  {
+    root = cf_create_root();
+    strcpy_s( root->path, cdrom_dir );
+    root->roottype = CF_ROOTTYPE_PATH;
+
+    //======================================================
+    // Next, check any VP files in the CD-ROM directory.
+    cf_build_pack_list(root);
+
+  }
 
 }
 
@@ -464,404 +464,404 @@ void cf_build_root_list(const char *cdrom_dir)
 // not in the list.
 int is_ext_in_list( const char *ext_list, const char *ext )
 {
-	char tmp_ext[128];
+  char tmp_ext[128];
 
-	strcpy_s( tmp_ext, ext);
-	strlwr(tmp_ext);
-	if ( strstr(ext_list, tmp_ext ))	{
-		return 1;
-	}	
+  strcpy_s( tmp_ext, ext);
+  strlwr(tmp_ext);
+  if ( strstr(ext_list, tmp_ext ))  {
+    return 1;
+  }  
 
-	return 0;
+  return 0;
 }
 
 void cf_search_root_path(int root_index)
 {
-	int i;
-	int num_files = 0;
+  int i;
+  int num_files = 0;
 
-	cf_root *root = cf_get_root(root_index);
+  cf_root *root = cf_get_root(root_index);
 
-	mprintf(( "Searching root '%s' ... ", root->path ));
+  mprintf(( "Searching root '%s' ... ", root->path ));
 
-	char search_path[CF_MAX_PATHNAME_LENGTH];
+  char search_path[CF_MAX_PATHNAME_LENGTH];
 #ifdef SCP_UNIX
     // This map stores the mapping between a specific path type and the actual path that we use for it
-	SCP_unordered_map<int, SCP_string> pathTypeToRealPath;
+  SCP_unordered_map<int, SCP_string> pathTypeToRealPath;
 #endif
 
-	for (i=CF_TYPE_ROOT; i<CF_MAX_PATH_TYPES; i++ )	{
+  for (i=CF_TYPE_ROOT; i<CF_MAX_PATH_TYPES; i++ )  {
 
-		// we don't want to add player files to the cache - taylor
-		if ( (i == CF_TYPE_SINGLE_PLAYERS) || (i == CF_TYPE_MULTI_PLAYERS) ) {
-			continue;
-		}
+    // we don't want to add player files to the cache - taylor
+    if ( (i == CF_TYPE_SINGLE_PLAYERS) || (i == CF_TYPE_MULTI_PLAYERS) ) {
+      continue;
+    }
 
-		strcpy_s( search_path, root->path );
+    strcpy_s( search_path, root->path );
 
-		if(strlen(Pathtypes[i].path)) {
-			strcat_s( search_path, Pathtypes[i].path );
-			if ( search_path[strlen(search_path)-1] != DIR_SEPARATOR_CHAR ) {
-				strcat_s( search_path, DIR_SEPARATOR_STR );
-			}
-		} 
+    if(strlen(Pathtypes[i].path)) {
+      strcat_s( search_path, Pathtypes[i].path );
+      if ( search_path[strlen(search_path)-1] != DIR_SEPARATOR_CHAR ) {
+        strcat_s( search_path, DIR_SEPARATOR_STR );
+      }
+    } 
 
 #if defined _WIN32
-		SCP_string search_directory = search_path;
-		strcat_s( search_path, "*.*" );
+    SCP_string search_directory = search_path;
+    strcat_s( search_path, "*.*" );
 
-		intptr_t find_handle;
-		_finddata_t find;
-		
-		find_handle = _findfirst( search_path, &find );
+    intptr_t find_handle;
+    _finddata_t find;
+    
+    find_handle = _findfirst( search_path, &find );
 
- 		if (find_handle != -1) {
-			do {
-				if (!(find.attrib & _A_SUBDIR)) {
+     if (find_handle != -1) {
+      do {
+        if (!(find.attrib & _A_SUBDIR)) {
 
-					char *ext = strrchr( find.name, '.' );
-					if ( ext )	{
-						if ( is_ext_in_list( Pathtypes[i].extensions, ext ) )	{
-							// Found a file!!!!
-							cf_file *file = cf_create_file();
+          char *ext = strrchr( find.name, '.' );
+          if ( ext )  {
+            if ( is_ext_in_list( Pathtypes[i].extensions, ext ) )  {
+              // Found a file!!!!
+              cf_file *file = cf_create_file();
 
-							strcpy_s( file->name_ext, find.name );
-							file->root_index = root_index;
-							file->pathtype_index = i;
-							file->write_time = find.time_write;
-							file->size = find.size;
-							file->pack_offset = 0;			// Mark as a non-packed file
+              strcpy_s( file->name_ext, find.name );
+              file->root_index = root_index;
+              file->pathtype_index = i;
+              file->write_time = find.time_write;
+              file->size = find.size;
+              file->pack_offset = 0;      // Mark as a non-packed file
 
-							SCP_string file_name;
-							sprintf(file_name, "%s%s%s", search_directory.c_str(), DIR_SEPARATOR_STR, find.name);
+              SCP_string file_name;
+              sprintf(file_name, "%s%s%s", search_directory.c_str(), DIR_SEPARATOR_STR, find.name);
 
-							file->real_name = vm_strdup(file_name.c_str());
+              file->real_name = vm_strdup(file_name.c_str());
 
-							num_files++;
-							//mprintf(( "Found file '%s'\n", file->name_ext ));
-						}
-					}
+              num_files++;
+              //mprintf(( "Found file '%s'\n", file->name_ext ));
+            }
+          }
 
-				}
+        }
 
-			} while (!_findnext(find_handle, &find));
+      } while (!_findnext(find_handle, &find));
 
-			_findclose( find_handle );
-		}
+      _findclose( find_handle );
+    }
 #elif defined SCP_UNIX
-		DIR *dirp = nullptr;
-		SCP_string search_dir;
-		{
-			if (i == CF_TYPE_ROOT) {
-				// Don't search for the same name for the root case since we would be searching in other mod directories in that case
-				dirp = opendir (search_path);
-				search_dir.assign(search_path);
-			} else {
-				// On Unix we can have a different case for the search paths so we also need to account for that
-				// We do that by looking at the parent of search_path and enumerating all directories and the check if any of
-				// them are a case-insensitive match
-				SCP_string directory_name;
+    DIR *dirp = nullptr;
+    SCP_string search_dir;
+    {
+      if (i == CF_TYPE_ROOT) {
+        // Don't search for the same name for the root case since we would be searching in other mod directories in that case
+        dirp = opendir (search_path);
+        search_dir.assign(search_path);
+      } else {
+        // On Unix we can have a different case for the search paths so we also need to account for that
+        // We do that by looking at the parent of search_path and enumerating all directories and the check if any of
+        // them are a case-insensitive match
+        SCP_string directory_name;
 
-				auto parentPathIter = pathTypeToRealPath.find(Pathtypes[i].parent_index);
+        auto parentPathIter = pathTypeToRealPath.find(Pathtypes[i].parent_index);
 
-				if (parentPathIter == pathTypeToRealPath.end()) {
-					// No parent known yet, use the standard dirname
-					char dirname_copy[CF_MAX_PATHNAME_LENGTH];
-					memcpy(dirname_copy, search_path, sizeof(search_path));
-					// According to the documentation of directory_name and basename, the return value does not need to be freed
-					directory_name.assign(dirname(dirname_copy));
-				} else {
-					// we have a valid parent path -> use that
-					directory_name = parentPathIter->second;
-				}
+        if (parentPathIter == pathTypeToRealPath.end()) {
+          // No parent known yet, use the standard dirname
+          char dirname_copy[CF_MAX_PATHNAME_LENGTH];
+          memcpy(dirname_copy, search_path, sizeof(search_path));
+          // According to the documentation of directory_name and basename, the return value does not need to be freed
+          directory_name.assign(dirname(dirname_copy));
+        } else {
+          // we have a valid parent path -> use that
+          directory_name = parentPathIter->second;
+        }
 
-				char basename_copy[CF_MAX_PATHNAME_LENGTH];
-				memcpy(basename_copy, search_path, sizeof(search_path));
-				// According to the documentation of dirname and basename, the return value does not need to be freed
-				auto search_name = basename(basename_copy);
+        char basename_copy[CF_MAX_PATHNAME_LENGTH];
+        memcpy(basename_copy, search_path, sizeof(search_path));
+        // According to the documentation of dirname and basename, the return value does not need to be freed
+        auto search_name = basename(basename_copy);
 
-				auto parentDirP = opendir(directory_name.c_str());
+        auto parentDirP = opendir(directory_name.c_str());
 
-				if (parentDirP) {
-					struct dirent *dir = nullptr;
-					while ((dir = readdir (parentDirP)) != nullptr) {
+        if (parentDirP) {
+          struct dirent *dir = nullptr;
+          while ((dir = readdir (parentDirP)) != nullptr) {
 
-						if (stricmp(search_name, dir->d_name)) {
-							continue;
-						}
+            if (stricmp(search_name, dir->d_name)) {
+              continue;
+            }
 
-						SCP_string fn;
-						sprintf(fn, "%s/%s", directory_name.c_str(), dir->d_name);
+            SCP_string fn;
+            sprintf(fn, "%s/%s", directory_name.c_str(), dir->d_name);
 
-						struct stat buf;
-						if (stat(fn.c_str(), &buf) == -1) {
-							continue;
-						}
+            struct stat buf;
+            if (stat(fn.c_str(), &buf) == -1) {
+              continue;
+            }
 
-						if (S_ISDIR(buf.st_mode)) {
-							// Found a case insensitive match
-							dirp = opendir(fn.c_str());
-							search_dir = fn;
-							// We also need to store this in our mapping since we may need it in the future
-							pathTypeToRealPath.insert(std::make_pair(i, fn));
-							break;
-						}
-					}
-					closedir(parentDirP);
-				}
-			}
-		}
+            if (S_ISDIR(buf.st_mode)) {
+              // Found a case insensitive match
+              dirp = opendir(fn.c_str());
+              search_dir = fn;
+              // We also need to store this in our mapping since we may need it in the future
+              pathTypeToRealPath.insert(std::make_pair(i, fn));
+              break;
+            }
+          }
+          closedir(parentDirP);
+        }
+      }
+    }
 
-		if ( dirp ) {
-			struct dirent *dir = nullptr;
-			while ((dir = readdir (dirp)) != NULL)
-			{
-				if (!fnmatch ("*.*", dir->d_name, 0))
-				{
-					SCP_string fn;
-					sprintf(fn, "%s/%s", search_dir.c_str(), dir->d_name);
+    if ( dirp ) {
+      struct dirent *dir = nullptr;
+      while ((dir = readdir (dirp)) != NULL)
+      {
+        if (!fnmatch ("*.*", dir->d_name, 0))
+        {
+          SCP_string fn;
+          sprintf(fn, "%s/%s", search_dir.c_str(), dir->d_name);
 
-					struct stat buf;
-					if (stat(fn.c_str(), &buf) == -1) {
-						continue;
-					}
-					
-					if (!S_ISREG(buf.st_mode)) {
-						continue;
-					}
-					
-					char *ext = strrchr( dir->d_name, '.' );
-					if ( ext )	{
-						if ( is_ext_in_list( Pathtypes[i].extensions, ext ) )	{
-							// Found a file!!!!
-							cf_file *file = cf_create_file();
+          struct stat buf;
+          if (stat(fn.c_str(), &buf) == -1) {
+            continue;
+          }
+          
+          if (!S_ISREG(buf.st_mode)) {
+            continue;
+          }
+          
+          char *ext = strrchr( dir->d_name, '.' );
+          if ( ext )  {
+            if ( is_ext_in_list( Pathtypes[i].extensions, ext ) )  {
+              // Found a file!!!!
+              cf_file *file = cf_create_file();
 
-							strcpy_s( file->name_ext, dir->d_name );
-							file->root_index = root_index;
-							file->pathtype_index = i;
+              strcpy_s( file->name_ext, dir->d_name );
+              file->root_index = root_index;
+              file->pathtype_index = i;
 
 
-							file->write_time = buf.st_mtime;
-							file->size = buf.st_size;
+              file->write_time = buf.st_mtime;
+              file->size = buf.st_size;
 
-							file->pack_offset = 0;			// Mark as a non-packed file
+              file->pack_offset = 0;      // Mark as a non-packed file
 
-							file->real_name = vm_strdup(fn.c_str());
+              file->real_name = vm_strdup(fn.c_str());
 
-							num_files++;
-							//mprintf(( "Found file '%s'\n", file->name_ext ));
-						}
-					}
-				}
-			}
-			closedir(dirp);
-		}
+              num_files++;
+              //mprintf(( "Found file '%s'\n", file->name_ext ));
+            }
+          }
+        }
+      }
+      closedir(dirp);
+    }
 #endif
-	}
+  }
 
-	mprintf(( "%i files\n", num_files ));
+  mprintf(( "%i files\n", num_files ));
 }
 
 
 typedef struct VP_FILE_HEADER {
-	char id[4];
-	int version;
-	int index_offset;
-	int num_files;
+  char id[4];
+  int version;
+  int index_offset;
+  int num_files;
 } VP_FILE_HEADER;
 
 typedef struct VP_FILE {
-	int	offset;
-	int	size;
-	char	filename[32];
-	_fs_time_t write_time;
+  int  offset;
+  int  size;
+  char  filename[32];
+  _fs_time_t write_time;
 } VP_FILE;
 
 void cf_search_root_pack(int root_index)
 {
-	int num_files = 0;
-	cf_root *root = cf_get_root(root_index);
+  int num_files = 0;
+  cf_root *root = cf_get_root(root_index);
 
-	Assert( root != NULL );
+  Assert( root != NULL );
 
-	// Open data		
-	FILE *fp = fopen( root->path, "rb" );
-	// Read the file header
-	if (!fp) {
-		return;
-	}
+  // Open data    
+  FILE *fp = fopen( root->path, "rb" );
+  // Read the file header
+  if (!fp) {
+    return;
+  }
 
-	if ( filelength(fileno(fp)) < (int)(sizeof(VP_FILE_HEADER) + (sizeof(int) * 3)) ) {
-		mprintf(( "Skipping VP file ('%s') of invalid size...\n", root->path ));
-		fclose(fp);
-		return;
-	}
+  if ( filelength(fileno(fp)) < (int)(sizeof(VP_FILE_HEADER) + (sizeof(int) * 3)) ) {
+    mprintf(( "Skipping VP file ('%s') of invalid size...\n", root->path ));
+    fclose(fp);
+    return;
+  }
 
-	VP_FILE_HEADER VP_header;
+  VP_FILE_HEADER VP_header;
 
-	Assert( sizeof(VP_header) == 16 );
-	if (fread(&VP_header, sizeof(VP_header), 1, fp) != 1) {
-		mprintf(("Skipping VP file ('%s') because the header could not be read...\n", root->path));
-		fclose(fp);
-		return;
-	}
+  Assert( sizeof(VP_header) == 16 );
+  if (fread(&VP_header, sizeof(VP_header), 1, fp) != 1) {
+    mprintf(("Skipping VP file ('%s') because the header could not be read...\n", root->path));
+    fclose(fp);
+    return;
+  }
 
-	VP_header.version = INTEL_INT( VP_header.version ); //-V570
-	VP_header.index_offset = INTEL_INT( VP_header.index_offset ); //-V570
-	VP_header.num_files = INTEL_INT( VP_header.num_files ); //-V570
+  VP_header.version = INTEL_INT( VP_header.version ); //-V570
+  VP_header.index_offset = INTEL_INT( VP_header.index_offset ); //-V570
+  VP_header.num_files = INTEL_INT( VP_header.num_files ); //-V570
 
-	mprintf(( "Searching root pack '%s' ... ", root->path ));
+  mprintf(( "Searching root pack '%s' ... ", root->path ));
 
-	// Read index info
-	fseek(fp, VP_header.index_offset, SEEK_SET);
+  // Read index info
+  fseek(fp, VP_header.index_offset, SEEK_SET);
 
-	char search_path[CF_MAX_PATHNAME_LENGTH];
+  char search_path[CF_MAX_PATHNAME_LENGTH];
 
-	strcpy_s( search_path, "" );
-	
-	// Go through all the files
-	int i;
-	for (i=0; i<VP_header.num_files; i++ )	{
-		VP_FILE find;
+  strcpy_s( search_path, "" );
+  
+  // Go through all the files
+  int i;
+  for (i=0; i<VP_header.num_files; i++ )  {
+    VP_FILE find;
 
-		if (fread( &find, sizeof(VP_FILE), 1, fp ) != 1) {
-			mprintf(("Failed to read file entry (currently in directory %s)!\n", search_path));
-			break;
-		}
+    if (fread( &find, sizeof(VP_FILE), 1, fp ) != 1) {
+      mprintf(("Failed to read file entry (currently in directory %s)!\n", search_path));
+      break;
+    }
 
-		find.offset = INTEL_INT( find.offset ); //-V570
-		find.size = INTEL_INT( find.size ); //-V570
-		find.write_time = INTEL_INT( find.write_time ); //-V570
-		find.filename[sizeof(find.filename)-1] = '\0';
+    find.offset = INTEL_INT( find.offset ); //-V570
+    find.size = INTEL_INT( find.size ); //-V570
+    find.write_time = INTEL_INT( find.write_time ); //-V570
+    find.filename[sizeof(find.filename)-1] = '\0';
 
-		if ( find.size == 0 )	{
-			size_t search_path_len = strlen(search_path);
-			if ( !stricmp( find.filename, ".." ))	{
-				char *p = &search_path[search_path_len-1];
-				while( (p > search_path) && (*p != DIR_SEPARATOR_CHAR) )	{
-					p--;
-				}
-				*p = 0;
-			} else {
-				if ( search_path_len && (search_path[search_path_len-1] != DIR_SEPARATOR_CHAR) ) {
-					strcat_s( search_path, DIR_SEPARATOR_STR );
-				}
-				strcat_s( search_path, find.filename );
-			}
+    if ( find.size == 0 )  {
+      size_t search_path_len = strlen(search_path);
+      if ( !stricmp( find.filename, ".." ))  {
+        char *p = &search_path[search_path_len-1];
+        while( (p > search_path) && (*p != DIR_SEPARATOR_CHAR) )  {
+          p--;
+        }
+        *p = 0;
+      } else {
+        if ( search_path_len && (search_path[search_path_len-1] != DIR_SEPARATOR_CHAR) ) {
+          strcat_s( search_path, DIR_SEPARATOR_STR );
+        }
+        strcat_s( search_path, find.filename );
+      }
 
-			//mprintf(( "Current dir = '%s'\n", search_path ));
-		} else {
-	
-			int j;			
-							
-			for (j=CF_TYPE_ROOT; j<CF_MAX_PATH_TYPES; j++ )	{
-				
-				if ( !stricmp( search_path, Pathtypes[j].path ))	{
-					char *ext = strrchr( find.filename, '.' );
-					if ( ext )	{
-						if ( is_ext_in_list( Pathtypes[j].extensions, ext ) )	{
-							// Found a file!!!!
-							cf_file *file = cf_create_file();
-							strcpy_s( file->name_ext, find.filename );
-							file->root_index = root_index;
-							file->pathtype_index = j;
-							file->write_time = (time_t)find.write_time;
-							file->size = find.size;
-							file->pack_offset = find.offset;			// Mark as a packed file
+      //mprintf(( "Current dir = '%s'\n", search_path ));
+    } else {
+  
+      int j;      
+              
+      for (j=CF_TYPE_ROOT; j<CF_MAX_PATH_TYPES; j++ )  {
+        
+        if ( !stricmp( search_path, Pathtypes[j].path ))  {
+          char *ext = strrchr( find.filename, '.' );
+          if ( ext )  {
+            if ( is_ext_in_list( Pathtypes[j].extensions, ext ) )  {
+              // Found a file!!!!
+              cf_file *file = cf_create_file();
+              strcpy_s( file->name_ext, find.filename );
+              file->root_index = root_index;
+              file->pathtype_index = j;
+              file->write_time = (time_t)find.write_time;
+              file->size = find.size;
+              file->pack_offset = find.offset;      // Mark as a packed file
 
-							num_files++;
-							//mprintf(( "Found pack file '%s'\n", file->name_ext ));
-						}
-					}
-				}
-			}
-		}
-	}
+              num_files++;
+              //mprintf(( "Found pack file '%s'\n", file->name_ext ));
+            }
+          }
+        }
+      }
+    }
+  }
 
-	fclose(fp);
+  fclose(fp);
 
-	mprintf(( "%i files\n", num_files ));
+  mprintf(( "%i files\n", num_files ));
 }
 
 
 
 void cf_build_file_list()
 {
-	int i;
+  int i;
 
-	Num_files = 0;
+  Num_files = 0;
 
-	// For each root, find all files...
-	for (i=0; i<Num_roots; i++ )	{
-		cf_root	*root = cf_get_root(i);
-		if ( root->roottype == CF_ROOTTYPE_PATH )	{
-			cf_search_root_path(i);
-		} else if ( root->roottype == CF_ROOTTYPE_PACK )	{
-			cf_search_root_pack(i);
-		}
-	}
+  // For each root, find all files...
+  for (i=0; i<Num_roots; i++ )  {
+    cf_root  *root = cf_get_root(i);
+    if ( root->roottype == CF_ROOTTYPE_PATH )  {
+      cf_search_root_path(i);
+    } else if ( root->roottype == CF_ROOTTYPE_PACK )  {
+      cf_search_root_pack(i);
+    }
+  }
 
 }
 
 
 void cf_build_secondary_filelist(const char *cdrom_dir)
 {
-	int i;
+  int i;
 
-	// Assume no files
-	Num_roots = 0;
-	Num_files = 0;
+  // Assume no files
+  Num_roots = 0;
+  Num_files = 0;
 
-	// Init the root blocks
-	for (i=0; i<CF_MAX_ROOT_BLOCKS; i++ )	{
-		Root_blocks[i] = NULL;
-	}
+  // Init the root blocks
+  for (i=0; i<CF_MAX_ROOT_BLOCKS; i++ )  {
+    Root_blocks[i] = NULL;
+  }
 
-	// Init the file blocks	
-	for (i=0; i<CF_MAX_FILE_BLOCKS; i++ )	{
-		File_blocks[i] = NULL;
-	}
+  // Init the file blocks  
+  for (i=0; i<CF_MAX_FILE_BLOCKS; i++ )  {
+    File_blocks[i] = NULL;
+  }
 
-	mprintf(( "Building file index...\n" ));
-	
-	// build the list of searchable roots
-	cf_build_root_list(cdrom_dir);	
+  mprintf(( "Building file index...\n" ));
+  
+  // build the list of searchable roots
+  cf_build_root_list(cdrom_dir);  
 
-	// build the list of files themselves
-	cf_build_file_list();
+  // build the list of files themselves
+  cf_build_file_list();
 
-	mprintf(( "Found %d roots and %d files.\n", Num_roots, Num_files ));
+  mprintf(( "Found %d roots and %d files.\n", Num_roots, Num_files ));
 }
 
 void cf_free_secondary_filelist()
 {
-	int i;
+  int i;
 
-	// Free the root blocks
-	for (i=0; i<CF_MAX_ROOT_BLOCKS; i++ )	{
-		if ( Root_blocks[i] )	{
-			vm_free( Root_blocks[i] );
-			Root_blocks[i] = NULL;
-		}
-	}
-	Num_roots = 0;
+  // Free the root blocks
+  for (i=0; i<CF_MAX_ROOT_BLOCKS; i++ )  {
+    if ( Root_blocks[i] )  {
+      vm_free( Root_blocks[i] );
+      Root_blocks[i] = NULL;
+    }
+  }
+  Num_roots = 0;
 
-	// Init the file blocks	
-	for (i=0; i<CF_MAX_FILE_BLOCKS; i++ )	{
-		if ( File_blocks[i] )	{
-			// Free file paths
-			for (auto& f : File_blocks[i]->files) {
-				if (f.real_name) {
-					vm_free(f.real_name);
-					f.real_name = nullptr;
-				}
-			}
+  // Init the file blocks  
+  for (i=0; i<CF_MAX_FILE_BLOCKS; i++ )  {
+    if ( File_blocks[i] )  {
+      // Free file paths
+      for (auto& f : File_blocks[i]->files) {
+        if (f.real_name) {
+          vm_free(f.real_name);
+          f.real_name = nullptr;
+        }
+      }
 
-			vm_free( File_blocks[i] );
-			File_blocks[i] = NULL;
-		}
-	}
-	Num_files = 0;
+      vm_free( File_blocks[i] );
+      File_blocks[i] = NULL;
+    }
+  }
+  Num_files = 0;
 }
 
 /**
@@ -881,181 +881,181 @@ void cf_free_secondary_filelist()
  */
 int cf_find_file_location( const char *filespec, int pathtype, int max_out, char *pack_filename, size_t *size, size_t *offset, bool localize )
 {
-	int i;
+  int i;
     uint ui;
-	int cfs_slow_search = 0;
-	char longname[MAX_PATH_LEN];
+  int cfs_slow_search = 0;
+  char longname[MAX_PATH_LEN];
 
-	Assert( (filespec != NULL) && (strlen(filespec) > 0) ); //-V805
-	Assert( (pack_filename == NULL) || (max_out > 1) );
+  Assert( (filespec != NULL) && (strlen(filespec) > 0) ); //-V805
+  Assert( (pack_filename == NULL) || (max_out > 1) );
 
-	// see if we have something other than just a filename
-	// our current rules say that any file that specifies a direct
-	// path will try to be opened on that path.  If that open
-	// fails, then we will open the file based on the extension
-	// of the file
+  // see if we have something other than just a filename
+  // our current rules say that any file that specifies a direct
+  // path will try to be opened on that path.  If that open
+  // fails, then we will open the file based on the extension
+  // of the file
 
-	// NOTE: full path should also include localization, if so desired
+  // NOTE: full path should also include localization, if so desired
 #ifdef SCP_UNIX
-	if ( strpbrk(filespec, "/") ) {			// do we have a full path already?
+  if ( strpbrk(filespec, "/") ) {      // do we have a full path already?
 #else
-	if ( strpbrk(filespec,"/\\:")  ) {		// do we have a full path already?
+  if ( strpbrk(filespec,"/\\:")  ) {    // do we have a full path already?
 #endif
-		FILE *fp = fopen(filespec, "rb" );
-		if (fp)	{
-			if ( size ) *size = filelength(fileno(fp));
-			if ( offset ) *offset = 0;
-			if ( pack_filename ) {
-				strncpy( pack_filename, filespec, max_out );
-			}				
-			fclose(fp);
-			return 1;		
-		}
+    FILE *fp = fopen(filespec, "rb" );
+    if (fp)  {
+      if ( size ) *size = filelength(fileno(fp));
+      if ( offset ) *offset = 0;
+      if ( pack_filename ) {
+        strncpy( pack_filename, filespec, max_out );
+      }        
+      fclose(fp);
+      return 1;    
+    }
 
-		return 0;		// If they give a full path, fail if not found.
-	}
+    return 0;    // If they give a full path, fail if not found.
+  }
 
-	// Search the hard drive for files first.
-	uint num_search_dirs = 0;
-	int search_order[CF_MAX_PATH_TYPES];
+  // Search the hard drive for files first.
+  uint num_search_dirs = 0;
+  int search_order[CF_MAX_PATH_TYPES];
 
-	if ( CF_TYPE_SPECIFIED(pathtype) )	{
-		search_order[num_search_dirs++] = pathtype;
-	} else {
-		for (i = CF_TYPE_ROOT; i < CF_MAX_PATH_TYPES; i++) {
-			if (i != pathtype)
-				search_order[num_search_dirs++] = i;
-		}
-	}
+  if ( CF_TYPE_SPECIFIED(pathtype) )  {
+    search_order[num_search_dirs++] = pathtype;
+  } else {
+    for (i = CF_TYPE_ROOT; i < CF_MAX_PATH_TYPES; i++) {
+      if (i != pathtype)
+        search_order[num_search_dirs++] = i;
+    }
+  }
 
-	memset( longname, 0, sizeof(longname) );
+  memset( longname, 0, sizeof(longname) );
 
 
-	for (ui=0; ui<num_search_dirs; ui++ )	{
-		switch (search_order[ui])
-		{
-			case CF_TYPE_ROOT:
-			case CF_TYPE_DATA:
-			case CF_TYPE_SINGLE_PLAYERS:
-			case CF_TYPE_MULTI_PLAYERS:
-			case CF_TYPE_MULTI_CACHE:
-			case CF_TYPE_MISSIONS:
-			case CF_TYPE_CACHE:
-				cfs_slow_search = 1;
-				break;
+  for (ui=0; ui<num_search_dirs; ui++ )  {
+    switch (search_order[ui])
+    {
+      case CF_TYPE_ROOT:
+      case CF_TYPE_DATA:
+      case CF_TYPE_SINGLE_PLAYERS:
+      case CF_TYPE_MULTI_PLAYERS:
+      case CF_TYPE_MULTI_CACHE:
+      case CF_TYPE_MISSIONS:
+      case CF_TYPE_CACHE:
+        cfs_slow_search = 1;
+        break;
  
-			default:
-				// always hit the disk if we are looking in only one path
-				cfs_slow_search = (num_search_dirs == 1) ? 1 : 0;
-				break;
-		}
+      default:
+        // always hit the disk if we are looking in only one path
+        cfs_slow_search = (num_search_dirs == 1) ? 1 : 0;
+        break;
+    }
  
-		if (cfs_slow_search) {
-			cf_create_default_path_string( longname, sizeof(longname)-1, search_order[ui], filespec, localize );
+    if (cfs_slow_search) {
+      cf_create_default_path_string( longname, sizeof(longname)-1, search_order[ui], filespec, localize );
 
 #if defined _WIN32
-			_finddata_t findstruct;
+      _finddata_t findstruct;
 
-			intptr_t findhandle = _findfirst(longname, &findstruct);
-			if (findhandle != -1) {
-				if (size)
-					*size = findstruct.size;
+      intptr_t findhandle = _findfirst(longname, &findstruct);
+      if (findhandle != -1) {
+        if (size)
+          *size = findstruct.size;
 
-				_findclose(findhandle);
+        _findclose(findhandle);
 
-				if (offset)
-					*offset = 0;
+        if (offset)
+          *offset = 0;
 
-				if (pack_filename)
-					strncpy( pack_filename, longname, max_out );
+        if (pack_filename)
+          strncpy( pack_filename, longname, max_out );
 
-				return 1;
-			}
+        return 1;
+      }
 #endif
-			{
-				FILE *fp = fopen(longname, "rb" );
+      {
+        FILE *fp = fopen(longname, "rb" );
 
-				if (fp) {
-					if (size)
-						*size = filelength( fileno(fp) );
+        if (fp) {
+          if (size)
+            *size = filelength( fileno(fp) );
 
-					fclose(fp);
+          fclose(fp);
 
-					if (offset)
-						*offset = 0;
+          if (offset)
+            *offset = 0;
 
-					if (pack_filename)
-						strncpy(pack_filename, longname, max_out);
+          if (pack_filename)
+            strncpy(pack_filename, longname, max_out);
 
-					return 1;
-				}
-			}
-		}
-	}
+          return 1;
+        }
+      }
+    }
+  }
 
-	// Search the pak files and CD-ROM.
-	for (ui = 0; ui < Num_files; ui++ )	{
-		cf_file *f = cf_get_file(ui);
+  // Search the pak files and CD-ROM.
+  for (ui = 0; ui < Num_files; ui++ )  {
+    cf_file *f = cf_get_file(ui);
 
-		// only search paths we're supposed to...
-		if ( (pathtype != CF_TYPE_ANY) && (pathtype != f->pathtype_index) )
-			continue;
+    // only search paths we're supposed to...
+    if ( (pathtype != CF_TYPE_ANY) && (pathtype != f->pathtype_index) )
+      continue;
 
 
-		if (localize) {
-			// create localized filespec
-			strncpy(longname, filespec, MAX_PATH_LEN - 1);
+    if (localize) {
+      // create localized filespec
+      strncpy(longname, filespec, MAX_PATH_LEN - 1);
 
-			if ( lcl_add_dir_to_path_with_filename(longname, MAX_PATH_LEN - 1) ) {
-				if ( !stricmp(longname, f->name_ext) ) {
-					if (size)
-						*size = f->size;
+      if ( lcl_add_dir_to_path_with_filename(longname, MAX_PATH_LEN - 1) ) {
+        if ( !stricmp(longname, f->name_ext) ) {
+          if (size)
+            *size = f->size;
 
-					if (offset)
-						*offset = (size_t)f->pack_offset;
+          if (offset)
+            *offset = (size_t)f->pack_offset;
 
-					if (pack_filename) {
-						if (f->pack_offset < 1) {
-							// This is a real file, return the actual file path
-							strncpy( pack_filename, f->real_name, max_out );
-						} else {
-							// File is in a pack file
-							cf_root *r = cf_get_root(f->root_index);
+          if (pack_filename) {
+            if (f->pack_offset < 1) {
+              // This is a real file, return the actual file path
+              strncpy( pack_filename, f->real_name, max_out );
+            } else {
+              // File is in a pack file
+              cf_root *r = cf_get_root(f->root_index);
 
-							strncpy( pack_filename, r->path, max_out );
-						}
-					}
+              strncpy( pack_filename, r->path, max_out );
+            }
+          }
 
-					return 1;
-				}
-			}
-		}
+          return 1;
+        }
+      }
+    }
 
-		// file either not localized or localized version not found
-		if ( !stricmp(filespec, f->name_ext) ) {
-			if (size)
-				*size = f->size;
+    // file either not localized or localized version not found
+    if ( !stricmp(filespec, f->name_ext) ) {
+      if (size)
+        *size = f->size;
 
-			if (offset)
-				*offset = (size_t)f->pack_offset;
+      if (offset)
+        *offset = (size_t)f->pack_offset;
 
-			if (pack_filename) {
-				if (f->pack_offset < 1) {
-					// This is a real file, return the actual file path
-					strncpy( pack_filename, f->real_name, max_out );
-				} else {
-					// File is in a pack file
-					cf_root *r = cf_get_root(f->root_index);
+      if (pack_filename) {
+        if (f->pack_offset < 1) {
+          // This is a real file, return the actual file path
+          strncpy( pack_filename, f->real_name, max_out );
+        } else {
+          // File is in a pack file
+          cf_root *r = cf_get_root(f->root_index);
 
-					strncpy( pack_filename, r->path, max_out );
-				}
-			}
+          strncpy( pack_filename, r->path, max_out );
+        }
+      }
 
-			return 1;
-		}
-	}
-		
-	return 0;
+      return 1;
+    }
+  }
+    
+  return 0;
 }
 
 // -- from parselo.cpp --
@@ -1081,299 +1081,299 @@ extern char *stristr(char *str, const char *substr);
  */
 int cf_find_file_location_ext( const char *filename, const int ext_num, const char **ext_list, int pathtype, int max_out, char *pack_filename, size_t *size, size_t *offset, bool localize )
 {
-	int cur_ext, i;
+  int cur_ext, i;
     uint ui;
-	int cfs_slow_search = 0;
-	char longname[MAX_PATH_LEN];
-	char filespec[MAX_FILENAME_LEN];
-	char *p = NULL;
-	
-	Assert( (filename != NULL) && (strlen(filename) < MAX_FILENAME_LEN) );
-	Assert( (ext_list != NULL) && (ext_num > 1) );	// if we are searching for just one ext
-													// then this is the wrong function to use
-	Assert( (pack_filename == NULL) || (max_out > 1) );
+  int cfs_slow_search = 0;
+  char longname[MAX_PATH_LEN];
+  char filespec[MAX_FILENAME_LEN];
+  char *p = NULL;
+  
+  Assert( (filename != NULL) && (strlen(filename) < MAX_FILENAME_LEN) );
+  Assert( (ext_list != NULL) && (ext_num > 1) );  // if we are searching for just one ext
+                          // then this is the wrong function to use
+  Assert( (pack_filename == NULL) || (max_out > 1) );
 
 
-	// if we have a full path already then fail.  this function if for searching via filter only!
+  // if we have a full path already then fail.  this function if for searching via filter only!
 #ifdef SCP_UNIX
-	if ( strpbrk(filename, "/") ) {			// do we have a full path already?
+  if ( strpbrk(filename, "/") ) {      // do we have a full path already?
 #else
-	if ( strpbrk(filename,"/\\:")  ) {		// do we have a full path already?
+  if ( strpbrk(filename,"/\\:")  ) {    // do we have a full path already?
 #endif
-		Int3();
-		return 0;
-	}
+    Int3();
+    return 0;
+  }
 
-	// Search the hard drive for files first.
-	uint num_search_dirs = 0;
-	int search_order[CF_MAX_PATH_TYPES];
+  // Search the hard drive for files first.
+  uint num_search_dirs = 0;
+  int search_order[CF_MAX_PATH_TYPES];
 
-	if ( CF_TYPE_SPECIFIED(pathtype) )	{
-		search_order[num_search_dirs++] = pathtype;
-	} else {
-		for (i = CF_TYPE_ROOT; i < CF_MAX_PATH_TYPES; i++)
-			search_order[num_search_dirs++] = i;
-	}
+  if ( CF_TYPE_SPECIFIED(pathtype) )  {
+    search_order[num_search_dirs++] = pathtype;
+  } else {
+    for (i = CF_TYPE_ROOT; i < CF_MAX_PATH_TYPES; i++)
+      search_order[num_search_dirs++] = i;
+  }
 
-	memset( longname, 0, sizeof(longname) );
-	memset( filespec, 0, sizeof(filespec) );
+  memset( longname, 0, sizeof(longname) );
+  memset( filespec, 0, sizeof(filespec) );
 
-	// strip any existing extension
-	strncpy(filespec, filename, MAX_FILENAME_LEN-1);
+  // strip any existing extension
+  strncpy(filespec, filename, MAX_FILENAME_LEN-1);
 
-	for (ui = 0; ui < num_search_dirs; ui++) {
-		// always hit the disk if we are looking in only one path
-		if (num_search_dirs == 1) {
-			cfs_slow_search = 1;
-		}
-		// otherwise hit based on a directory type
-		else {
-			switch (search_order[ui])
-			{
-				case CF_TYPE_ROOT:
-				case CF_TYPE_DATA:
-				case CF_TYPE_SINGLE_PLAYERS:
-				case CF_TYPE_MULTI_PLAYERS:
-				case CF_TYPE_MULTI_CACHE:
-				case CF_TYPE_MISSIONS:
-				case CF_TYPE_CACHE:
-					cfs_slow_search = 1;
-					break;
-			}
-		}
+  for (ui = 0; ui < num_search_dirs; ui++) {
+    // always hit the disk if we are looking in only one path
+    if (num_search_dirs == 1) {
+      cfs_slow_search = 1;
+    }
+    // otherwise hit based on a directory type
+    else {
+      switch (search_order[ui])
+      {
+        case CF_TYPE_ROOT:
+        case CF_TYPE_DATA:
+        case CF_TYPE_SINGLE_PLAYERS:
+        case CF_TYPE_MULTI_PLAYERS:
+        case CF_TYPE_MULTI_CACHE:
+        case CF_TYPE_MISSIONS:
+        case CF_TYPE_CACHE:
+          cfs_slow_search = 1;
+          break;
+      }
+    }
 
-		if ( !cfs_slow_search )
-			continue;
+    if ( !cfs_slow_search )
+      continue;
 
-		for (cur_ext = 0; cur_ext < ext_num; cur_ext++) {
-			// strip any extension and add the one we want to check for
-			// (NOTE: to be fully retail compatible, we need to support multiple periods for something like *_1.5.wav,
-			//        which means that we need to strip a length of >2 only, assuming that all valid ext are at least 2 chars)
-			p = strrchr(filespec, '.');
-			if ( p && (strlen(p) > 2) )
-				(*p) = 0;
+    for (cur_ext = 0; cur_ext < ext_num; cur_ext++) {
+      // strip any extension and add the one we want to check for
+      // (NOTE: to be fully retail compatible, we need to support multiple periods for something like *_1.5.wav,
+      //        which means that we need to strip a length of >2 only, assuming that all valid ext are at least 2 chars)
+      p = strrchr(filespec, '.');
+      if ( p && (strlen(p) > 2) )
+        (*p) = 0;
 
-			strcat_s( filespec, ext_list[cur_ext] );
+      strcat_s( filespec, ext_list[cur_ext] );
  
-			cf_create_default_path_string( longname, sizeof(longname)-1, search_order[ui], filespec, localize );
+      cf_create_default_path_string( longname, sizeof(longname)-1, search_order[ui], filespec, localize );
 
 #if defined _WIN32
-			_finddata_t findstruct;
-			intptr_t findhandle = _findfirst(longname, &findstruct);
-			if (findhandle != -1) {
-				if (size)
-					*size = findstruct.size;
+      _finddata_t findstruct;
+      intptr_t findhandle = _findfirst(longname, &findstruct);
+      if (findhandle != -1) {
+        if (size)
+          *size = findstruct.size;
 
-				_findclose(findhandle);
+        _findclose(findhandle);
 
-				if (offset)
-					*offset = 0;
+        if (offset)
+          *offset = 0;
 
-				if (pack_filename)
-					strncpy( pack_filename, longname, max_out );
+        if (pack_filename)
+          strncpy( pack_filename, longname, max_out );
 
-				return cur_ext;
-			}
+        return cur_ext;
+      }
 #endif
-			{
-				FILE *fp = fopen(longname, "rb" );
+      {
+        FILE *fp = fopen(longname, "rb" );
 
-				if (fp) {
-					if (size)
-						*size = filelength( fileno(fp) );
+        if (fp) {
+          if (size)
+            *size = filelength( fileno(fp) );
 
-					fclose(fp);
+          fclose(fp);
 
-					if (offset)
-						*offset = 0;
+          if (offset)
+            *offset = 0;
 
-					if (pack_filename)
-						strncpy(pack_filename, longname, max_out);
+          if (pack_filename)
+            strncpy(pack_filename, longname, max_out);
 
-					return cur_ext;
-				}
-			}
-		}
-	}
+          return cur_ext;
+        }
+      }
+    }
+  }
 
-	// Search the pak files and CD-ROM.
+  // Search the pak files and CD-ROM.
 
-	// first off, make sure that we don't have an extension
-	// (NOTE: to be fully retail compatible, we need to support multiple periods for something like *_1.5.wav,
-	//        which means that we need to strip a length of >2 only, assuming that all valid ext are at least 2 chars)
-	p = strrchr(filespec, '.');
-	if ( p && (strlen(p) > 2) )
-		(*p) = 0;
+  // first off, make sure that we don't have an extension
+  // (NOTE: to be fully retail compatible, we need to support multiple periods for something like *_1.5.wav,
+  //        which means that we need to strip a length of >2 only, assuming that all valid ext are at least 2 chars)
+  p = strrchr(filespec, '.');
+  if ( p && (strlen(p) > 2) )
+    (*p) = 0;
 
-	// go ahead and get our length, which is used to test with later
-	size_t filespec_len = strlen(filespec);
+  // go ahead and get our length, which is used to test with later
+  size_t filespec_len = strlen(filespec);
 
-	// get total legnth, with extension, which is iused to test with later
-	// (FIXME: this assumes that everything in ext_list[] is the same length!)
-	size_t filespec_len_big = filespec_len + strlen(ext_list[0]);
+  // get total legnth, with extension, which is iused to test with later
+  // (FIXME: this assumes that everything in ext_list[] is the same length!)
+  size_t filespec_len_big = filespec_len + strlen(ext_list[0]);
 
-	SCP_vector< cf_file* > file_list_index;
-	int last_root_index = -1;
-	int last_path_index = -1;
+  SCP_vector< cf_file* > file_list_index;
+  int last_root_index = -1;
+  int last_path_index = -1;
 
-	file_list_index.reserve( MIN(ext_num * 4, (int)Num_files) );
+  file_list_index.reserve( MIN(ext_num * 4, (int)Num_files) );
 
-	// next, run though and pick out base matches
-	for (ui = 0; ui < Num_files; ui++) {
-		cf_file *f = cf_get_file(ui);
+  // next, run though and pick out base matches
+  for (ui = 0; ui < Num_files; ui++) {
+    cf_file *f = cf_get_file(ui);
 
-		// ... only search paths that we're supposed to
-		if ( (num_search_dirs == 1) && (pathtype != f->pathtype_index) )
-			continue;
+    // ... only search paths that we're supposed to
+    if ( (num_search_dirs == 1) && (pathtype != f->pathtype_index) )
+      continue;
 
-		// ... check that our names are the same length (accounting for the missing extension on our own name)
-		if ( strlen(f->name_ext) != filespec_len_big )
-			continue;
+    // ... check that our names are the same length (accounting for the missing extension on our own name)
+    if ( strlen(f->name_ext) != filespec_len_big )
+      continue;
 
-		// ... check that we match the base filename
-		if ( strnicmp(f->name_ext, filespec, filespec_len) )
-			continue;
+    // ... check that we match the base filename
+    if ( strnicmp(f->name_ext, filespec, filespec_len) )
+      continue;
 
-		// ... make sure that it's one of our supported types
-		bool found_one = false;
-		for (cur_ext = 0; cur_ext < ext_num; cur_ext++) {
-			if ( stristr(f->name_ext, ext_list[cur_ext]) ) {
-				found_one = true;
-				break;
-			}
-		}
+    // ... make sure that it's one of our supported types
+    bool found_one = false;
+    for (cur_ext = 0; cur_ext < ext_num; cur_ext++) {
+      if ( stristr(f->name_ext, ext_list[cur_ext]) ) {
+        found_one = true;
+        break;
+      }
+    }
 
-		if ( !found_one )
-			continue;
+    if ( !found_one )
+      continue;
 
-		// ... we check based on location, so if location changes after the first find then bail
-		if (last_root_index == -1) {
-			last_root_index = f->root_index;
-			last_path_index = f->pathtype_index;
-		} else {
-			if (f->root_index != last_root_index)
-				break;
+    // ... we check based on location, so if location changes after the first find then bail
+    if (last_root_index == -1) {
+      last_root_index = f->root_index;
+      last_path_index = f->pathtype_index;
+    } else {
+      if (f->root_index != last_root_index)
+        break;
 
-			if (f->pathtype_index != last_path_index)
-				break;
-		}
+      if (f->pathtype_index != last_path_index)
+        break;
+    }
 
-		// ok, we have a good base match, so add it to our cache
-		file_list_index.push_back( f );
-	}
+    // ok, we have a good base match, so add it to our cache
+    file_list_index.push_back( f );
+  }
 
-	// now try and find our preferred match
-	for (cur_ext = 0; cur_ext < ext_num; cur_ext++) {
-		for (SCP_vector<cf_file*>::iterator fli = file_list_index.begin(); fli != file_list_index.end(); ++fli) {
-			cf_file *f = *fli;
-	
-			strcat_s( filespec, ext_list[cur_ext] );
+  // now try and find our preferred match
+  for (cur_ext = 0; cur_ext < ext_num; cur_ext++) {
+    for (SCP_vector<cf_file*>::iterator fli = file_list_index.begin(); fli != file_list_index.end(); ++fli) {
+      cf_file *f = *fli;
+  
+      strcat_s( filespec, ext_list[cur_ext] );
 
-			if (localize) {
-				// create localized filespec
-				strncpy(longname, filespec, MAX_PATH_LEN - 1);
+      if (localize) {
+        // create localized filespec
+        strncpy(longname, filespec, MAX_PATH_LEN - 1);
 
-				if ( lcl_add_dir_to_path_with_filename(longname, MAX_PATH_LEN - 1) ) {
-					if ( !stricmp(longname, f->name_ext) ) {
-						if (size)
-							*size = f->size;
+        if ( lcl_add_dir_to_path_with_filename(longname, MAX_PATH_LEN - 1) ) {
+          if ( !stricmp(longname, f->name_ext) ) {
+            if (size)
+              *size = f->size;
 
-						if (offset)
-							*offset = f->pack_offset;
+            if (offset)
+              *offset = f->pack_offset;
 
-						if (pack_filename) {
-							if (f->pack_offset < 1) {
-								// This is a real file, return the actual file path
-								strncpy( pack_filename, f->real_name, max_out );
-							} else {
-								// File is in a pack file
-								cf_root *r = cf_get_root(f->root_index);
+            if (pack_filename) {
+              if (f->pack_offset < 1) {
+                // This is a real file, return the actual file path
+                strncpy( pack_filename, f->real_name, max_out );
+              } else {
+                // File is in a pack file
+                cf_root *r = cf_get_root(f->root_index);
 
-								strncpy( pack_filename, r->path, max_out );
-							}
-						}
+                strncpy( pack_filename, r->path, max_out );
+              }
+            }
 
-						// found it, so cleanup and return
-						file_list_index.clear();
+            // found it, so cleanup and return
+            file_list_index.clear();
 
-						return cur_ext;
-					}
-				}
-			}
+            return cur_ext;
+          }
+        }
+      }
 
-			// file either not localized or localized version not found
-			if ( !stricmp(filespec, f->name_ext) ) {
-				if (size)
-					*size = f->size;
+      // file either not localized or localized version not found
+      if ( !stricmp(filespec, f->name_ext) ) {
+        if (size)
+          *size = f->size;
 
-				if (offset)
-					*offset = f->pack_offset;
+        if (offset)
+          *offset = f->pack_offset;
 
-				if (pack_filename) {
-					if (f->pack_offset < 1) {
-						// This is a real file, return the actual file path
-						strncpy( pack_filename, f->real_name, max_out );
-					} else {
-						// File is in a pack file
-						cf_root *r = cf_get_root(f->root_index);
+        if (pack_filename) {
+          if (f->pack_offset < 1) {
+            // This is a real file, return the actual file path
+            strncpy( pack_filename, f->real_name, max_out );
+          } else {
+            // File is in a pack file
+            cf_root *r = cf_get_root(f->root_index);
 
-						strncpy( pack_filename, r->path, max_out );
-					}
-				}
+            strncpy( pack_filename, r->path, max_out );
+          }
+        }
 
-				// found it, so cleanup and return
-				file_list_index.clear();
+        // found it, so cleanup and return
+        file_list_index.clear();
 
-				return cur_ext;
-			}
+        return cur_ext;
+      }
 
-			// ok, we're still here, so strip off the extension again in order to
-			// prepare for the next run
-			p = strrchr(filespec, '.');
-			if ( p && (strlen(p) > 2) )
-				(*p) = 0;
-		}
-	}
+      // ok, we're still here, so strip off the extension again in order to
+      // prepare for the next run
+      p = strrchr(filespec, '.');
+      if ( p && (strlen(p) > 2) )
+        (*p) = 0;
+    }
+  }
 
-	return -1;
+  return -1;
 }
 
 
 // Returns true if filename matches filespec, else zero if not
 int cf_matches_spec(const char *filespec, const char *filename)
 {
-	const char *src_ext;
-	const char *dst_ext;
+  const char *src_ext;
+  const char *dst_ext;
 
-	src_ext = strrchr(filespec, '*');
-	if(!src_ext)
-	{
-		src_ext = strrchr(filespec, '.');
-		if (!src_ext)
-			return 1;
-	}
-	else
-	{
-		src_ext++;
-	}
+  src_ext = strrchr(filespec, '*');
+  if(!src_ext)
+  {
+    src_ext = strrchr(filespec, '.');
+    if (!src_ext)
+      return 1;
+  }
+  else
+  {
+    src_ext++;
+  }
 
-	if(strlen(filespec) > strlen(filename))
-	{
-		return 0;
-	}
+  if(strlen(filespec) > strlen(filename))
+  {
+    return 0;
+  }
 
-	dst_ext = filename + strlen(filename) - ((filespec + strlen(filespec)) - src_ext);
-	if (!dst_ext)
-		return 1;
-	
-	if(src_ext == filespec)
-	{
-		return !stricmp(dst_ext, src_ext);
-	}
-	else
-	{
-		return (!stricmp(dst_ext, src_ext) && !strnicmp(dst_ext, src_ext, src_ext - filespec));
-	}
+  dst_ext = filename + strlen(filename) - ((filespec + strlen(filespec)) - src_ext);
+  if (!dst_ext)
+    return 1;
+  
+  if(src_ext == filespec)
+  {
+    return !stricmp(dst_ext, src_ext);
+  }
+  else
+  {
+    return (!stricmp(dst_ext, src_ext) && !strnicmp(dst_ext, src_ext, src_ext - filespec));
+  }
 }
 
 int (*Get_file_list_filter)(const char *filename) = NULL;
@@ -1382,51 +1382,51 @@ int Skip_packfile_search = 0;
 
 static bool verify_file_list_child()
 {
-	if (Get_file_list_child == NULL) {
-		return false;
-	}
+  if (Get_file_list_child == NULL) {
+    return false;
+  }
 
-	// empty or too long
-	size_t len = strlen(Get_file_list_child);
-	if ( !len || (len > MAX_FILENAME_LEN) ) {
-		return false;
-	}
+  // empty or too long
+  size_t len = strlen(Get_file_list_child);
+  if ( !len || (len > MAX_FILENAME_LEN) ) {
+    return false;
+  }
 
-	// can not being with directory separator
-	if (Get_file_list_child[0] == DIR_SEPARATOR_CHAR) {
-		return false;
-	}
+  // can not being with directory separator
+  if (Get_file_list_child[0] == DIR_SEPARATOR_CHAR) {
+    return false;
+  }
 
-	// no ':' or spaces
-	if ( strchr(Get_file_list_child, ':') || strchr(Get_file_list_child, ' ') ) {
-		return false;
-	}
+  // no ':' or spaces
+  if ( strchr(Get_file_list_child, ':') || strchr(Get_file_list_child, ' ') ) {
+    return false;
+  }
 
-	return true;
+  return true;
 }
 
 static int cf_file_already_in_list( SCP_vector<SCP_string> &list, const char *filename )
 {
-	char name_no_extension[MAX_PATH_LEN];
-	size_t i, size = list.size();
+  char name_no_extension[MAX_PATH_LEN];
+  size_t i, size = list.size();
 
-	if (size == 0) {
-		return 0;
-	}
+  if (size == 0) {
+    return 0;
+  }
 
-	strcpy_s(name_no_extension, filename );
-	char *p = strrchr( name_no_extension, '.' );
-	if ( p ) *p = 0;
+  strcpy_s(name_no_extension, filename );
+  char *p = strrchr( name_no_extension, '.' );
+  if ( p ) *p = 0;
 
-	for (i = 0; i < size; i++) {
-		if ( !stricmp(list[i].c_str(), name_no_extension ) ) {
-			// Match found!
-			return 1;
-		}
-	}
+  for (i = 0; i < size; i++) {
+    if ( !stricmp(list[i].c_str(), name_no_extension ) ) {
+      // Match found!
+      return 1;
+    }
+  }
 
-	// Not found
-	return 0;
+  // Not found
+  return 0;
 }
 
 // An alternative cf_get_file_list*(), true dynamic list version.
@@ -1435,204 +1435,204 @@ static int cf_file_already_in_list( SCP_vector<SCP_string> &list, const char *fi
 // See above descriptions of cf_get_file_list() for more information about how it all works.
 int cf_get_file_list( SCP_vector<SCP_string> &list, int pathtype, const char *filter, int sort, SCP_vector<file_list_info> *info )
 {
-	char *ptr;
-	uint i;
-	int own_flag = 0;
-	size_t l;
-	SCP_vector<file_list_info> my_info;
-	file_list_info tinfo;
+  char *ptr;
+  uint i;
+  int own_flag = 0;
+  size_t l;
+  SCP_vector<file_list_info> my_info;
+  file_list_info tinfo;
 
-	if ( !info && (sort == CF_SORT_TIME) ) {
-		info = &my_info;
-		own_flag = 1;
-	}
+  if ( !info && (sort == CF_SORT_TIME) ) {
+    info = &my_info;
+    own_flag = 1;
+  }
 
-	char filespec[MAX_PATH_LEN];
+  char filespec[MAX_PATH_LEN];
 
-	bool check_duplicates = !list.empty();
+  bool check_duplicates = !list.empty();
 
-	if ( check_duplicates && (sort != CF_SORT_NONE) ) {
-		Int3();
-		sort = CF_SORT_NONE;
-	}
+  if ( check_duplicates && (sort != CF_SORT_NONE) ) {
+    Int3();
+    sort = CF_SORT_NONE;
+  }
 
-	if (Get_file_list_child && !verify_file_list_child() ) {
-		Get_file_list_child = NULL;
-	}
+  if (Get_file_list_child && !verify_file_list_child() ) {
+    Get_file_list_child = NULL;
+  }
 
 #if defined _WIN32
-	cf_create_default_path_string( filespec, sizeof(filespec)-1, pathtype, (char*)Get_file_list_child );
-	strcat_s(filespec, DIR_SEPARATOR_STR);
-	strcat_s(filespec, filter);
+  cf_create_default_path_string( filespec, sizeof(filespec)-1, pathtype, (char*)Get_file_list_child );
+  strcat_s(filespec, DIR_SEPARATOR_STR);
+  strcat_s(filespec, filter);
 
-	_finddata_t find;
-	intptr_t find_handle;
+  _finddata_t find;
+  intptr_t find_handle;
 
-	find_handle = _findfirst( filespec, &find );
-	if (find_handle != -1) {
-		do {
+  find_handle = _findfirst( filespec, &find );
+  if (find_handle != -1) {
+    do {
             if (strcmp(strrchr(filter, '.'), strrchr(find.name,'.')) != 0)
                 continue;
 
-			if (!(find.attrib & _A_SUBDIR)) {
-				if ( !Get_file_list_filter || (*Get_file_list_filter)(find.name) ) {
-					if ( check_duplicates && cf_file_already_in_list(list, find.name) ) {
-						continue;
-					}
+      if (!(find.attrib & _A_SUBDIR)) {
+        if ( !Get_file_list_filter || (*Get_file_list_filter)(find.name) ) {
+          if ( check_duplicates && cf_file_already_in_list(list, find.name) ) {
+            continue;
+          }
 
-					ptr = strrchr(find.name, '.');
-					if (ptr)
-						l = (size_t)(ptr - find.name);
-					else
-						l = strlen(find.name);
+          ptr = strrchr(find.name, '.');
+          if (ptr)
+            l = (size_t)(ptr - find.name);
+          else
+            l = strlen(find.name);
 
-					list.push_back( SCP_string(find.name, l) );
+          list.push_back( SCP_string(find.name, l) );
 
-					if (info) {
-						tinfo.write_time = find.time_write;
-						info->push_back( tinfo );
-					}
-				}
-			}
+          if (info) {
+            tinfo.write_time = find.time_write;
+            info->push_back( tinfo );
+          }
+        }
+      }
 
-		} while (!_findnext(find_handle, &find));
+    } while (!_findnext(find_handle, &find));
 
-		_findclose( find_handle );
-	}
+    _findclose( find_handle );
+  }
 
 #elif defined SCP_UNIX
-	cf_create_default_path_string( filespec, sizeof(filespec)-1, pathtype, (char*)Get_file_list_child );
+  cf_create_default_path_string( filespec, sizeof(filespec)-1, pathtype, (char*)Get_file_list_child );
 
-	DIR *dirp;
-	struct dirent *dir;
+  DIR *dirp;
+  struct dirent *dir;
 
-	dirp = opendir (filespec);
-	if ( dirp ) {
-		while ((dir = readdir (dirp)) != NULL) {
+  dirp = opendir (filespec);
+  if ( dirp ) {
+    while ((dir = readdir (dirp)) != NULL) {
 
-			if (fnmatch(filter, dir->d_name, 0) != 0)
-				continue;
+      if (fnmatch(filter, dir->d_name, 0) != 0)
+        continue;
 
-			char fn[MAX_PATH];
-			snprintf(fn, MAX_PATH-1, "%s/%s", filespec, dir->d_name);
-			fn[MAX_PATH-1] = 0;
+      char fn[MAX_PATH];
+      snprintf(fn, MAX_PATH-1, "%s/%s", filespec, dir->d_name);
+      fn[MAX_PATH-1] = 0;
 
-			struct stat buf;
-			if (stat(fn, &buf) == -1) {
-				continue;
-			}
+      struct stat buf;
+      if (stat(fn, &buf) == -1) {
+        continue;
+      }
 
-			if (!S_ISREG(buf.st_mode)) {
-				continue;
-			}
+      if (!S_ISREG(buf.st_mode)) {
+        continue;
+      }
 
-			if ( !Get_file_list_filter || (*Get_file_list_filter)(dir->d_name) ) {
-				if ( check_duplicates && cf_file_already_in_list(list, dir->d_name) ) {
-					continue;
-				}
+      if ( !Get_file_list_filter || (*Get_file_list_filter)(dir->d_name) ) {
+        if ( check_duplicates && cf_file_already_in_list(list, dir->d_name) ) {
+          continue;
+        }
 
-				ptr = strrchr(dir->d_name, '.');
-				if (ptr)
-					l = (size_t)(ptr - dir->d_name);
-				else
-					l = strlen(dir->d_name);
+        ptr = strrchr(dir->d_name, '.');
+        if (ptr)
+          l = (size_t)(ptr - dir->d_name);
+        else
+          l = strlen(dir->d_name);
 
-				list.push_back( SCP_string(dir->d_name, l) );
+        list.push_back( SCP_string(dir->d_name, l) );
 
-				if (info) {
-					tinfo.write_time = buf.st_mtime;
-					info->push_back( tinfo );
-				}
-			}
-		}
+        if (info) {
+          tinfo.write_time = buf.st_mtime;
+          info->push_back( tinfo );
+        }
+      }
+    }
 
-		closedir(dirp);
-	}
+    closedir(dirp);
+  }
 #endif
 
-	bool skip_packfiles = false;
-	if ( (pathtype == CF_TYPE_PLAYERS) || (pathtype == CF_TYPE_SINGLE_PLAYERS) || (pathtype == CF_TYPE_MULTI_PLAYERS) ) {
-		skip_packfiles = true;
-	} else if (Get_file_list_child != NULL) {
-		skip_packfiles = true;
-	}
+  bool skip_packfiles = false;
+  if ( (pathtype == CF_TYPE_PLAYERS) || (pathtype == CF_TYPE_SINGLE_PLAYERS) || (pathtype == CF_TYPE_MULTI_PLAYERS) ) {
+    skip_packfiles = true;
+  } else if (Get_file_list_child != NULL) {
+    skip_packfiles = true;
+  }
 
-	// Search all the packfiles and CD.
-	if ( !skip_packfiles )	{
-		for (i=0; i<Num_files; i++ )	{
-			cf_file * f = cf_get_file(i);
+  // Search all the packfiles and CD.
+  if ( !skip_packfiles )  {
+    for (i=0; i<Num_files; i++ )  {
+      cf_file * f = cf_get_file(i);
 
-			// only search paths we're supposed to...
-			if ( (pathtype != CF_TYPE_ANY) && (pathtype != f->pathtype_index)  )	{
-				continue;
-			}
+      // only search paths we're supposed to...
+      if ( (pathtype != CF_TYPE_ANY) && (pathtype != f->pathtype_index)  )  {
+        continue;
+      }
 
-			if ( !cf_matches_spec( filter,f->name_ext))	{
-				continue;
-			}
+      if ( !cf_matches_spec( filter,f->name_ext))  {
+        continue;
+      }
 
-			if ( cf_file_already_in_list(list, f->name_ext))	{
-				continue;
-			}
+      if ( cf_file_already_in_list(list, f->name_ext))  {
+        continue;
+      }
 
-			if (Skip_packfile_search && f->pack_offset != 0) {
-				// If the packfile skip flag is set we skip files in VPs but still search in directories
-				continue;
-			}
+      if (Skip_packfile_search && f->pack_offset != 0) {
+        // If the packfile skip flag is set we skip files in VPs but still search in directories
+        continue;
+      }
 
-			if ( !Get_file_list_filter || (*Get_file_list_filter)(f->name_ext) ) {
-				//mprintf(( "Found '%s' in root %d path %d\n", f->name_ext, f->root_index, f->pathtype_index ));
+      if ( !Get_file_list_filter || (*Get_file_list_filter)(f->name_ext) ) {
+        //mprintf(( "Found '%s' in root %d path %d\n", f->name_ext, f->root_index, f->pathtype_index ));
 
-				ptr = strrchr(f->name_ext, '.');
-				if (ptr)
-					l = (size_t)(ptr - f->name_ext);
-				else
-					l = strlen(f->name_ext);
+        ptr = strrchr(f->name_ext, '.');
+        if (ptr)
+          l = (size_t)(ptr - f->name_ext);
+        else
+          l = strlen(f->name_ext);
 
-				list.push_back( SCP_string(f->name_ext, l) );
+        list.push_back( SCP_string(f->name_ext, l) );
 
-				if (info) {
-					tinfo.write_time = f->write_time;
-					info->push_back( tinfo );
-				}
-			}
+        if (info) {
+          tinfo.write_time = f->write_time;
+          info->push_back( tinfo );
+        }
+      }
 
-		}
-	}
+    }
+  }
 
 
-	if (sort != CF_SORT_NONE)	{
-		cf_sort_filenames( list, sort, info );
-	}
+  if (sort != CF_SORT_NONE)  {
+    cf_sort_filenames( list, sort, info );
+  }
 
-	if (own_flag)	{
-		my_info.clear();
-	}
+  if (own_flag)  {
+    my_info.clear();
+  }
 
-	Get_file_list_filter = NULL;
-	Get_file_list_child = NULL;
+  Get_file_list_filter = NULL;
+  Get_file_list_child = NULL;
 
-	return (int)list.size();
+  return (int)list.size();
 }
 
 int cf_file_already_in_list( int num_files, char **list, const char *filename )
 {
-	int i;
+  int i;
 
-	char name_no_extension[MAX_PATH_LEN];
+  char name_no_extension[MAX_PATH_LEN];
 
-	strcpy_s(name_no_extension, filename );
-	char *p = strrchr( name_no_extension, '.' );
-	if ( p ) *p = 0;
+  strcpy_s(name_no_extension, filename );
+  char *p = strrchr( name_no_extension, '.' );
+  if ( p ) *p = 0;
 
-	for (i=0; i<num_files; i++ )	{
-		if ( !stricmp(list[i], name_no_extension ) )	{
-			// Match found!
-			return 1;
-		}
-	}
-	// Not found
-	return 0;
+  for (i=0; i<num_files; i++ )  {
+    if ( !stricmp(list[i], name_no_extension ) )  {
+      // Match found!
+      return 1;
+    }
+  }
+  // Not found
+  return 0;
 }
 
 // An alternative cf_get_file_list(), dynamic list version.
@@ -1641,211 +1641,211 @@ int cf_file_already_in_list( int num_files, char **list, const char *filename )
 // See above descriptions of cf_get_file_list() for more information about how it all works.
 int cf_get_file_list( int max, char **list, int pathtype, const char *filter, int sort, file_list_info *info )
 {
-	char *ptr;
-	uint i;
-	int num_files = 0, own_flag = 0;
-	size_t l;
+  char *ptr;
+  uint i;
+  int num_files = 0, own_flag = 0;
+  size_t l;
 
-	if (max < 1) {
-		Get_file_list_filter = NULL;
+  if (max < 1) {
+    Get_file_list_filter = NULL;
 
-		return 0;
-	}
+    return 0;
+  }
 
-	Assert(list);
+  Assert(list);
 
-	if (!info && (sort == CF_SORT_TIME)) {
-		info = (file_list_info *) vm_malloc(sizeof(file_list_info) * max);
-		own_flag = 1;
-	}
+  if (!info && (sort == CF_SORT_TIME)) {
+    info = (file_list_info *) vm_malloc(sizeof(file_list_info) * max);
+    own_flag = 1;
+  }
 
-	char filespec[MAX_PATH_LEN];
+  char filespec[MAX_PATH_LEN];
 
 #if defined _WIN32
-	cf_create_default_path_string( filespec, sizeof(filespec)-1, pathtype, filter );
+  cf_create_default_path_string( filespec, sizeof(filespec)-1, pathtype, filter );
 
-	_finddata_t find;
-	intptr_t find_handle;
+  _finddata_t find;
+  intptr_t find_handle;
 
-	find_handle = _findfirst( filespec, &find );
-	if (find_handle != -1) {
-		do {
-			if (num_files >= max)
-				break;
+  find_handle = _findfirst( filespec, &find );
+  if (find_handle != -1) {
+    do {
+      if (num_files >= max)
+        break;
 
             if (strcmp(strrchr(filter, '.'), strrchr(find.name,'.')) != 0)
                 continue;
 
-			if ( strlen(find.name) >= MAX_FILENAME_LEN )
-				continue;
+      if ( strlen(find.name) >= MAX_FILENAME_LEN )
+        continue;
 
-			if (!(find.attrib & _A_SUBDIR)) {
-				if ( !Get_file_list_filter || (*Get_file_list_filter)(find.name) ) {
-					ptr = strrchr(find.name, '.');
-					if (ptr)
-						l = ptr - find.name;
-					else
-						l = strlen(find.name);
+      if (!(find.attrib & _A_SUBDIR)) {
+        if ( !Get_file_list_filter || (*Get_file_list_filter)(find.name) ) {
+          ptr = strrchr(find.name, '.');
+          if (ptr)
+            l = ptr - find.name;
+          else
+            l = strlen(find.name);
 
-					list[num_files] = (char *)vm_malloc(l + 1);
-					strncpy(list[num_files], find.name, l);
-					list[num_files][l] = 0;
-					if (info)
-						info[num_files].write_time = find.time_write;
+          list[num_files] = (char *)vm_malloc(l + 1);
+          strncpy(list[num_files], find.name, l);
+          list[num_files][l] = 0;
+          if (info)
+            info[num_files].write_time = find.time_write;
 
-					num_files++;
-				}
-			}
+          num_files++;
+        }
+      }
 
-		} while (!_findnext(find_handle, &find));
+    } while (!_findnext(find_handle, &find));
 
-		_findclose( find_handle );
-	}
+    _findclose( find_handle );
+  }
 
 #elif defined SCP_UNIX
-	cf_create_default_path_string( filespec, sizeof(filespec)-1, pathtype, NULL );
+  cf_create_default_path_string( filespec, sizeof(filespec)-1, pathtype, NULL );
 
-	DIR *dirp;
-	struct dirent *dir;
+  DIR *dirp;
+  struct dirent *dir;
 
-	dirp = opendir (filespec);
-	if ( dirp ) {
-		while ((dir = readdir (dirp)) != NULL)
-		{
-			if (num_files >= max)
-				break;
+  dirp = opendir (filespec);
+  if ( dirp ) {
+    while ((dir = readdir (dirp)) != NULL)
+    {
+      if (num_files >= max)
+        break;
 
-			if ( strlen(dir->d_name) >= MAX_FILENAME_LEN ) {
-				continue;
-			}
+      if ( strlen(dir->d_name) >= MAX_FILENAME_LEN ) {
+        continue;
+      }
 
-			if (fnmatch(filter, dir->d_name, 0) != 0)
-				continue;
+      if (fnmatch(filter, dir->d_name, 0) != 0)
+        continue;
 
-			char fn[MAX_PATH];
-			snprintf(fn, MAX_PATH-1, "%s/%s", filespec, dir->d_name);
-			fn[MAX_PATH-1] = 0;
+      char fn[MAX_PATH];
+      snprintf(fn, MAX_PATH-1, "%s/%s", filespec, dir->d_name);
+      fn[MAX_PATH-1] = 0;
 
-			struct stat buf;
-			if (stat(fn, &buf) == -1) {
-				continue;
-			}
+      struct stat buf;
+      if (stat(fn, &buf) == -1) {
+        continue;
+      }
 
-			if (!S_ISREG(buf.st_mode)) {
-				continue;
-			}
+      if (!S_ISREG(buf.st_mode)) {
+        continue;
+      }
 
-			if ( !Get_file_list_filter || (*Get_file_list_filter)(dir->d_name) ) {
-				ptr = strrchr(dir->d_name, '.');
-				if (ptr)
-					l = ptr - dir->d_name;
-				else
-					l = strlen(dir->d_name);
+      if ( !Get_file_list_filter || (*Get_file_list_filter)(dir->d_name) ) {
+        ptr = strrchr(dir->d_name, '.');
+        if (ptr)
+          l = ptr - dir->d_name;
+        else
+          l = strlen(dir->d_name);
 
-				list[num_files] = (char *)vm_malloc(l + 1);
-				strncpy(list[num_files], dir->d_name, l);
-				list[num_files][l] = 0;
-				if (info)
-					info[num_files].write_time = buf.st_mtime;
+        list[num_files] = (char *)vm_malloc(l + 1);
+        strncpy(list[num_files], dir->d_name, l);
+        list[num_files][l] = 0;
+        if (info)
+          info[num_files].write_time = buf.st_mtime;
 
-				num_files++;
-			}
-		}
+        num_files++;
+      }
+    }
 
-		closedir(dirp);
-	}
+    closedir(dirp);
+  }
 #endif
 
-	bool skip_packfiles = false;
-	if ((pathtype == CF_TYPE_PLAYERS) || (pathtype == CF_TYPE_SINGLE_PLAYERS) || (pathtype == CF_TYPE_MULTI_PLAYERS)) {
-		skip_packfiles = true;
-	}
-	else if (Get_file_list_child != NULL) {
-		skip_packfiles = true;
-	}
+  bool skip_packfiles = false;
+  if ((pathtype == CF_TYPE_PLAYERS) || (pathtype == CF_TYPE_SINGLE_PLAYERS) || (pathtype == CF_TYPE_MULTI_PLAYERS)) {
+    skip_packfiles = true;
+  }
+  else if (Get_file_list_child != NULL) {
+    skip_packfiles = true;
+  }
 
-	// Search all the packfiles and CD.
-	if ( !skip_packfiles)	{
-		for (i=0; i<Num_files; i++ )	{
-			cf_file * f = cf_get_file(i);
+  // Search all the packfiles and CD.
+  if ( !skip_packfiles)  {
+    for (i=0; i<Num_files; i++ )  {
+      cf_file * f = cf_get_file(i);
 
-			// only search paths we're supposed to...
-			if ( (pathtype != CF_TYPE_ANY) && (pathtype != f->pathtype_index)  )	{
-				continue;
-			}
+      // only search paths we're supposed to...
+      if ( (pathtype != CF_TYPE_ANY) && (pathtype != f->pathtype_index)  )  {
+        continue;
+      }
 
-			if (num_files >= max)
-				break;
-			
-			if ( !cf_matches_spec( filter,f->name_ext))	{
-				continue;
-			}
+      if (num_files >= max)
+        break;
+      
+      if ( !cf_matches_spec( filter,f->name_ext))  {
+        continue;
+      }
 
-			if ( cf_file_already_in_list(num_files,list,f->name_ext))	{
-				continue;
-			}
+      if ( cf_file_already_in_list(num_files,list,f->name_ext))  {
+        continue;
+      }
 
-			if (Skip_packfile_search && f->pack_offset != 0) {
-				// If the packfile skip flag is set we skip files in VPs but still search in directories
-				continue;
-			}
+      if (Skip_packfile_search && f->pack_offset != 0) {
+        // If the packfile skip flag is set we skip files in VPs but still search in directories
+        continue;
+      }
 
-			if ( !Get_file_list_filter || (*Get_file_list_filter)(f->name_ext) ) {
+      if ( !Get_file_list_filter || (*Get_file_list_filter)(f->name_ext) ) {
 
-				//mprintf(( "Found '%s' in root %d path %d\n", f->name_ext, f->root_index, f->pathtype_index ));
+        //mprintf(( "Found '%s' in root %d path %d\n", f->name_ext, f->root_index, f->pathtype_index ));
 
-					ptr = strrchr(f->name_ext, '.');
-					if (ptr)
-						l = ptr - f->name_ext;
-					else
-						l = strlen(f->name_ext);
+          ptr = strrchr(f->name_ext, '.');
+          if (ptr)
+            l = ptr - f->name_ext;
+          else
+            l = strlen(f->name_ext);
 
-					list[num_files] = (char *)vm_malloc(l + 1);
-					strncpy(list[num_files], f->name_ext, l);
-					list[num_files][l] = 0;
+          list[num_files] = (char *)vm_malloc(l + 1);
+          strncpy(list[num_files], f->name_ext, l);
+          list[num_files][l] = 0;
 
-				if (info)	{
-					info[num_files].write_time = f->write_time;
-				}
+        if (info)  {
+          info[num_files].write_time = f->write_time;
+        }
 
-				num_files++;
-			}
+        num_files++;
+      }
 
-		}
-	}
+    }
+  }
 
 
-	if (sort != CF_SORT_NONE)	{
-		cf_sort_filenames( num_files, list, sort, info );
-	}
+  if (sort != CF_SORT_NONE)  {
+    cf_sort_filenames( num_files, list, sort, info );
+  }
 
-	if (own_flag)	{
-		vm_free(info);
-	}
+  if (own_flag)  {
+    vm_free(info);
+  }
 
-	Get_file_list_filter = NULL;
+  Get_file_list_filter = NULL;
 
-	return num_files;
+  return num_files;
 }
 
 int cf_file_already_in_list_preallocated( int num_files, char arr[][MAX_FILENAME_LEN], const char *filename )
 {
-	int i;
+  int i;
 
-	char name_no_extension[MAX_PATH_LEN];
+  char name_no_extension[MAX_PATH_LEN];
 
-	strcpy_s(name_no_extension, filename );
-	char *p = strrchr( name_no_extension, '.' );
-	if ( p ) *p = 0;
+  strcpy_s(name_no_extension, filename );
+  char *p = strrchr( name_no_extension, '.' );
+  if ( p ) *p = 0;
 
-	for (i=0; i<num_files; i++ )	{
-		if ( !stricmp(arr[i], name_no_extension ) )	{
-			// Match found!
-			return 1;
-		}
-	}
-	// Not found
-	return 0;
+  for (i=0; i<num_files; i++ )  {
+    if ( !stricmp(arr[i], name_no_extension ) )  {
+      // Match found!
+      return 1;
+    }
+  }
+  // Not found
+  return 0;
 }
 
 // An alternative cf_get_file_list(), fixed array version.
@@ -1854,192 +1854,192 @@ int cf_file_already_in_list_preallocated( int num_files, char arr[][MAX_FILENAME
 // See above descriptions of cf_get_file_list() for more information about how it all works.
 int cf_get_file_list_preallocated( int max, char arr[][MAX_FILENAME_LEN], char **list, int pathtype, const char *filter, int sort, file_list_info *info )
 {
-	int num_files = 0, own_flag = 0;
+  int num_files = 0, own_flag = 0;
 
-	if (max < 1) {
-		Get_file_list_filter = NULL;
+  if (max < 1) {
+    Get_file_list_filter = NULL;
 
-		return 0;
-	}
+    return 0;
+  }
 
-	if (list) {
-		for (int i=0; i<max; i++)	{
-			list[i] = arr[i];
-		}
-	} else {
-		sort = CF_SORT_NONE;  // sorting of array directly not supported.  Sorting done on list only
-	}
+  if (list) {
+    for (int i=0; i<max; i++)  {
+      list[i] = arr[i];
+    }
+  } else {
+    sort = CF_SORT_NONE;  // sorting of array directly not supported.  Sorting done on list only
+  }
 
-	if (!info && (sort == CF_SORT_TIME)) {
-		info = (file_list_info *) vm_malloc(sizeof(file_list_info) * max);
+  if (!info && (sort == CF_SORT_TIME)) {
+    info = (file_list_info *) vm_malloc(sizeof(file_list_info) * max);
 
-		if ( info )
-			own_flag = 1;
-	}
+    if ( info )
+      own_flag = 1;
+  }
 
-	char filespec[MAX_PATH_LEN];
+  char filespec[MAX_PATH_LEN];
 
-	// Search the default directories
+  // Search the default directories
 #if defined _WIN32
-	cf_create_default_path_string( filespec, sizeof(filespec)-1, pathtype, filter );
+  cf_create_default_path_string( filespec, sizeof(filespec)-1, pathtype, filter );
 
-	intptr_t find_handle;
-	_finddata_t find;
-	
-	find_handle = _findfirst( filespec, &find );
-	if (find_handle != -1) {
-		do {
-			if (num_files >= max)			
-				break;
+  intptr_t find_handle;
+  _finddata_t find;
+  
+  find_handle = _findfirst( filespec, &find );
+  if (find_handle != -1) {
+    do {
+      if (num_files >= max)      
+        break;
 
-			if (!(find.attrib & _A_SUBDIR)) {
+      if (!(find.attrib & _A_SUBDIR)) {
             
                 if (strcmp(strstr(filter, "."), strstr(find.name,".")) != 0)
                     continue;
 
-				if ( strlen(find.name) >= MAX_FILENAME_LEN )
-					continue;
+        if ( strlen(find.name) >= MAX_FILENAME_LEN )
+          continue;
 
-				if ( !Get_file_list_filter || (*Get_file_list_filter)(find.name) ) {
+        if ( !Get_file_list_filter || (*Get_file_list_filter)(find.name) ) {
 
-					strncpy(arr[num_files], find.name, MAX_FILENAME_LEN - 1 );
-					char *ptr = strrchr(arr[num_files], '.');
-					if ( ptr ) {
-						*ptr = 0;
-					}
+          strncpy(arr[num_files], find.name, MAX_FILENAME_LEN - 1 );
+          char *ptr = strrchr(arr[num_files], '.');
+          if ( ptr ) {
+            *ptr = 0;
+          }
 
-					if (info)	{
-						info[num_files].write_time = find.time_write;
-					}
+          if (info)  {
+            info[num_files].write_time = find.time_write;
+          }
 
-					num_files++;
-				}
-			}
+          num_files++;
+        }
+      }
 
-		} while (!_findnext(find_handle, &find));
+    } while (!_findnext(find_handle, &find));
 
-		_findclose( find_handle );
-	}
+    _findclose( find_handle );
+  }
 
 #elif defined SCP_UNIX
-	cf_create_default_path_string( filespec, sizeof(filespec)-1, pathtype, NULL );
+  cf_create_default_path_string( filespec, sizeof(filespec)-1, pathtype, NULL );
 
-	DIR *dirp;
-	struct dirent *dir;
+  DIR *dirp;
+  struct dirent *dir;
 
-	dirp = opendir (filespec);
-	if ( dirp ) {
-		while ((dir = readdir (dirp)) != NULL)
-		{
-			if (num_files >= max)
-				break;
+  dirp = opendir (filespec);
+  if ( dirp ) {
+    while ((dir = readdir (dirp)) != NULL)
+    {
+      if (num_files >= max)
+        break;
 
-			if (fnmatch(filter, dir->d_name, 0) != 0)
-				continue;
+      if (fnmatch(filter, dir->d_name, 0) != 0)
+        continue;
 
-			char fn[MAX_PATH];
-			snprintf(fn, MAX_PATH-1, "%s/%s", filespec, dir->d_name);
-			fn[MAX_PATH-1] = 0;
+      char fn[MAX_PATH];
+      snprintf(fn, MAX_PATH-1, "%s/%s", filespec, dir->d_name);
+      fn[MAX_PATH-1] = 0;
 
-			struct stat buf;
-			if (stat(fn, &buf) == -1) {
-				continue;
-			}
+      struct stat buf;
+      if (stat(fn, &buf) == -1) {
+        continue;
+      }
 
-			if (!S_ISREG(buf.st_mode)) {
-				continue;
-			}
+      if (!S_ISREG(buf.st_mode)) {
+        continue;
+      }
 
-			if ( strlen(dir->d_name) >= MAX_FILENAME_LEN ) {
-				continue;
-			}
+      if ( strlen(dir->d_name) >= MAX_FILENAME_LEN ) {
+        continue;
+      }
 
-			if ( !Get_file_list_filter || (*Get_file_list_filter)(dir->d_name) ) {
+      if ( !Get_file_list_filter || (*Get_file_list_filter)(dir->d_name) ) {
 
-				strncpy(arr[num_files], dir->d_name, MAX_FILENAME_LEN - 1 );
-				char *ptr = strrchr(arr[num_files], '.');
-				if ( ptr ) {
-					*ptr = 0;
-				}
+        strncpy(arr[num_files], dir->d_name, MAX_FILENAME_LEN - 1 );
+        char *ptr = strrchr(arr[num_files], '.');
+        if ( ptr ) {
+          *ptr = 0;
+        }
 
-				if (info)	{
-					info[num_files].write_time = buf.st_mtime;
-				}
+        if (info)  {
+          info[num_files].write_time = buf.st_mtime;
+        }
 
-				num_files++;
-			}
-		}
-		closedir(dirp);
-	}
+        num_files++;
+      }
+    }
+    closedir(dirp);
+  }
 #endif
 
-	bool skip_packfiles = false;
-	if ((pathtype == CF_TYPE_PLAYERS) || (pathtype == CF_TYPE_SINGLE_PLAYERS) || (pathtype == CF_TYPE_MULTI_PLAYERS)) {
-		skip_packfiles = true;
-	}
-	else if (Get_file_list_child != NULL) {
-		skip_packfiles = true;
-	}
+  bool skip_packfiles = false;
+  if ((pathtype == CF_TYPE_PLAYERS) || (pathtype == CF_TYPE_SINGLE_PLAYERS) || (pathtype == CF_TYPE_MULTI_PLAYERS)) {
+    skip_packfiles = true;
+  }
+  else if (Get_file_list_child != NULL) {
+    skip_packfiles = true;
+  }
 
-	// Search all the packfiles and CD.
-	if (!skip_packfiles) {
-		for (uint i=0; i<Num_files; i++ )	{
-			cf_file * f = cf_get_file(i);
+  // Search all the packfiles and CD.
+  if (!skip_packfiles) {
+    for (uint i=0; i<Num_files; i++ )  {
+      cf_file * f = cf_get_file(i);
 
-			// only search paths we're supposed to...
-			if ( (pathtype != CF_TYPE_ANY) && (pathtype != f->pathtype_index)  )	{
-				continue;
-			}
+      // only search paths we're supposed to...
+      if ( (pathtype != CF_TYPE_ANY) && (pathtype != f->pathtype_index)  )  {
+        continue;
+      }
 
-			if (num_files >= max)
-						
-				break;
+      if (num_files >= max)
+            
+        break;
 
-			if ( !cf_matches_spec( filter,f->name_ext))	{
-				continue;
-			}
+      if ( !cf_matches_spec( filter,f->name_ext))  {
+        continue;
+      }
 
-			if ( cf_file_already_in_list_preallocated( num_files, arr, f->name_ext ))	{
-				continue;
-			}
+      if ( cf_file_already_in_list_preallocated( num_files, arr, f->name_ext ))  {
+        continue;
+      }
 
-			if (Skip_packfile_search && f->pack_offset != 0) {
-				// If the packfile skip flag is set we skip files in VPs but still search in directories
-				continue;
-			}
+      if (Skip_packfile_search && f->pack_offset != 0) {
+        // If the packfile skip flag is set we skip files in VPs but still search in directories
+        continue;
+      }
 
-			if ( !Get_file_list_filter || (*Get_file_list_filter)(f->name_ext) ) {
+      if ( !Get_file_list_filter || (*Get_file_list_filter)(f->name_ext) ) {
 
-				//mprintf(( "Found '%s' in root %d path %d\n", f->name_ext, f->root_index, f->pathtype_index ));
+        //mprintf(( "Found '%s' in root %d path %d\n", f->name_ext, f->root_index, f->pathtype_index ));
 
-				strncpy(arr[num_files], f->name_ext, MAX_FILENAME_LEN - 1 );
-				char *ptr = strrchr(arr[num_files], '.');
-				if ( ptr ) {
-					*ptr = 0;
-				}
+        strncpy(arr[num_files], f->name_ext, MAX_FILENAME_LEN - 1 );
+        char *ptr = strrchr(arr[num_files], '.');
+        if ( ptr ) {
+          *ptr = 0;
+        }
 
-				if (info)	{
-					info[num_files].write_time = f->write_time;
-				}
+        if (info)  {
+          info[num_files].write_time = f->write_time;
+        }
 
-				num_files++;
-			}
+        num_files++;
+      }
 
-		}
-	}
+    }
+  }
 
-	if (sort != CF_SORT_NONE) {
-		Assert(list);
-		cf_sort_filenames( num_files, list, sort, info );
-	}
+  if (sort != CF_SORT_NONE) {
+    Assert(list);
+    cf_sort_filenames( num_files, list, sort, info );
+  }
 
-	if (own_flag)	{
-		vm_free(info);
-	}
+  if (own_flag)  {
+    vm_free(info);
+  }
 
-	Get_file_list_filter = NULL;
+  Get_file_list_filter = NULL;
 
-	return num_files;
+  return num_files;
 }
 
 // Returns the default storage path for files given a 
@@ -2048,71 +2048,71 @@ int cf_get_file_list_preallocated( int max, char arr[][MAX_FILENAME_LEN], char *
 // If filename isn't null it will also tack the filename
 // on the end, creating a completely valid filename.
 // Input:   pathtype  - CF_TYPE_??
-//			path_max  - Maximum characters in the path
+//      path_max  - Maximum characters in the path
 //          filename  - optional, if set, tacks the filename onto end of path.
 // Output:  path      - Fully qualified pathname.
 //Returns 0 if the result would be too long (invalid result)
 int cf_create_default_path_string(char *path, uint path_max, int pathtype, const char *filename, bool localize )
 {
 #ifdef SCP_UNIX
-	if ( filename && strpbrk(filename,"/")  ) {
+  if ( filename && strpbrk(filename,"/")  ) {
 #else
-	if ( filename && strpbrk(filename,"/\\:")  ) {
+  if ( filename && strpbrk(filename,"/\\:")  ) {
 #endif
-		// Already has full path
-		strncpy( path, filename, path_max );
+    // Already has full path
+    strncpy( path, filename, path_max );
 
-	} else {
-		cf_root *root = cf_get_root(0);
+  } else {
+    cf_root *root = cf_get_root(0);
 
-		if (!root) {
-			Assert( filename != NULL );
-			strncpy(path, filename, path_max);
-			return 1;
-		}
+    if (!root) {
+      Assert( filename != NULL );
+      strncpy(path, filename, path_max);
+      return 1;
+    }
 
-		Assert(CF_TYPE_SPECIFIED(pathtype));
+    Assert(CF_TYPE_SPECIFIED(pathtype));
 
-		// force a specific directory to search for player files
-		if ( (pathtype == CF_TYPE_PLAYERS) || (pathtype == CF_TYPE_SINGLE_PLAYERS) || (pathtype == CF_TYPE_MULTI_PLAYERS) ) {
-			strncpy(path, Pilot_file_path.c_str(), path_max);
-		} else {
-			strncpy(path, root->path, path_max);
-		}
+    // force a specific directory to search for player files
+    if ( (pathtype == CF_TYPE_PLAYERS) || (pathtype == CF_TYPE_SINGLE_PLAYERS) || (pathtype == CF_TYPE_MULTI_PLAYERS) ) {
+      strncpy(path, Pilot_file_path.c_str(), path_max);
+    } else {
+      strncpy(path, root->path, path_max);
+    }
 
-		strcat_s(path, path_max, Pathtypes[pathtype].path);
+    strcat_s(path, path_max, Pathtypes[pathtype].path);
 
-		// Don't add slash for root directory
-		if (Pathtypes[pathtype].path[0] != '\0') {
-			if ( path[strlen(path)-1] != DIR_SEPARATOR_CHAR ) {
-				strcat_s(path, path_max, DIR_SEPARATOR_STR);
-			}
-		}
+    // Don't add slash for root directory
+    if (Pathtypes[pathtype].path[0] != '\0') {
+      if ( path[strlen(path)-1] != DIR_SEPARATOR_CHAR ) {
+        strcat_s(path, path_max, DIR_SEPARATOR_STR);
+      }
+    }
 
-		// add filename
-		if (filename) {
-			strcat_s(path, path_max, filename);
+    // add filename
+    if (filename) {
+      strcat_s(path, path_max, filename);
 
-			// localize filename
-			if (localize) {
-				// create copy of path
-				char path_tmp[MAX_PATH_LEN] = { 0 };
-				strncpy( path_tmp, path, MAX_PATH_LEN - 1 );
+      // localize filename
+      if (localize) {
+        // create copy of path
+        char path_tmp[MAX_PATH_LEN] = { 0 };
+        strncpy( path_tmp, path, MAX_PATH_LEN - 1 );
 
-				// localize the path
-				if(lcl_add_dir_to_path_with_filename(path_tmp, MAX_PATH_LEN - 1)) {
-					// verify localized path
-					FILE *fp = fopen(path, "rb");
-					if (fp) {
-						fclose(fp);
-						return 1;
-					}
-				}
-			}
-		}
-	}
+        // localize the path
+        if(lcl_add_dir_to_path_with_filename(path_tmp, MAX_PATH_LEN - 1)) {
+          // verify localized path
+          FILE *fp = fopen(path, "rb");
+          if (fp) {
+            fclose(fp);
+            return 1;
+          }
+        }
+      }
+    }
+  }
 
-	return 1;
+  return 1;
 }
 
 // Returns the default storage path for files given a 
@@ -2127,92 +2127,92 @@ int cf_create_default_path_string(char *path, uint path_max, int pathtype, const
 int cf_create_default_path_string( SCP_string &path, int pathtype, const char *filename, bool localize )
 {
 #ifdef SCP_UNIX
-	if ( filename && strpbrk(filename,"/")  ) {
+  if ( filename && strpbrk(filename,"/")  ) {
 #else
-	if ( filename && strpbrk(filename,"/\\:")  ) {
+  if ( filename && strpbrk(filename,"/\\:")  ) {
 #endif
-		// Already has full path
-		path.assign(filename);
+    // Already has full path
+    path.assign(filename);
 
-	} else {
-		cf_root *root = cf_get_root(0);
+  } else {
+    cf_root *root = cf_get_root(0);
 
-		if (!root) {
-			Assert( filename != NULL );
-			path.assign(filename);
-			return 1;
-		}
+    if (!root) {
+      Assert( filename != NULL );
+      path.assign(filename);
+      return 1;
+    }
 
-		Assert(CF_TYPE_SPECIFIED(pathtype));
-		std::ostringstream s_path;
+    Assert(CF_TYPE_SPECIFIED(pathtype));
+    std::ostringstream s_path;
 
-		// force a specific directory to search for player files
-		if ( (pathtype == CF_TYPE_PLAYERS) || (pathtype == CF_TYPE_SINGLE_PLAYERS) || (pathtype == CF_TYPE_MULTI_PLAYERS) ) {
-			s_path << Pilot_file_path;
-		} else {
-			s_path << root->path;
-		}
+    // force a specific directory to search for player files
+    if ( (pathtype == CF_TYPE_PLAYERS) || (pathtype == CF_TYPE_SINGLE_PLAYERS) || (pathtype == CF_TYPE_MULTI_PLAYERS) ) {
+      s_path << Pilot_file_path;
+    } else {
+      s_path << root->path;
+    }
 
-		s_path << Pathtypes[pathtype].path;
+    s_path << Pathtypes[pathtype].path;
 
-		// Don't add slash for root directory
-		if (Pathtypes[pathtype].path[0] != '\0') {
-			if ( *(s_path.str().rbegin()) != DIR_SEPARATOR_CHAR ) {
-				s_path << DIR_SEPARATOR_STR;
-			}
-		//	if ( path[strlen(path)-1] != DIR_SEPARATOR_CHAR ) {
-		//		strcat_s(path, path_max, DIR_SEPARATOR_STR);
-		//	}
-		}
+    // Don't add slash for root directory
+    if (Pathtypes[pathtype].path[0] != '\0') {
+      if ( *(s_path.str().rbegin()) != DIR_SEPARATOR_CHAR ) {
+        s_path << DIR_SEPARATOR_STR;
+      }
+    //  if ( path[strlen(path)-1] != DIR_SEPARATOR_CHAR ) {
+    //    strcat_s(path, path_max, DIR_SEPARATOR_STR);
+    //  }
+    }
 
-		// add filename
-		if (filename) {
-			s_path << filename;
-		}
+    // add filename
+    if (filename) {
+      s_path << filename;
+    }
 
-		path = s_path.str().c_str();
-	}
+    path = s_path.str().c_str();
+  }
 
-	return 1;
+  return 1;
 }
 
 void cfile_spew_pack_file_crcs()
 {
-	int i;
-	char datetime[45];
-	uint chksum = 0;
-	time_t my_time;
-	
-	FILE *out = fopen(os_get_config_path("vp_crcs.txt").c_str(), "w");
+  int i;
+  char datetime[45];
+  uint chksum = 0;
+  time_t my_time;
+  
+  FILE *out = fopen(os_get_config_path("vp_crcs.txt").c_str(), "w");
 
-	if (out == NULL) {
-		Int3();
-		return;
-	}
+  if (out == NULL) {
+    Int3();
+    return;
+  }
 
-	my_time = time(NULL);
+  my_time = time(NULL);
 
-	memset( datetime, 0, sizeof(datetime) );
-	snprintf(datetime, sizeof(datetime)-1, "%s", ctime(&my_time));
-	// ctime() adds a newline char, so we have to strip it off
-	datetime[strlen(datetime)-1] = '\0';
+  memset( datetime, 0, sizeof(datetime) );
+  snprintf(datetime, sizeof(datetime)-1, "%s", ctime(&my_time));
+  // ctime() adds a newline char, so we have to strip it off
+  datetime[strlen(datetime)-1] = '\0';
 
-	fprintf(out, "Pack file CRC log (%s) ... \n", datetime);
-	fprintf(out, "-------------------------------------------------------------------------------\n");
+  fprintf(out, "Pack file CRC log (%s) ... \n", datetime);
+  fprintf(out, "-------------------------------------------------------------------------------\n");
 
-	for (i = 0; i < Num_roots; i++) {
-		cf_root *cur_root = cf_get_root(i);
+  for (i = 0; i < Num_roots; i++) {
+    cf_root *cur_root = cf_get_root(i);
 
-		if (cur_root->roottype != CF_ROOTTYPE_PACK)
-			continue;
+    if (cur_root->roottype != CF_ROOTTYPE_PACK)
+      continue;
 
-		chksum = 0;
-		cf_chksum_pack(cur_root->path, &chksum, true);
+    chksum = 0;
+    cf_chksum_pack(cur_root->path, &chksum, true);
 
-		fprintf(out, "  %s  --  0x%x\n", cur_root->path, chksum);
-	}
+    fprintf(out, "  %s  --  0x%x\n", cur_root->path, chksum);
+  }
 
-	fprintf(out, "-------------------------------------------------------------------------------\n");
+  fprintf(out, "-------------------------------------------------------------------------------\n");
 
-	fclose(out);
+  fclose(out);
 }

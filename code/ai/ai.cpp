@@ -29,18 +29,18 @@ ai_info *Player_ai;
  */
 int ai_get_slot(int shipnum)
 {
-	int	i;
+  int  i;
 
-	for (i=0; i<MAX_AI_INFO ; i++)
-		if (Ai_info[i].shipnum == -1)	{
-			Ai_info[i].shipnum = shipnum;
-			return i;
-		}
+  for (i=0; i<MAX_AI_INFO ; i++)
+    if (Ai_info[i].shipnum == -1)  {
+      Ai_info[i].shipnum = shipnum;
+      return i;
+    }
 
-	Warning( LOCATION, "Couldn't get AI slot" );
-	Int3();
+  Warning( LOCATION, "Couldn't get AI slot" );
+  Int3();
 
-	return -1;
+  return -1;
 }
 
 /**
@@ -49,55 +49,55 @@ int ai_get_slot(int shipnum)
  */
 void ai_free_slot(int ai_index)
 {
-	Assert( (ai_index >= 0) && (ai_index < MAX_AI_INFO) );
+  Assert( (ai_index >= 0) && (ai_index < MAX_AI_INFO) );
 
-	Ai_info[ai_index].shipnum = -1;
+  Ai_info[ai_index].shipnum = -1;
 }
 
 int get_wingnum(int objnum)
 {
-	int	shipnum, ai_index;
+  int  shipnum, ai_index;
 
-	shipnum = Objects[objnum].instance;
+  shipnum = Objects[objnum].instance;
 
-	ai_index = Ships[shipnum].ai_index;
+  ai_index = Ships[shipnum].ai_index;
 
-	return Ai_info[ai_index].wing;
+  return Ai_info[ai_index].wing;
 }
 
 void set_wingnum(int objnum, int wingnum)
 {
-	int	shipnum, ai_index;
+  int  shipnum, ai_index;
 
-	Assert(Objects[objnum].type == OBJ_SHIP);
+  Assert(Objects[objnum].type == OBJ_SHIP);
 
-	shipnum = Objects[objnum].instance;
+  shipnum = Objects[objnum].instance;
 
-	Assert((shipnum >= 0) && (shipnum < MAX_SHIPS));
+  Assert((shipnum >= 0) && (shipnum < MAX_SHIPS));
 
-	ai_index = Ships[shipnum].ai_index;
+  ai_index = Ships[shipnum].ai_index;
 
-	Assert( (ai_index >= 0) && (ai_index < MAX_AI_INFO) );
+  Assert( (ai_index >= 0) && (ai_index < MAX_AI_INFO) );
 
-	Ai_info[ai_index].wing = wingnum;
+  Ai_info[ai_index].wing = wingnum;
 }
 
 char *ai_get_goal_target_name(const char *name, int *index)
 {
-	Assert(name != NULL);
-	Assert(index != NULL);
-	int i;
+  Assert(name != NULL);
+  Assert(index != NULL);
+  int i;
 
-	for (i=0; i < Total_goal_target_names; i++)
-		if (!stricmp(name, Goal_target_names[i])) {
-			*index = i;
-			return Goal_target_names[i];
-		}
+  for (i=0; i < Total_goal_target_names; i++)
+    if (!stricmp(name, Goal_target_names[i])) {
+      *index = i;
+      return Goal_target_names[i];
+    }
 
-	Assert(Total_goal_target_names < MAX_GOAL_TARGET_NAMES);
-	Assertion(strlen(name) <= NAME_LENGTH - 1, "Goal target name %s is too long. Needs to be 31 characters or less.", name);
-	i = Total_goal_target_names++;
-	strcpy_s(Goal_target_names[i], name);
-	*index = i;
-	return Goal_target_names[i];
+  Assert(Total_goal_target_names < MAX_GOAL_TARGET_NAMES);
+  Assertion(strlen(name) <= NAME_LENGTH - 1, "Goal target name %s is too long. Needs to be 31 characters or less.", name);
+  i = Total_goal_target_names++;
+  strcpy_s(Goal_target_names[i], name);
+  *index = i;
+  return Goal_target_names[i];
 }

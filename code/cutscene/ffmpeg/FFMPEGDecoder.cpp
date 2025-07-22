@@ -19,53 +19,53 @@ using namespace cutscene::ffmpeg;
 
 class AVPacketScope
 {
-	AVPacket* _packet;
+  AVPacket* _packet;
  public:
-	explicit AVPacketScope(AVPacket* av_packet)
-		: _packet(av_packet) {
-	}
+  explicit AVPacketScope(AVPacket* av_packet)
+    : _packet(av_packet) {
+  }
 
-	~AVPacketScope() {
-		av_packet_unref(_packet);
-	}
+  ~AVPacketScope() {
+    av_packet_unref(_packet);
+  }
 };
 
 const char* CHECKED_EXTENSIONS[] = {
-	"webm",
-	"mp4",
-	"ogg",
-	"mve"
+  "webm",
+  "mp4",
+  "ogg",
+  "mve"
 };
 
 double getFrameRate(AVStream* stream, AVCodecContext* codecCtx) {
-	auto fps = av_q2d(stream->r_frame_rate);
+  auto fps = av_q2d(stream->r_frame_rate);
 
-	if (fps < 0.000001)
-	{
-		fps = av_q2d(stream->avg_frame_rate);
-	}
+  if (fps < 0.000001)
+  {
+    fps = av_q2d(stream->avg_frame_rate);
+  }
 
-	if (fps < 0.000001)
-	{
-		fps = 1.0 / av_q2d(codecCtx->time_base);
-	}
+  if (fps < 0.000001)
+  {
+    fps = 1.0 / av_q2d(codecCtx->time_base);
+  }
 
-	return fps;
+  return fps;
 }
 
 CodecContextParameters getCodecParameters(AVStream* stream) {
-	CodecContextParameters paras;
+  CodecContextParameters paras;
 
-	paras.width = stream->codecpar->width;
-	paras.height = stream->codecpar->height;
-	paras.pixel_format = (AVPixelFormat)stream->codecpar->format;
+  paras.width = stream->codecpar->width;
+  paras.height = stream->codecpar->height;
+  paras.pixel_format = (AVPixelFormat)stream->codecpar->format;
 
   if (av_channel_layout_copy(&paras.ch_layout, &stream->codecpar->ch_layout) != 0)
   {
      av_channel_layout_default(&paras.ch_layout, 1);
   }
-	paras.sample_rate = stream->codecpar->sample_rate;
-	paras.audio_format = (AVSampleFormat)stream->codecpar->format;
+  paras.sample_rate = stream->codecpar->sample_rate;
+  paras.audio_format = (AVSampleFormat)stream->codecpar->format;
 
     return paras;
 }
@@ -74,7 +74,7 @@ CodecContextParameters getCodecParameters(AVStream* stream) {
 namespace cutscene {
 namespace ffmpeg {
 struct InputStream {
-	std::unique_ptr<FFmpegContext> m_ctx;
+  std::unique_ptr<FFmpegContext> m_ctx;
 };
 
 FFMPEGDecoder::FFMPEGDecoder() {
@@ -85,275 +85,275 @@ FFMPEGDecoder::~FFMPEGDecoder() {
 
 namespace {
 std::unique_ptr<InputStream> openStream(const SCP_string& name) {
-	// Only check the root and movies folders
-	int dirType;
-	if (cf_exists_full(name.c_str(), CF_TYPE_ROOT)) {
-		dirType = CF_TYPE_ROOT;
-	} else if (cf_exists_full(name.c_str(), CF_TYPE_MOVIES)) {
-		dirType = CF_TYPE_MOVIES;
-	} else {
-		return nullptr;
-	}
+  // Only check the root and movies folders
+  int dirType;
+  if (cf_exists_full(name.c_str(), CF_TYPE_ROOT)) {
+    dirType = CF_TYPE_ROOT;
+  } else if (cf_exists_full(name.c_str(), CF_TYPE_MOVIES)) {
+    dirType = CF_TYPE_MOVIES;
+  } else {
+    return nullptr;
+  }
 
-	std::unique_ptr<InputStream> input(new InputStream());
+  std::unique_ptr<InputStream> input(new InputStream());
 
-	try {
-		// Create the FFmpeg context
-		input->m_ctx = FFmpegContext::createContext(name, dirType);
+  try {
+    // Create the FFmpeg context
+    input->m_ctx = FFmpegContext::createContext(name, dirType);
 
-		// This may fail, in that case return null
-		if (!input->m_ctx) {
-			return nullptr;
-		}
-	}
-	catch (const FFmpegException& e) {
-		mprintf(("Error opening %s: %s\n", name.c_str(), e.what()));
-		return nullptr;
-	}
+    // This may fail, in that case return null
+    if (!input->m_ctx) {
+      return nullptr;
+    }
+  }
+  catch (const FFmpegException& e) {
+    mprintf(("Error opening %s: %s\n", name.c_str(), e.what()));
+    return nullptr;
+  }
 
-	return input;
+  return input;
 }
 
 std::unique_ptr<DecoderStatus> initializeStatus(std::unique_ptr<InputStream>& stream) {
-	std::unique_ptr<DecoderStatus> status(new DecoderStatus());
+  std::unique_ptr<DecoderStatus> status(new DecoderStatus());
 
-	auto ctx = stream->m_ctx->ctx();
+  auto ctx = stream->m_ctx->ctx();
 
-	auto videoStream = av_find_best_stream(ctx, AVMEDIA_TYPE_VIDEO, -1, -1, const_cast<const AVCodec**>(&status->videoCodec), 0);
-	if (videoStream < 0) {
-		if (videoStream == AVERROR_STREAM_NOT_FOUND) {
-			mprintf(("FFmpeg: No video stream found in file!\n"));
-		} else if (videoStream == AVERROR_DECODER_NOT_FOUND) {
-			mprintf(("FFmpeg: Codec for video stream could not be found!\n"));
-		} else {
-			mprintf(("FFmpeg: Unknown error while finding video stream!\n"));
-		}
+  auto videoStream = av_find_best_stream(ctx, AVMEDIA_TYPE_VIDEO, -1, -1, const_cast<const AVCodec**>(&status->videoCodec), 0);
+  if (videoStream < 0) {
+    if (videoStream == AVERROR_STREAM_NOT_FOUND) {
+      mprintf(("FFmpeg: No video stream found in file!\n"));
+    } else if (videoStream == AVERROR_DECODER_NOT_FOUND) {
+      mprintf(("FFmpeg: Codec for video stream could not be found!\n"));
+    } else {
+      mprintf(("FFmpeg: Unknown error while finding video stream!\n"));
+    }
 
-		return nullptr;
-	}
+    return nullptr;
+  }
 
-	auto audioStream = av_find_best_stream(ctx, AVMEDIA_TYPE_AUDIO, -1, videoStream, const_cast<const AVCodec**>(&status->audioCodec), 0);
-	if (audioStream < 0) {
-		if (audioStream == AVERROR_STREAM_NOT_FOUND) {
-			mprintf(("FFmpeg: No audio stream found in file!\n"));
-		} else if (videoStream == AVERROR_DECODER_NOT_FOUND) {
-			mprintf(("FFmpeg: Codec for audio stream could not be found!\n"));
-		} else {
-			mprintf(("FFmpeg: Unknown error while finding audio stream!\n"));
-		}
-	}
+  auto audioStream = av_find_best_stream(ctx, AVMEDIA_TYPE_AUDIO, -1, videoStream, const_cast<const AVCodec**>(&status->audioCodec), 0);
+  if (audioStream < 0) {
+    if (audioStream == AVERROR_STREAM_NOT_FOUND) {
+      mprintf(("FFmpeg: No audio stream found in file!\n"));
+    } else if (videoStream == AVERROR_DECODER_NOT_FOUND) {
+      mprintf(("FFmpeg: Codec for audio stream could not be found!\n"));
+    } else {
+      mprintf(("FFmpeg: Unknown error while finding audio stream!\n"));
+    }
+  }
 
-	status->videoStreamIndex = videoStream;
-	status->videoStream = ctx->streams[videoStream];
+  status->videoStreamIndex = videoStream;
+  status->videoStream = ctx->streams[videoStream];
 
-	if (audioStream >= 0) {
-		status->audioStreamIndex = audioStream;
-		status->audioStream = ctx->streams[audioStream];
-	}
+  if (audioStream >= 0) {
+    status->audioStreamIndex = audioStream;
+    status->audioStream = ctx->streams[audioStream];
+  }
 
-	status->videoCodecPars = getCodecParameters(status->videoStream);
+  status->videoCodecPars = getCodecParameters(status->videoStream);
 
-	int err;
+  int err;
 #if LIBAVCODEC_VERSION_INT > AV_VERSION_INT(57, 24, 255)
-	status->videoCodecCtx = avcodec_alloc_context3(status->videoCodec);
+  status->videoCodecCtx = avcodec_alloc_context3(status->videoCodec);
 
-	// Copy codec parameters from input stream to output codec context
-	err = avcodec_parameters_to_context(status->videoCodecCtx, status->videoStream->codecpar);
-	if (err < 0) {
-		char errorStr[512];
-		av_strerror(err, errorStr, sizeof(errorStr));
-		mprintf(("FFMPEG: Failed to copy context parameters! Error: %s\n", errorStr));
-		return nullptr;
-	}
+  // Copy codec parameters from input stream to output codec context
+  err = avcodec_parameters_to_context(status->videoCodecCtx, status->videoStream->codecpar);
+  if (err < 0) {
+    char errorStr[512];
+    av_strerror(err, errorStr, sizeof(errorStr));
+    mprintf(("FFMPEG: Failed to copy context parameters! Error: %s\n", errorStr));
+    return nullptr;
+  }
 #else
-	status->videoCodecCtx = status->videoStream->codec;
+  status->videoCodecCtx = status->videoStream->codec;
 #endif
 
-	err = avcodec_open2(status->videoCodecCtx, status->videoCodec, nullptr);
-	if (err < 0) {
-		char errorStr[512];
-		av_strerror(err, errorStr, sizeof(errorStr));
-		mprintf(("FFMPEG: Failed to open video codec! Error: %s\n", errorStr));
-		return nullptr;
-	}
+  err = avcodec_open2(status->videoCodecCtx, status->videoCodec, nullptr);
+  if (err < 0) {
+    char errorStr[512];
+    av_strerror(err, errorStr, sizeof(errorStr));
+    mprintf(("FFMPEG: Failed to open video codec! Error: %s\n", errorStr));
+    return nullptr;
+  }
 
-	mprintf(("FFmpeg: Using video codec %s (%s).\n", status->videoCodec->long_name ? status->videoCodec->long_name : "<Unknown>",
-		status->videoCodec->name ? status->videoCodec->name : "<Unknown>"));
+  mprintf(("FFmpeg: Using video codec %s (%s).\n", status->videoCodec->long_name ? status->videoCodec->long_name : "<Unknown>",
+    status->videoCodec->name ? status->videoCodec->name : "<Unknown>"));
 
-	// Now initialize audio, if this fails it's not a fatal error
-	if (audioStream >= 0) {
-		status->audioCodecPars = getCodecParameters(status->audioStream);
+  // Now initialize audio, if this fails it's not a fatal error
+  if (audioStream >= 0) {
+    status->audioCodecPars = getCodecParameters(status->audioStream);
 
 #if LIBAVCODEC_VERSION_INT > AV_VERSION_INT(57, 24, 255)
-		status->audioCodecCtx = avcodec_alloc_context3(status->audioCodec);
+    status->audioCodecCtx = avcodec_alloc_context3(status->audioCodec);
 
-		err = avcodec_parameters_to_context(status->audioCodecCtx, status->audioStream->codecpar);
-		if (err < 0) {
-			char errorStr[512];
-			av_strerror(err, errorStr, sizeof(errorStr));
-			mprintf(("FFMPEG: Failed to copy context parameters! Error: %s\n", errorStr));
-			return nullptr;
-		}
+    err = avcodec_parameters_to_context(status->audioCodecCtx, status->audioStream->codecpar);
+    if (err < 0) {
+      char errorStr[512];
+      av_strerror(err, errorStr, sizeof(errorStr));
+      mprintf(("FFMPEG: Failed to copy context parameters! Error: %s\n", errorStr));
+      return nullptr;
+    }
 #else
-		status->audioCodecCtx = status->audioStream->codec;
+    status->audioCodecCtx = status->audioStream->codec;
 #endif
 
-		err = avcodec_open2(status->audioCodecCtx, status->audioCodec, nullptr);
-		if (err < 0) {
-			char errorStr[512];
-			av_strerror(err, errorStr, sizeof(errorStr));
-			mprintf(("FFMPEG: Failed to open audio codec! Error: %s\n", errorStr));
-		}
+    err = avcodec_open2(status->audioCodecCtx, status->audioCodec, nullptr);
+    if (err < 0) {
+      char errorStr[512];
+      av_strerror(err, errorStr, sizeof(errorStr));
+      mprintf(("FFMPEG: Failed to open audio codec! Error: %s\n", errorStr));
+    }
 
-		mprintf(("FFmpeg: Using audio codec %s (%s).\n", status->audioCodec->long_name ? status->audioCodec->long_name : "<Unknown>",
-			status->audioCodec->name ? status->audioCodec->name : "<Unknown>"));
-	}
+    mprintf(("FFmpeg: Using audio codec %s (%s).\n", status->audioCodec->long_name ? status->audioCodec->long_name : "<Unknown>",
+      status->audioCodec->name ? status->audioCodec->name : "<Unknown>"));
+  }
 
-	return status;
+  return status;
 }
 
 std::unique_ptr<InputStream> openInputStream(const SCP_string& name) {
-	// Check a list of extensions we might use
-	// The actual format of the file may be whatever FFmpeg supports
-	for (auto ext : CHECKED_EXTENSIONS) {
-		auto fileName = name + "." + ext;
+  // Check a list of extensions we might use
+  // The actual format of the file may be whatever FFmpeg supports
+  for (auto ext : CHECKED_EXTENSIONS) {
+    auto fileName = name + "." + ext;
 
-		auto input = openStream(fileName);
+    auto input = openStream(fileName);
 
-		if (input) {
-			return input;
-		}
-	}
+    if (input) {
+      return input;
+    }
+  }
 
-	return nullptr;
+  return nullptr;
 }
 }
 
 bool FFMPEGDecoder::initialize(const SCP_string& fileName) {
-	SCP_string movieName = fileName;
-	// First make the file name lower case
-	std::transform(movieName.begin(), movieName.end(), movieName.begin(), ::tolower);
+  SCP_string movieName = fileName;
+  // First make the file name lower case
+  std::transform(movieName.begin(), movieName.end(), movieName.begin(), ::tolower);
 
-	// Then remove the extension
-	size_t dotPos = movieName.find('.');
-	if (dotPos != SCP_string::npos) {
-		movieName.resize(dotPos);
-	}
+  // Then remove the extension
+  size_t dotPos = movieName.find('.');
+  if (dotPos != SCP_string::npos) {
+    movieName.resize(dotPos);
+  }
 
-	// Try to open the input stream
-	auto input = openInputStream(movieName);
-	if (!input) {
-		return false;
-	}
+  // Try to open the input stream
+  auto input = openInputStream(movieName);
+  if (!input) {
+    return false;
+  }
 
-	// We now have a valid input stream, try to find the correct streams
-	auto status = initializeStatus(input);
-	if (!status) {
-		return false;
-	}
+  // We now have a valid input stream, try to find the correct streams
+  auto status = initializeStatus(input);
+  if (!status) {
+    return false;
+  }
 
-	// Buffer ~ 2 seconds of video and audio
-	initializeQueues(static_cast<size_t>(ceil(getFrameRate(status->videoStream, status->videoCodecCtx))) * 2);
+  // Buffer ~ 2 seconds of video and audio
+  initializeQueues(static_cast<size_t>(ceil(getFrameRate(status->videoStream, status->videoCodecCtx))) * 2);
 
-	// We're done, now just put the pointer into this
-	std::swap(m_input, input);
-	std::swap(m_status, status);
-	return true;
+  // We're done, now just put the pointer into this
+  std::swap(m_input, input);
+  std::swap(m_status, status);
+  return true;
 }
 
 MovieProperties FFMPEGDecoder::getProperties() {
-	MovieProperties props;
-	props.size.width = static_cast<size_t>(m_status->videoCodecPars.width);
-	props.size.height = static_cast<size_t>(m_status->videoCodecPars.height);
+  MovieProperties props;
+  props.size.width = static_cast<size_t>(m_status->videoCodecPars.width);
+  props.size.height = static_cast<size_t>(m_status->videoCodecPars.height);
 
-	props.fps = static_cast<float>(getFrameRate(m_status->videoStream, m_status->videoCodecCtx));
+  props.fps = static_cast<float>(getFrameRate(m_status->videoStream, m_status->videoCodecCtx));
 
-	return props;
+  return props;
 }
 
 void FFMPEGDecoder::startDecoding() {
-	std::unique_ptr<VideoDecoder> videoDecoder(new VideoDecoder(m_status.get()));
+  std::unique_ptr<VideoDecoder> videoDecoder(new VideoDecoder(m_status.get()));
 
-	std::unique_ptr<AudioDecoder> audioDecoder;
+  std::unique_ptr<AudioDecoder> audioDecoder;
 
-	if (hasAudio()) {
-		audioDecoder.reset(new AudioDecoder(m_status.get()));
-	}
+  if (hasAudio()) {
+    audioDecoder.reset(new AudioDecoder(m_status.get()));
+  }
 
-	auto ctx = m_input->m_ctx->ctx();
-	AVPacket packet;
-	while (isDecoding()) {
-		auto read_err = av_read_frame(ctx, &packet);
-		AVPacketScope scope(&packet);
+  auto ctx = m_input->m_ctx->ctx();
+  AVPacket packet;
+  while (isDecoding()) {
+    auto read_err = av_read_frame(ctx, &packet);
+    AVPacketScope scope(&packet);
 
-		if (avio_feof(ctx->pb) != 0) {
-			// EOF!!
-			break;
-		} else if (read_err < 0) {
-			if (read_err == AVERROR_EOF) {
-				// Finished reading -> break out of loop
-				break;
-			} else {
-				// Some kind of other error, try to continue reading
-				char errorStr[512];
-				av_strerror(read_err, errorStr, sizeof(errorStr));
-				mprintf(("FFMPEG: Failed to read frame! Error: %s\n", errorStr));
+    if (avio_feof(ctx->pb) != 0) {
+      // EOF!!
+      break;
+    } else if (read_err < 0) {
+      if (read_err == AVERROR_EOF) {
+        // Finished reading -> break out of loop
+        break;
+      } else {
+        // Some kind of other error, try to continue reading
+        char errorStr[512];
+        av_strerror(read_err, errorStr, sizeof(errorStr));
+        mprintf(("FFMPEG: Failed to read frame! Error: %s\n", errorStr));
 
-				// Skip packet
-				continue;
-			}
-		}
+        // Skip packet
+        continue;
+      }
+    }
 
-		if (packet.stream_index == m_status->videoStreamIndex) {
-			videoDecoder->decodePacket(&packet);
+    if (packet.stream_index == m_status->videoStreamIndex) {
+      videoDecoder->decodePacket(&packet);
 
-			VideoFramePtr ptr;
-			while((ptr = videoDecoder->getFrame()) != nullptr) {
-				pushFrameData(std::move(ptr));
-			}
-		} else if (audioDecoder && packet.stream_index == m_status->audioStreamIndex) {
-			audioDecoder->decodePacket(&packet);
+      VideoFramePtr ptr;
+      while((ptr = videoDecoder->getFrame()) != nullptr) {
+        pushFrameData(std::move(ptr));
+      }
+    } else if (audioDecoder && packet.stream_index == m_status->audioStreamIndex) {
+      audioDecoder->decodePacket(&packet);
 
-			AudioFramePtr ptr;
-			while ((ptr = audioDecoder->getFrame()) != nullptr) {
-				pushAudioData(std::move(ptr));
-			}
-		}
-	}
+      AudioFramePtr ptr;
+      while ((ptr = audioDecoder->getFrame()) != nullptr) {
+        pushAudioData(std::move(ptr));
+      }
+    }
+  }
 
-	if (isDecoding()) {
-		// If we are still alive then read the last frames from the decoders
-		videoDecoder->finishDecoding();
-		VideoFramePtr video_ptr;
-		while ((video_ptr = videoDecoder->getFrame()) != nullptr) {
-			pushFrameData(std::move(video_ptr));
-		}
+  if (isDecoding()) {
+    // If we are still alive then read the last frames from the decoders
+    videoDecoder->finishDecoding();
+    VideoFramePtr video_ptr;
+    while ((video_ptr = videoDecoder->getFrame()) != nullptr) {
+      pushFrameData(std::move(video_ptr));
+    }
 
-		if (audioDecoder) {
-			audioDecoder->finishDecoding();
-			AudioFramePtr audio_frame;
-			while ((audio_frame = audioDecoder->getFrame()) != nullptr) {
-				pushAudioData(std::move(audio_frame));
-			}
-		}
-	}
+    if (audioDecoder) {
+      audioDecoder->finishDecoding();
+      AudioFramePtr audio_frame;
+      while ((audio_frame = audioDecoder->getFrame()) != nullptr) {
+        pushAudioData(std::move(audio_frame));
+      }
+    }
+  }
 
-	stopDecoder();
+  stopDecoder();
 }
 
 bool FFMPEGDecoder::hasAudio() {
-	return m_status->audioStreamIndex >= 0;
+  return m_status->audioStreamIndex >= 0;
 }
 
 void FFMPEGDecoder::close() {
-	if (m_status) {
-		m_status = nullptr;
-	}
+  if (m_status) {
+    m_status = nullptr;
+  }
 
-	if (m_input) {
-		// This will delete the InputStream pointer and free all data
-		m_input = nullptr;
-	}
+  if (m_input) {
+    // This will delete the InputStream pointer and free all data
+    m_input = nullptr;
+  }
 }
 }
 }

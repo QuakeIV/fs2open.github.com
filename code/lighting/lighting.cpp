@@ -34,26 +34,26 @@ static int Num_light_levels = 0;
 
 SCP_vector<light*> Static_light;
 
-static int Light_in_shadow = 0;	// If true, this means we're in a shadow
+static int Light_in_shadow = 0;  // If true, this means we're in a shadow
 
 #define LM_BRIGHTEN  0
 #define LM_DARKEN    1
 
-#define MIN_LIGHT 0.03f	// When light drops below this level, ignore it.  Must be non-zero! (1/32)
+#define MIN_LIGHT 0.03f  // When light drops below this level, ignore it.  Must be non-zero! (1/32)
 
 
 static int Lighting_off = 0;
 
 // For lighting values, 0.75 is full intensity
 
-#if 1		// ADAM'S new stuff
-	static int Lighting_mode = LM_BRIGHTEN;
-	#define AMBIENT_LIGHT_DEFAULT		0.15f		//0.10f
-	#define REFLECTIVE_LIGHT_DEFAULT 0.75f		//0.90f
+#if 1    // ADAM'S new stuff
+  static int Lighting_mode = LM_BRIGHTEN;
+  #define AMBIENT_LIGHT_DEFAULT    0.15f    //0.10f
+  #define REFLECTIVE_LIGHT_DEFAULT 0.75f    //0.90f
 #else
-	static int Lighting_mode = LM_DARKEN;
-	#define AMBIENT_LIGHT_DEFAULT		0.75f		//0.10f
-	#define REFLECTIVE_LIGHT_DEFAULT 0.50f		//0.90f
+  static int Lighting_mode = LM_DARKEN;
+  #define AMBIENT_LIGHT_DEFAULT    0.75f    //0.10f
+  #define REFLECTIVE_LIGHT_DEFAULT 0.50f    //0.90f
 #endif
 
 static float Ambient_light = AMBIENT_LIGHT_DEFAULT;
@@ -65,93 +65,93 @@ static void light_filter_reset();
 
 DCF(light,"Changes lighting parameters")
 {
-	SCP_string arg_str;
-	float val_f;
-	bool  val_b;
+  SCP_string arg_str;
+  float val_f;
+  bool  val_b;
 
-	if (dc_optional_string_either("help", "--help")) {
-		dc_printf( "Usage: light keyword\nWhere keyword can be in the following forms:\n" );
-		dc_printf( "light on|off          Turns all lighting on/off\n" );
-		dc_printf( "light default         Resets lighting to all default values\n" );
-		dc_printf( "light ambient X       Where X is the ambient light between 0 and 1.0\n" );
-		dc_printf( "light reflect X       Where X is the material reflectiveness between 0 and 1.0\n" );
-		dc_printf( "light dynamic [bool]  Toggles dynamic lighting on/off\n" );
-		dc_printf( "light mode [light|darken]   Changes the lighting mode.\n" );
-		dc_printf( "   Where 'light' means the global light adds light.\n");
-		dc_printf( "   and 'darken' means the global light subtracts light.\n");
-		return;
-	}
+  if (dc_optional_string_either("help", "--help")) {
+    dc_printf( "Usage: light keyword\nWhere keyword can be in the following forms:\n" );
+    dc_printf( "light on|off          Turns all lighting on/off\n" );
+    dc_printf( "light default         Resets lighting to all default values\n" );
+    dc_printf( "light ambient X       Where X is the ambient light between 0 and 1.0\n" );
+    dc_printf( "light reflect X       Where X is the material reflectiveness between 0 and 1.0\n" );
+    dc_printf( "light dynamic [bool]  Toggles dynamic lighting on/off\n" );
+    dc_printf( "light mode [light|darken]   Changes the lighting mode.\n" );
+    dc_printf( "   Where 'light' means the global light adds light.\n");
+    dc_printf( "   and 'darken' means the global light subtracts light.\n");
+    return;
+  }
 
-	if (dc_optional_string_either("status", "--status") || dc_optional_string_either("?", "--?")) {
-		dc_printf( "Ambient light is set to %.2f\n", Ambient_light );
-		dc_printf( "Reflective light is set to %.2f\n", Reflective_light );
-		dc_printf( "Dynamic lighting is: %s\n", (Lighting_flag?"on":"off") );
-		switch( Lighting_mode ) {
-		case LM_BRIGHTEN:
-			dc_printf( "Lighting mode is: light\n" );
-			break;
-		case LM_DARKEN:
-			dc_printf( "Lighting mode is: darken\n" );
-			break;
-		default:
-			dc_printf( "Lighting mode is: UNKNOWN\n" );
-		}
-		return;
-	}
-	
-	if (dc_optional_string("ambient")) {
-		dc_stuff_float(&val_f);
-		if ((val_f < 0.0f) || (val_f > 1.0f)) {
-			dc_printf(" Error: ambient value must be between 0.0 and 1.0\n");
-		} else {
-			Ambient_light = val_f;
-		}
-	
-	} else if (dc_optional_string("reflect")) {
-		dc_stuff_float(&val_f);
-		if ( (val_f < 0.0f) || (val_f > 1.0f))	{
-			dc_printf(" Error: reflect value mus be between 0.0 and 1.0\n");
-		} else {
-			Reflective_light = val_f;
-		}
-	
-	} else if (dc_optional_string("default")) {
-		Lighting_mode = LM_BRIGHTEN;
-		Ambient_light = AMBIENT_LIGHT_DEFAULT;
-		Reflective_light = REFLECTIVE_LIGHT_DEFAULT;
-		Lighting_flag = 0;
-	
-	} else if (dc_optional_string("mode")) {
-		dc_stuff_string_white(arg_str);
-		if (arg_str == "light") {
-			Lighting_mode = LM_BRIGHTEN;
-	
-		} else if (arg_str == "darken") {
-			Lighting_mode = LM_DARKEN;
-		
-		} else {
-			dc_printf(" Error: unknown light mode: '%s'\n", arg_str.c_str());
-		}
-	
-	} else if (dc_optional_string("dynamic")) {
-		dc_stuff_boolean(&val_b);
-		Lighting_flag = val_b;
+  if (dc_optional_string_either("status", "--status") || dc_optional_string_either("?", "--?")) {
+    dc_printf( "Ambient light is set to %.2f\n", Ambient_light );
+    dc_printf( "Reflective light is set to %.2f\n", Reflective_light );
+    dc_printf( "Dynamic lighting is: %s\n", (Lighting_flag?"on":"off") );
+    switch( Lighting_mode ) {
+    case LM_BRIGHTEN:
+      dc_printf( "Lighting mode is: light\n" );
+      break;
+    case LM_DARKEN:
+      dc_printf( "Lighting mode is: darken\n" );
+      break;
+    default:
+      dc_printf( "Lighting mode is: UNKNOWN\n" );
+    }
+    return;
+  }
+  
+  if (dc_optional_string("ambient")) {
+    dc_stuff_float(&val_f);
+    if ((val_f < 0.0f) || (val_f > 1.0f)) {
+      dc_printf(" Error: ambient value must be between 0.0 and 1.0\n");
+    } else {
+      Ambient_light = val_f;
+    }
+  
+  } else if (dc_optional_string("reflect")) {
+    dc_stuff_float(&val_f);
+    if ( (val_f < 0.0f) || (val_f > 1.0f))  {
+      dc_printf(" Error: reflect value mus be between 0.0 and 1.0\n");
+    } else {
+      Reflective_light = val_f;
+    }
+  
+  } else if (dc_optional_string("default")) {
+    Lighting_mode = LM_BRIGHTEN;
+    Ambient_light = AMBIENT_LIGHT_DEFAULT;
+    Reflective_light = REFLECTIVE_LIGHT_DEFAULT;
+    Lighting_flag = 0;
+  
+  } else if (dc_optional_string("mode")) {
+    dc_stuff_string_white(arg_str);
+    if (arg_str == "light") {
+      Lighting_mode = LM_BRIGHTEN;
+  
+    } else if (arg_str == "darken") {
+      Lighting_mode = LM_DARKEN;
+    
+    } else {
+      dc_printf(" Error: unknown light mode: '%s'\n", arg_str.c_str());
+    }
+  
+  } else if (dc_optional_string("dynamic")) {
+    dc_stuff_boolean(&val_b);
+    Lighting_flag = val_b;
 
-	} else if(dc_maybe_stuff_boolean(&Lighting_off)) {
-		Lighting_off = !Lighting_off;
+  } else if(dc_maybe_stuff_boolean(&Lighting_off)) {
+    Lighting_off = !Lighting_off;
 
-	} else {
-		dc_stuff_string_white(arg_str);
-		dc_printf("Error: Unknown argument '%s'\n", arg_str.c_str());
-	}
+  } else {
+    dc_stuff_string_white(arg_str);
+    dc_printf("Error: Unknown argument '%s'\n", arg_str.c_str());
+  }
 }
 
 void light_reset()
 {
-	Static_light.clear();
+  Static_light.clear();
 
-	Num_lights = 0;
-	light_filter_reset();
+  Num_lights = 0;
+  light_filter_reset();
 }
 extern vec3d Object_position;
 
@@ -162,41 +162,41 @@ extern vec3d Object_position;
  */
 static void light_rotate(light * l)
 {
-	switch( l->type )	{
-	case LT_DIRECTIONAL:
-		// Rotate the light direction into local coodinates
-		
-		vm_vec_rotate(&l->local_vec, &l->vec, &Light_matrix );
-		break;
-	
-	case LT_POINT:	{
-			vec3d tempv;
-			// Rotate the point into local coordinates
-	
-			vm_vec_sub(&tempv, &l->vec, &Light_base );
-			vm_vec_rotate(&l->local_vec, &tempv, &Light_matrix );
-		}
-		break;
-	
-	case LT_TUBE:{
-			vec3d tempv;
+  switch( l->type )  {
+  case LT_DIRECTIONAL:
+    // Rotate the light direction into local coodinates
+    
+    vm_vec_rotate(&l->local_vec, &l->vec, &Light_matrix );
+    break;
+  
+  case LT_POINT:  {
+      vec3d tempv;
+      // Rotate the point into local coordinates
+  
+      vm_vec_sub(&tempv, &l->vec, &Light_base );
+      vm_vec_rotate(&l->local_vec, &tempv, &Light_matrix );
+    }
+    break;
+  
+  case LT_TUBE:{
+      vec3d tempv;
 
-			// Rotate the point into local coordinates
-			vm_vec_sub(&tempv, &l->vec, &Light_base );
-			vm_vec_rotate(&l->local_vec, &tempv, &Light_matrix );
-			
-			// Rotate the point into local coordinates
-			vm_vec_sub(&tempv, &l->vec2, &Light_base );
-			vm_vec_rotate(&l->local_vec2, &tempv, &Light_matrix );
-		}
-		break;
+      // Rotate the point into local coordinates
+      vm_vec_sub(&tempv, &l->vec, &Light_base );
+      vm_vec_rotate(&l->local_vec, &tempv, &Light_matrix );
+      
+      // Rotate the point into local coordinates
+      vm_vec_sub(&tempv, &l->vec2, &Light_base );
+      vm_vec_rotate(&l->local_vec2, &tempv, &Light_matrix );
+    }
+    break;
 
-	case LT_CONE:
-			break;
+  case LT_CONE:
+      break;
 
-	default:
-		Int3();	// Invalid light type
-	}
+  default:
+    Int3();  // Invalid light type
+  }
 }
 
 // Sets the ambient lighting level.
@@ -207,178 +207,178 @@ void light_set_ambient(float ambient_light)
 
 void light_add_directional(const vec3d *dir, float intensity, float r, float g, float b, float spec_r, float spec_g, float spec_b, bool specular)
 {
-	if(!specular){
-		spec_r = r;
-		spec_g = g;
-		spec_b = b;
-	}
-	light * l;
+  if(!specular){
+    spec_r = r;
+    spec_g = g;
+    spec_b = b;
+  }
+  light * l;
 
-	if ( Lighting_off ) return;
+  if ( Lighting_off ) return;
 
-	if ( Num_lights >= MAX_LIGHTS ) return;
+  if ( Num_lights >= MAX_LIGHTS ) return;
 
-	l = &Lights[Num_lights++];
+  l = &Lights[Num_lights++];
 
-	l->type = LT_DIRECTIONAL;
+  l->type = LT_DIRECTIONAL;
 
-	if ( Lighting_mode == LM_BRIGHTEN )	{
-		vm_vec_copy_scale( &l->vec, dir, -1.0f );
-	} else {
-		vm_vec_copy_scale( &l->vec, dir, 1.0f );
-	}
+  if ( Lighting_mode == LM_BRIGHTEN )  {
+    vm_vec_copy_scale( &l->vec, dir, -1.0f );
+  } else {
+    vm_vec_copy_scale( &l->vec, dir, 1.0f );
+  }
 
-	l->r = r;
-	l->g = g;
-	l->b = b;
-	l->spec_r = spec_r;
-	l->spec_g = spec_g;
-	l->spec_b = spec_b;
-	l->intensity = intensity;
-	l->rada = 0.0f;
-	l->radb = 0.0f;
-	l->rada_squared = l->rada*l->rada;
-	l->radb_squared = l->radb*l->radb;
-	l->light_ignore_objnum = -1;
-	l->affected_objnum = -1;
-	l->instance = Num_lights-1;
-		
-	Assert( Num_light_levels <= 1 );
+  l->r = r;
+  l->g = g;
+  l->b = b;
+  l->spec_r = spec_r;
+  l->spec_g = spec_g;
+  l->spec_b = spec_b;
+  l->intensity = intensity;
+  l->rada = 0.0f;
+  l->radb = 0.0f;
+  l->rada_squared = l->rada*l->rada;
+  l->radb_squared = l->radb*l->radb;
+  l->light_ignore_objnum = -1;
+  l->affected_objnum = -1;
+  l->instance = Num_lights-1;
+    
+  Assert( Num_light_levels <= 1 );
 
-	Static_light.push_back(l);
+  Static_light.push_back(l);
 }
 
 
 void light_add_point(const vec3d *pos, float r1, float r2, float intensity, float r, float g, float b, int light_ignore_objnum, float spec_r, float spec_g, float spec_b, bool specular)
 {
-	Assertion( r1 > 0.0f, "Invalid radius r1 specified for light: %f. Radius must be > 0.0f. Examine stack trace to determine culprit.\n", r1 );
-	Assertion( r2 > 0.0f, "Invalid radius r2 specified for light: %f. Radius must be > 0.0f. Examine stack trace to determine culprit.\n", r2 );
+  Assertion( r1 > 0.0f, "Invalid radius r1 specified for light: %f. Radius must be > 0.0f. Examine stack trace to determine culprit.\n", r1 );
+  Assertion( r2 > 0.0f, "Invalid radius r2 specified for light: %f. Radius must be > 0.0f. Examine stack trace to determine culprit.\n", r2 );
 
-	if(!specular){
-		spec_r = r;
-		spec_g = g;
-		spec_b = b;
-	}
+  if(!specular){
+    spec_r = r;
+    spec_g = g;
+    spec_b = b;
+  }
 
-	light * l;
+  light * l;
 
-	if ( Lighting_off ) return;
+  if ( Lighting_off ) return;
 
-	if (!Lighting_flag) return;
+  if (!Lighting_flag) return;
 
-	if ( Num_lights >= MAX_LIGHTS ) {
-		mprintf(( "Out of lights!\n" ));
-		return;
-	}
+  if ( Num_lights >= MAX_LIGHTS ) {
+    mprintf(( "Out of lights!\n" ));
+    return;
+  }
 
-	l = &Lights[Num_lights++];
+  l = &Lights[Num_lights++];
 
-	l->type = LT_POINT;
-	l->vec = *pos;
-	l->r = r;
-	l->g = g;
-	l->b = b;
-	l->spec_r = spec_r;
-	l->spec_g = spec_g;
-	l->spec_b = spec_b;
-	l->intensity = intensity;
-	l->rada = r1;
-	l->radb = r2;
-	l->rada_squared = l->rada*l->rada;
-	l->radb_squared = l->radb*l->radb;
-	l->light_ignore_objnum = light_ignore_objnum;
-	l->affected_objnum = -1;
-	l->instance = Num_lights-1;
+  l->type = LT_POINT;
+  l->vec = *pos;
+  l->r = r;
+  l->g = g;
+  l->b = b;
+  l->spec_r = spec_r;
+  l->spec_g = spec_g;
+  l->spec_b = spec_b;
+  l->intensity = intensity;
+  l->rada = r1;
+  l->radb = r2;
+  l->rada_squared = l->rada*l->rada;
+  l->radb_squared = l->radb*l->radb;
+  l->light_ignore_objnum = light_ignore_objnum;
+  l->affected_objnum = -1;
+  l->instance = Num_lights-1;
 
-	Assert( Num_light_levels <= 1 );
+  Assert( Num_light_levels <= 1 );
 }
 
 void light_add_point_unique(const vec3d *pos, float r1, float r2, float intensity, float r, float g, float b, int affected_objnum, float spec_r, float spec_g, float spec_b, bool specular)
 {
-	Assertion(r1 > 0.0f, "Invalid radius r1 specified for light: %f. Radius must be > 0.0f. Examine stack trace to determine culprit.\n", r1);
-	Assertion(r2 > 0.0f, "Invalid radius r2 specified for light: %f. Radius must be > 0.0f. Examine stack trace to determine culprit.\n", r2);
+  Assertion(r1 > 0.0f, "Invalid radius r1 specified for light: %f. Radius must be > 0.0f. Examine stack trace to determine culprit.\n", r1);
+  Assertion(r2 > 0.0f, "Invalid radius r2 specified for light: %f. Radius must be > 0.0f. Examine stack trace to determine culprit.\n", r2);
 
-	if(!specular){
-		spec_r = r;
-		spec_g = g;
-		spec_b = b;
-	}
-	light * l;
+  if(!specular){
+    spec_r = r;
+    spec_g = g;
+    spec_b = b;
+  }
+  light * l;
 
-	if ( Lighting_off ) return;
+  if ( Lighting_off ) return;
 
-	if (!Lighting_flag) return;
+  if (!Lighting_flag) return;
 
-	if ( Num_lights >= MAX_LIGHTS ) {
-		mprintf(( "Out of lights!\n" ));
-		return;
-	}
+  if ( Num_lights >= MAX_LIGHTS ) {
+    mprintf(( "Out of lights!\n" ));
+    return;
+  }
 
-	l = &Lights[Num_lights++];
+  l = &Lights[Num_lights++];
 
-	l->type = LT_POINT;
-	l->vec = *pos;
-	l->r = r;
-	l->g = g;
-	l->b = b;
-	l->spec_r = spec_r;
-	l->spec_g = spec_g;
-	l->spec_b = spec_b;
-	l->intensity = intensity;
-	l->rada = r1;
-	l->radb = r2;
-	l->rada_squared = l->rada*l->rada;
-	l->radb_squared = l->radb*l->radb;
-	l->light_ignore_objnum = -1;
-	l->affected_objnum = affected_objnum;
-	l->instance = Num_lights-1;
+  l->type = LT_POINT;
+  l->vec = *pos;
+  l->r = r;
+  l->g = g;
+  l->b = b;
+  l->spec_r = spec_r;
+  l->spec_g = spec_g;
+  l->spec_b = spec_b;
+  l->intensity = intensity;
+  l->rada = r1;
+  l->radb = r2;
+  l->rada_squared = l->rada*l->rada;
+  l->radb_squared = l->radb*l->radb;
+  l->light_ignore_objnum = -1;
+  l->affected_objnum = affected_objnum;
+  l->instance = Num_lights-1;
 
-	Assert( Num_light_levels <= 1 );
+  Assert( Num_light_levels <= 1 );
 }
 
 // beams affect every ship except the firing ship
 void light_add_tube(const vec3d *p0, const vec3d *p1, float r1, float r2, float intensity, float r, float g, float b, int affected_objnum, float spec_r, float spec_g, float spec_b, bool specular)
 {
-	Assertion(r1 > 0.0f, "Invalid radius r1 specified for light: %f. Radius must be > 0.0f. Examine stack trace to determine culprit.\n", r1);
-	Assertion(r2 > 0.0f, "Invalid radius r2 specified for light: %f. Radius must be > 0.0f. Examine stack trace to determine culprit.\n", r2);
+  Assertion(r1 > 0.0f, "Invalid radius r1 specified for light: %f. Radius must be > 0.0f. Examine stack trace to determine culprit.\n", r1);
+  Assertion(r2 > 0.0f, "Invalid radius r2 specified for light: %f. Radius must be > 0.0f. Examine stack trace to determine culprit.\n", r2);
 
-	if(!specular){
-		spec_r = r;
-		spec_g = g;
-		spec_b = b;
-	}
-	light * l;
+  if(!specular){
+    spec_r = r;
+    spec_g = g;
+    spec_b = b;
+  }
+  light * l;
 
-	if ( Lighting_off ) return;
+  if ( Lighting_off ) return;
 
-	if (!Lighting_flag) return;
+  if (!Lighting_flag) return;
 
-	if ( Num_lights >= MAX_LIGHTS ) {
-		mprintf(( "Out of lights!\n" ));
-		return;
-	}
+  if ( Num_lights >= MAX_LIGHTS ) {
+    mprintf(( "Out of lights!\n" ));
+    return;
+  }
 
-	l = &Lights[Num_lights++];
+  l = &Lights[Num_lights++];
 
-	l->type = LT_TUBE;
-	l->vec = *p0;
-	l->vec2 = *p1;
-	l->r = r;
-	l->g = g;
-	l->b = b;
-	l->spec_r = spec_r;
-	l->spec_g = spec_g;
-	l->spec_b = spec_b;
-	l->intensity = intensity;
-	l->rada = r1;
-	l->radb = r2;
-	l->rada_squared = l->rada*l->rada;
-	l->radb_squared = l->radb*l->radb;
-	l->light_ignore_objnum = affected_objnum;
-	l->affected_objnum = -1;
-	l->instance = Num_lights-1;
+  l->type = LT_TUBE;
+  l->vec = *p0;
+  l->vec2 = *p1;
+  l->r = r;
+  l->g = g;
+  l->b = b;
+  l->spec_r = spec_r;
+  l->spec_g = spec_g;
+  l->spec_b = spec_b;
+  l->intensity = intensity;
+  l->rada = r1;
+  l->radb = r2;
+  l->rada_squared = l->rada*l->rada;
+  l->radb_squared = l->radb*l->radb;
+  l->light_ignore_objnum = affected_objnum;
+  l->affected_objnum = -1;
+  l->instance = Num_lights-1;
 
-	Assert( Num_light_levels <= 1 );
+  Assert( Num_light_levels <= 1 );
 }
 
 /**
@@ -386,20 +386,20 @@ void light_add_tube(const vec3d *p0, const vec3d *p1, float r1, float r2, float 
  */
 static void light_filter_reset()
 {
-	int i;
-	light *l;
+  int i;
+  light *l;
 
-	if ( Lighting_off ) return;
+  if ( Lighting_off ) return;
 
-	Num_light_levels = 1;
+  Num_light_levels = 1;
 
-	int n = Num_light_levels-1;
-	Num_relevent_lights[n] = 0;
+  int n = Num_light_levels-1;
+  Num_relevent_lights[n] = 0;
 
-	l = Lights;
-	for (i=0; i<Num_lights; i++, l++ )	{
-		Relevent_lights[Num_relevent_lights[n]++][n] = l;
-	}
+  l = Lights;
+  for (i=0; i<Num_lights; i++, l++ )  {
+    Relevent_lights[Num_relevent_lights[n]++][n] = l;
+  }
 }
 
 
@@ -413,48 +413,48 @@ static void light_filter_reset()
  */
 int light_filter_push( int objnum, const vec3d *pos, float rad )
 {
-	int i;
-	light *l;
+  int i;
+  light *l;
 
-	if ( Lighting_off ) return 0;
+  if ( Lighting_off ) return 0;
 
-	light_filter_reset();
+  light_filter_reset();
 
-	int n1,n2;
-	n1 = Num_light_levels-1;
-	n2 = Num_light_levels;
-	Num_light_levels++;
-	Assert( Num_light_levels < MAX_LIGHT_LEVELS );
+  int n1,n2;
+  n1 = Num_light_levels-1;
+  n2 = Num_light_levels;
+  Num_light_levels++;
+  Assert( Num_light_levels < MAX_LIGHT_LEVELS );
 
-	Num_relevent_lights[n2] = 0;
+  Num_relevent_lights[n2] = 0;
 
-	for (i=0; i<Num_relevent_lights[n1]; i++ )	{
-		l = Relevent_lights[i][n1];
+  for (i=0; i<Num_relevent_lights[n1]; i++ )  {
+    l = Relevent_lights[i][n1];
 
-		switch( l->type )	{
-		case LT_DIRECTIONAL:
-			//Relevent_lights[Num_relevent_lights[n2]++][n2] = l;
-			break;
+    switch( l->type )  {
+    case LT_DIRECTIONAL:
+      //Relevent_lights[Num_relevent_lights[n2]++][n2] = l;
+      break;
 
-		case LT_POINT:	{
-				// if this is a "unique" light source, it only affects one guy
-				if(l->affected_objnum >= 0){
-					if(objnum == l->affected_objnum){
-						vec3d to_light;
-						float dist_squared, max_dist_squared;
-						vm_vec_sub( &to_light, &l->vec, pos );
-						dist_squared = vm_vec_mag_squared(&to_light);
+    case LT_POINT:  {
+        // if this is a "unique" light source, it only affects one guy
+        if(l->affected_objnum >= 0){
+          if(objnum == l->affected_objnum){
+            vec3d to_light;
+            float dist_squared, max_dist_squared;
+            vm_vec_sub( &to_light, &l->vec, pos );
+            dist_squared = vm_vec_mag_squared(&to_light);
 
-						max_dist_squared = l->radb+rad;
-						max_dist_squared *= max_dist_squared;
-						
-						if ( dist_squared < max_dist_squared )	{
-							Relevent_lights[Num_relevent_lights[n2]++][n2] = l;
-						}
-					}
-				}
-				// otherwise check all relevant objects
-				else {
+            max_dist_squared = l->radb+rad;
+            max_dist_squared *= max_dist_squared;
+            
+            if ( dist_squared < max_dist_squared )  {
+              Relevent_lights[Num_relevent_lights[n2]++][n2] = l;
+            }
+          }
+        }
+        // otherwise check all relevant objects
+        else {
                     vec3d to_light;
                     float dist_squared, max_dist_squared;
                     vm_vec_sub( &to_light, &l->vec, pos );
@@ -462,112 +462,112 @@ int light_filter_push( int objnum, const vec3d *pos, float rad )
 
                     max_dist_squared = l->radb+rad;
                     max_dist_squared *= max_dist_squared;
-						
-                    if ( dist_squared < max_dist_squared )	{
+            
+                    if ( dist_squared < max_dist_squared )  {
                         Relevent_lights[Num_relevent_lights[n2]++][n2] = l;
                     }
-				}
-			}
-			break;
+        }
+      }
+      break;
 
-		// hmm. this could probably be more optimal
-		case LT_TUBE:
-			if(l->light_ignore_objnum != objnum){
-				vec3d nearest;
-				float dist_squared, max_dist_squared;
-				vm_vec_dist_squared_to_line(pos,&l->vec,&l->vec2,&nearest,&dist_squared);
+    // hmm. this could probably be more optimal
+    case LT_TUBE:
+      if(l->light_ignore_objnum != objnum){
+        vec3d nearest;
+        float dist_squared, max_dist_squared;
+        vm_vec_dist_squared_to_line(pos,&l->vec,&l->vec2,&nearest,&dist_squared);
 
-				max_dist_squared = l->radb+rad;
-				max_dist_squared *= max_dist_squared;
+        max_dist_squared = l->radb+rad;
+        max_dist_squared *= max_dist_squared;
 
-				if ( dist_squared < max_dist_squared )
-					Relevent_lights[Num_relevent_lights[n2]++][n2] = l;
-			}
-			break;
+        if ( dist_squared < max_dist_squared )
+          Relevent_lights[Num_relevent_lights[n2]++][n2] = l;
+      }
+      break;
 
-		case LT_CONE:
-			break;
+    case LT_CONE:
+      break;
 
-		default:
-			Int3();	// Invalid light type
-		}
-	}
+    default:
+      Int3();  // Invalid light type
+    }
+  }
 
-	return Num_relevent_lights[n2];
+  return Num_relevent_lights[n2];
 }
 
 static int is_inside(const vec3d *min, const vec3d *max, const vec3d * p0, float rad)
 {
-	const float *origin = (float *)&p0->xyz.x;
-	const float *minB = (float *)min;
-	const float *maxB = (float *)max;
-	int i;
+  const float *origin = (float *)&p0->xyz.x;
+  const float *minB = (float *)min;
+  const float *maxB = (float *)max;
+  int i;
 
-	for (i=0; i<3; i++ )	{
-		if ( origin[i] < minB[i] - rad )	{
-			return 0;
-		} else if (origin[i] > maxB[i] + rad )	{
-			return 0;
-		}
-	}
-	return 1;
+  for (i=0; i<3; i++ )  {
+    if ( origin[i] < minB[i] - rad )  {
+      return 0;
+    } else if (origin[i] > maxB[i] + rad )  {
+      return 0;
+    }
+  }
+  return 1;
 }
 
 
 int light_filter_push_box(const vec3d *min, const vec3d *max)
 {
-	int i;
-	light *l;
+  int i;
+  light *l;
 
-	if ( Lighting_off ) return 0;
+  if ( Lighting_off ) return 0;
 
-	int n1,n2;
-	n1 = Num_light_levels-1;
-	n2 = Num_light_levels;
-	Num_light_levels++;
+  int n1,n2;
+  n1 = Num_light_levels-1;
+  n2 = Num_light_levels;
+  Num_light_levels++;
 
-	Assert( Num_light_levels < MAX_LIGHT_LEVELS );
+  Assert( Num_light_levels < MAX_LIGHT_LEVELS );
 
-	Num_relevent_lights[n2] = 0;
+  Num_relevent_lights[n2] = 0;
 
-	for (i=0; i<Num_relevent_lights[n1]; i++ )	{
-		l = Relevent_lights[i][n1];
+  for (i=0; i<Num_relevent_lights[n1]; i++ )  {
+    l = Relevent_lights[i][n1];
 
-		switch( l->type )	{
-		case LT_DIRECTIONAL:
-			//Relevent_lights[Num_relevent_lights[n2]++][n2] = l;
-			break;
+    switch( l->type )  {
+    case LT_DIRECTIONAL:
+      //Relevent_lights[Num_relevent_lights[n2]++][n2] = l;
+      break;
 
-		case LT_POINT:	{
-				if ( is_inside( min, max, &l->local_vec, l->radb ) )	{
-					Relevent_lights[Num_relevent_lights[n2]++][n2] = l;
-				}
-			}
-			break;
+    case LT_POINT:  {
+        if ( is_inside( min, max, &l->local_vec, l->radb ) )  {
+          Relevent_lights[Num_relevent_lights[n2]++][n2] = l;
+        }
+      }
+      break;
 
-		case LT_TUBE:
-			if ( is_inside(min, max, &l->local_vec, l->radb) || is_inside(min, max, &l->local_vec2, l->radb) )	{
-				Relevent_lights[Num_relevent_lights[n2]++][n2] = l;
-			}
-			break;
+    case LT_TUBE:
+      if ( is_inside(min, max, &l->local_vec, l->radb) || is_inside(min, max, &l->local_vec2, l->radb) )  {
+        Relevent_lights[Num_relevent_lights[n2]++][n2] = l;
+      }
+      break;
 
-		case LT_CONE:
-			break;
+    case LT_CONE:
+      break;
 
-		default:
-			Int3();	// Invalid light type
-		}
-	}
+    default:
+      Int3();  // Invalid light type
+    }
+  }
 
-	return Num_relevent_lights[n2];
+  return Num_relevent_lights[n2];
 }
 
 void light_filter_pop()
 {
-	if ( Lighting_off ) return;
+  if ( Lighting_off ) return;
 
-	Num_light_levels--;
-	Assert( Num_light_levels > 0 );
+  Num_light_levels--;
+  Assert( Num_light_levels > 0 );
 }
 
 static int l_num_points=0, l_num_lights=0;
@@ -575,22 +575,22 @@ static int l_num_points=0, l_num_lights=0;
 
 void light_rotate_all()
 {
-	int i;
-	light *l;
+  int i;
+  light *l;
 
-	if ( Lighting_off ) return;
+  if ( Lighting_off ) return;
 
-	int n = Num_light_levels-1;
+  int n = Num_light_levels-1;
 
-	l = Lights;
-	for (i=0; i<Num_relevent_lights[n]; i++ )	{
-		l = Relevent_lights[i][n];
-		light_rotate(l);
-	}
+  l = Lights;
+  for (i=0; i<Num_relevent_lights[n]; i++ )  {
+    l = Relevent_lights[i][n];
+    light_rotate(l);
+  }
 
-	for (i = 0; i < (int)Static_light.size(); i++) {
-		light_rotate(Static_light[i]);
-	}
+  for (i = 0; i < (int)Static_light.size(); i++) {
+    light_rotate(Static_light[i]);
+  }
 }
 
 /**
@@ -598,7 +598,7 @@ void light_rotate_all()
  */
 int light_get_global_count()
 {
-	return (int)Static_light.size();
+  return (int)Static_light.size();
 }
 
 /**
@@ -611,125 +611,125 @@ int light_get_global_count()
  */
 int light_get_global_dir(vec3d *pos, int n)
 {
-	if ( (n < 0) || (n >= (int)Static_light.size()) ) {
-		return 0;
-	}
+  if ( (n < 0) || (n >= (int)Static_light.size()) ) {
+    return 0;
+  }
 
-	if (pos) {
-		*pos = Static_light[n]->vec;
+  if (pos) {
+    *pos = Static_light[n]->vec;
 
-		if ( Lighting_mode != LM_DARKEN )	{
-			vm_vec_scale( pos, -1.0f );
-		}
-	}
-	return 1;
+    if ( Lighting_mode != LM_DARKEN )  {
+      vm_vec_scale( pos, -1.0f );
+    }
+  }
+  return 1;
 }
 
 
 void light_set_shadow( int state )
 {
-	Light_in_shadow = state;
+  Light_in_shadow = state;
 }
 
 
 void light_set_all_relevent()
 {
-	int idx;
+  int idx;
 
-	gr_reset_lighting();
+  gr_reset_lighting();
 
-	for (idx = 0; idx < (int)Static_light.size(); idx++)
-		gr_set_light( Static_light[idx] );
+  for (idx = 0; idx < (int)Static_light.size(); idx++)
+    gr_set_light( Static_light[idx] );
 
-	extern bool Deferred_lighting;
-	if(Deferred_lighting)
-		return;
+  extern bool Deferred_lighting;
+  if(Deferred_lighting)
+    return;
 
-	// for simplicity sake were going to forget about dynamic lights for the moment
+  // for simplicity sake were going to forget about dynamic lights for the moment
 
-	int n = Num_light_levels-1;
+  int n = Num_light_levels-1;
 
-	for (idx = 0; idx < Num_relevent_lights[n]; idx++ )
-		gr_set_light( Relevent_lights[idx][n] );
+  for (idx = 0; idx < Num_relevent_lights[n]; idx++ )
+    gr_set_light( Relevent_lights[idx][n] );
 }
 
 
 ubyte light_apply(const vec3d *pos, const vec3d *norm, float static_light_level)
 {
-	int i, idx;
-	float lval;
-	light *l;
+  int i, idx;
+  float lval;
+  light *l;
 
-	if (Detail.lighting==0) {
-		// No static light
-		return ubyte(fl2i(static_light_level*255.0f));
-	}
+  if (Detail.lighting==0) {
+    // No static light
+    return ubyte(fl2i(static_light_level*255.0f));
+  }
 
-	if ( Lighting_off ) return 191;
+  if ( Lighting_off ) return 191;
 
-	// Factor in ambient light
-	lval = Ambient_light;
-	
-	// Factor in light from suns if there are any
-	if ( !Light_in_shadow ){
-		// apply all sun lights
-		for (idx = 0; idx < (int)Static_light.size(); idx++) {
-			float ltmp;
+  // Factor in ambient light
+  lval = Ambient_light;
+  
+  // Factor in light from suns if there are any
+  if ( !Light_in_shadow ){
+    // apply all sun lights
+    for (idx = 0; idx < (int)Static_light.size(); idx++) {
+      float ltmp;
 
-			// calculate light from surface normal
-			ltmp = -vm_vec_dot(&Static_light[idx]->local_vec, norm )*Static_light[idx]->intensity*Reflective_light;		// reflective light
+      // calculate light from surface normal
+      ltmp = -vm_vec_dot(&Static_light[idx]->local_vec, norm )*Static_light[idx]->intensity*Reflective_light;    // reflective light
 
-			switch(Lighting_mode)	{
-			case LM_BRIGHTEN:
-				if ( ltmp > 0.0f )
-					lval += ltmp;
-				break;
-			case LM_DARKEN:
-				if ( ltmp > 0.0f )
-					lval -= ltmp;
+      switch(Lighting_mode)  {
+      case LM_BRIGHTEN:
+        if ( ltmp > 0.0f )
+          lval += ltmp;
+        break;
+      case LM_DARKEN:
+        if ( ltmp > 0.0f )
+          lval -= ltmp;
 
-				if ( lval < 0.0f ) 
-					lval = 0.0f;
-				break;
-			}
-		}
-	}
+        if ( lval < 0.0f ) 
+          lval = 0.0f;
+        break;
+      }
+    }
+  }
 
-	// At this point, l must be between 0 and 0.75 (0.75-1.0 is for dynamic light only)
+  // At this point, l must be between 0 and 0.75 (0.75-1.0 is for dynamic light only)
     CLAMP(lval, 0.0f, 0.75f);
 
-	lval *= static_light_level;
+  lval *= static_light_level;
 
-	int n = Num_light_levels-1;
+  int n = Num_light_levels-1;
 
-	l_num_lights += Num_relevent_lights[n];
-	l_num_points++;
+  l_num_lights += Num_relevent_lights[n];
+  l_num_points++;
 
-	for (i=0; i<Num_relevent_lights[n]; i++ )	{
-		l = Relevent_lights[i][n];
+  for (i=0; i<Num_relevent_lights[n]; i++ )  {
+    l = Relevent_lights[i][n];
 
-		vec3d to_light;
-		float dot, dist;
-		vm_vec_sub( &to_light, &l->local_vec, pos );
-		dot = vm_vec_dot(&to_light, norm );
-		if ( dot > 0.0f )	{
-			dist = vm_vec_mag_squared(&to_light);
-			if ( dist < l->rada_squared )	{
-				lval += l->intensity*dot;
-			} else if ( dist < l->radb_squared )	{
-				// dist from 0 to 
-				float nnum = dist - l->rada_squared;
-				float dden = l->radb_squared - l->rada_squared;
-				float ltmp = (1.0f - nnum / dden )*dot*l->intensity;
-				lval += ltmp;
-			}
-			if ( lval > 1.0f ) {
-				return 255;
-			}
-		}
-	}
+    vec3d to_light;
+    float dot, dist;
+    vm_vec_sub( &to_light, &l->local_vec, pos );
+    dot = vm_vec_dot(&to_light, norm );
+    if ( dot > 0.0f )  {
+      dist = vm_vec_mag_squared(&to_light);
+      if ( dist < l->rada_squared )  {
+        lval += l->intensity*dot;
+      } else if ( dist < l->radb_squared )  {
+        // dist from 0 to 
+        float nnum = dist - l->rada_squared;
+        float dden = l->radb_squared - l->rada_squared;
+        float ltmp = (1.0f - nnum / dden )*dot*l->intensity;
+        lval += ltmp;
+      }
+      if ( lval > 1.0f ) {
+        return 255;
+      }
+    }
+  }
 
-	return ubyte(fl2i(lval*255.0f));
+  return ubyte(fl2i(lval*255.0f));
 }
 
 float static_light_factor = 1.0f;
@@ -739,518 +739,518 @@ double specular_exponent_value = 16.0;
 
 void light_apply_specular(ubyte *param_r, ubyte *param_g, ubyte *param_b, const vec3d *pos, const vec3d *norm, const vec3d *cam){
 
-	light *l;
-	float rval = 0, gval = 0, bval = 0;
-	int idx;
+  light *l;
+  float rval = 0, gval = 0, bval = 0;
+  int idx;
 
-	if ( !Cmdline_spec ) {
-		*param_r = 0;
-		*param_g = 0;
-		*param_b = 0;
-		return;
-	}
+  if ( !Cmdline_spec ) {
+    *param_r = 0;
+    *param_g = 0;
+    *param_b = 0;
+    return;
+  }
 
-	if (Detail.lighting==0) {
-		*param_r = 0;
-		*param_g = 0;
-		*param_b = 0;
-		return;
-	}
+  if (Detail.lighting==0) {
+    *param_r = 0;
+    *param_g = 0;
+    *param_b = 0;
+    return;
+  }
 
-	if ( Lighting_off ) {
-		*param_r = 0;
-		*param_g = 0;
-		*param_b = 0;
-		return;
-	}
+  if ( Lighting_off ) {
+    *param_r = 0;
+    *param_g = 0;
+    *param_b = 0;
+    return;
+  }
 
-	vec3d V, N;
-	vm_vec_sub(&V, cam,pos);
-	vm_vec_normalize(&V);
+  vec3d V, N;
+  vm_vec_sub(&V, cam,pos);
+  vm_vec_normalize(&V);
 
-	N = *norm;
-	vm_vec_normalize(&N);
+  N = *norm;
+  vm_vec_normalize(&N);
 
-	// Factor in light from sun if there is one
-		// apply all sun lights
-		for (idx = 0; idx < (int)Static_light.size(); idx++) {
-			float ltmp;
+  // Factor in light from sun if there is one
+    // apply all sun lights
+    for (idx = 0; idx < (int)Static_light.size(); idx++) {
+      float ltmp;
 
-			vec3d R;
-			vm_vec_sub(&R,&V, &Static_light[idx]->local_vec);
-			vm_vec_normalize(&R);
+      vec3d R;
+      vm_vec_sub(&R,&V, &Static_light[idx]->local_vec);
+      vm_vec_normalize(&R);
 
-			ltmp = (float)pow((double)vm_vec_dot(&R, &N ), specular_exponent_value) * Static_light[idx]->intensity * static_light_factor;		// reflective light
+      ltmp = (float)pow((double)vm_vec_dot(&R, &N ), specular_exponent_value) * Static_light[idx]->intensity * static_light_factor;    // reflective light
 
-			switch(Lighting_mode)	{
-			case LM_BRIGHTEN:
-				if ( ltmp > 0.0f )	{
-					rval += Static_light[idx]->spec_r * ltmp;
-					gval += Static_light[idx]->spec_g * ltmp;
-					bval += Static_light[idx]->spec_b * ltmp;
-				}
-				break;
-			case LM_DARKEN:
-				if ( ltmp > 0.0f )	{
-					rval -= ltmp; if ( rval < 0.0f ) rval = 0.0f;
-					gval -= ltmp; if ( gval < 0.0f ) gval = 0.0f;
-					bval -= ltmp; if ( bval < 0.0f ) bval = 0.0f; 
-				}
-				break;
-			}
-		}
+      switch(Lighting_mode)  {
+      case LM_BRIGHTEN:
+        if ( ltmp > 0.0f )  {
+          rval += Static_light[idx]->spec_r * ltmp;
+          gval += Static_light[idx]->spec_g * ltmp;
+          bval += Static_light[idx]->spec_b * ltmp;
+        }
+        break;
+      case LM_DARKEN:
+        if ( ltmp > 0.0f )  {
+          rval -= ltmp; if ( rval < 0.0f ) rval = 0.0f;
+          gval -= ltmp; if ( gval < 0.0f ) gval = 0.0f;
+          bval -= ltmp; if ( bval < 0.0f ) bval = 0.0f; 
+        }
+        break;
+      }
+    }
 
 
     CLAMP(rval, 0.0f, 0.75f);
     CLAMP(gval, 0.0f, 0.75f);
     CLAMP(bval, 0.0f, 0.75f);
 
-	//dynamic lights
+  //dynamic lights
 
-	int n = Num_light_levels-1;
+  int n = Num_light_levels-1;
 
-	l_num_lights += Num_relevent_lights[n];
-	l_num_points++;
+  l_num_lights += Num_relevent_lights[n];
+  l_num_points++;
 
-	vec3d to_light;
-	float dot, dist;
-	vec3d temp;
-	float factor = 1.0f;
-	for (idx = 0; idx < Num_relevent_lights[n]; idx++) {
-		l = Relevent_lights[idx][n];
+  vec3d to_light;
+  float dot, dist;
+  vec3d temp;
+  float factor = 1.0f;
+  for (idx = 0; idx < Num_relevent_lights[n]; idx++) {
+    l = Relevent_lights[idx][n];
 
-		dist = -1.0f;
-		switch(l->type){
-		// point lights
-		case LT_POINT:			
-			vm_vec_sub( &to_light, &l->local_vec, pos );
-			factor = static_point_factor;
-			break;
+    dist = -1.0f;
+    switch(l->type){
+    // point lights
+    case LT_POINT:      
+      vm_vec_sub( &to_light, &l->local_vec, pos );
+      factor = static_point_factor;
+      break;
 
-		// tube lights
-		case LT_TUBE:						
-			if(vm_vec_dist_to_line(pos, &l->local_vec, &l->local_vec2, &temp, &dist) != 0){
-				continue;
-			}
-			factor = static_tube_factor;
-			vm_vec_sub(&to_light, &temp, pos);
-			dist *= dist;	// since we use radius squared
-			break;
+    // tube lights
+    case LT_TUBE:            
+      if(vm_vec_dist_to_line(pos, &l->local_vec, &l->local_vec2, &temp, &dist) != 0){
+        continue;
+      }
+      factor = static_tube_factor;
+      vm_vec_sub(&to_light, &temp, pos);
+      dist *= dist;  // since we use radius squared
+      break;
 
-		case LT_CONE:
-			continue;
+    case LT_CONE:
+      continue;
 
-		// others. BAD
-		default:
-			Int3();
-		}
+    // others. BAD
+    default:
+      Int3();
+    }
 
-		vec3d R;
-		vm_vec_normalize(&to_light);
-		vm_vec_add(&R,&V, &to_light);
-		vm_vec_normalize(&R);
+    vec3d R;
+    vm_vec_normalize(&to_light);
+    vm_vec_add(&R,&V, &to_light);
+    vm_vec_normalize(&R);
 
-		dot = (float)pow((double)vm_vec_dot(&R, &N ), specular_exponent_value) * l->intensity * factor;		// reflective light
-	
-		if ( dot > 0.0f )	{
-			// indicating that we already calculated the distance (vm_vec_dist_to_line(...) does this for us)
-			if(dist < 0.0f){
-				dist = vm_vec_mag_squared(&to_light);
-			}
-			if ( dist < l->rada_squared )	{
-				float ratio;
-				ratio = l->intensity*dot*factor;
-				ratio *= 0.25f;
-				rval += l->spec_r*ratio;
-				gval += l->spec_g*ratio;
-				bval += l->spec_b*ratio;
-			} else if ( dist < l->radb_squared )	{
-				float ratio;
-				// dist from 0 to 
-				float nnum = dist - l->rada_squared;
-				float dden = l->radb_squared - l->rada_squared;
-				ratio = (1.0f - nnum / dden)*dot*l->intensity*factor;
-				ratio *= 0.25f;
-				rval += l->spec_r*ratio;
-				gval += l->spec_g*ratio;
-				bval += l->spec_b*ratio;
-			}
-		}
-	}
+    dot = (float)pow((double)vm_vec_dot(&R, &N ), specular_exponent_value) * l->intensity * factor;    // reflective light
+  
+    if ( dot > 0.0f )  {
+      // indicating that we already calculated the distance (vm_vec_dist_to_line(...) does this for us)
+      if(dist < 0.0f){
+        dist = vm_vec_mag_squared(&to_light);
+      }
+      if ( dist < l->rada_squared )  {
+        float ratio;
+        ratio = l->intensity*dot*factor;
+        ratio *= 0.25f;
+        rval += l->spec_r*ratio;
+        gval += l->spec_g*ratio;
+        bval += l->spec_b*ratio;
+      } else if ( dist < l->radb_squared )  {
+        float ratio;
+        // dist from 0 to 
+        float nnum = dist - l->rada_squared;
+        float dden = l->radb_squared - l->rada_squared;
+        ratio = (1.0f - nnum / dden)*dot*l->intensity*factor;
+        ratio *= 0.25f;
+        rval += l->spec_r*ratio;
+        gval += l->spec_g*ratio;
+        bval += l->spec_b*ratio;
+      }
+    }
+  }
 
     CLAMP(rval, 0.0f, 1.0f);
     CLAMP(gval, 0.0f, 1.0f);
     CLAMP(bval, 0.0f, 1.0f);
 
-	*param_r = ubyte(fl2i(rval*254.0f));
-	*param_g = ubyte(fl2i(gval*254.0f));
-	*param_b = ubyte(fl2i(bval*254.0f));
+  *param_r = ubyte(fl2i(rval*254.0f));
+  *param_g = ubyte(fl2i(gval*254.0f));
+  *param_b = ubyte(fl2i(bval*254.0f));
 }
 
 void light_apply_rgb( ubyte *param_r, ubyte *param_g, ubyte *param_b, const vec3d *pos, const vec3d *norm, float static_light_level )
 {
-	int idx;
-	float rval, gval, bval;
-	light *l;
+  int idx;
+  float rval, gval, bval;
+  light *l;
 
-	if (Detail.lighting==0) {
-		// No static light
-		ubyte lVal = ubyte(fl2i(static_light_level*255.0f));
-		*param_r = lVal;
-		*param_g = lVal;
-		*param_b = lVal;
-		return;
-	}
+  if (Detail.lighting==0) {
+    // No static light
+    ubyte lVal = ubyte(fl2i(static_light_level*255.0f));
+    *param_r = lVal;
+    *param_g = lVal;
+    *param_b = lVal;
+    return;
+  }
 
-	if ( Lighting_off ) {
-		*param_r = 255;
-		*param_g = 255;
-		*param_b = 255;
-		return;
-	}
+  if ( Lighting_off ) {
+    *param_r = 255;
+    *param_g = 255;
+    *param_b = 255;
+    return;
+  }
 
-	// Factor in ambient light
-	rval = Ambient_light;
-	gval = Ambient_light;
-	bval = Ambient_light;
+  // Factor in ambient light
+  rval = Ambient_light;
+  gval = Ambient_light;
+  bval = Ambient_light;
 
-	// Factor in light from sun if there is one
-	if ( !Light_in_shadow ){
-		// apply all sun lights
-		for (idx = 0; idx < (int)Static_light.size(); idx++) {
-			float ltmp;
+  // Factor in light from sun if there is one
+  if ( !Light_in_shadow ){
+    // apply all sun lights
+    for (idx = 0; idx < (int)Static_light.size(); idx++) {
+      float ltmp;
 
-			// calculate light from surface normal
-			ltmp = -vm_vec_dot(&Static_light[idx]->local_vec, norm )*Static_light[idx]->intensity*Reflective_light;		// reflective light
+      // calculate light from surface normal
+      ltmp = -vm_vec_dot(&Static_light[idx]->local_vec, norm )*Static_light[idx]->intensity*Reflective_light;    // reflective light
 
-			switch(Lighting_mode)	{
-			case LM_BRIGHTEN:
-				if ( ltmp > 0.0f )	{
-					rval += Static_light[idx]->r * ltmp;
-					gval += Static_light[idx]->g * ltmp;
-					bval += Static_light[idx]->b * ltmp;
-				}
-				break;
-			case LM_DARKEN:
-				if ( ltmp > 0.0f )	{
-					rval -= ltmp; if ( rval < 0.0f ) rval = 0.0f;
-					gval -= ltmp; if ( gval < 0.0f ) gval = 0.0f;
-					bval -= ltmp; if ( bval < 0.0f ) bval = 0.0f; 
-				}
-				break;
-			}
-		}
-	}
+      switch(Lighting_mode)  {
+      case LM_BRIGHTEN:
+        if ( ltmp > 0.0f )  {
+          rval += Static_light[idx]->r * ltmp;
+          gval += Static_light[idx]->g * ltmp;
+          bval += Static_light[idx]->b * ltmp;
+        }
+        break;
+      case LM_DARKEN:
+        if ( ltmp > 0.0f )  {
+          rval -= ltmp; if ( rval < 0.0f ) rval = 0.0f;
+          gval -= ltmp; if ( gval < 0.0f ) gval = 0.0f;
+          bval -= ltmp; if ( bval < 0.0f ) bval = 0.0f; 
+        }
+        break;
+      }
+    }
+  }
 
-	// At this point, l must be between 0 and 0.75 (0.75-1.0 is for dynamic light only)
-	CLAMP(rval, 0.0f, 0.75f);
+  // At this point, l must be between 0 and 0.75 (0.75-1.0 is for dynamic light only)
+  CLAMP(rval, 0.0f, 0.75f);
     CLAMP(gval, 0.0f, 0.75f);
     CLAMP(bval, 0.0f, 0.75f);
 
-	rval *= static_light_level;
-	gval *= static_light_level;
-	bval *= static_light_level;
+  rval *= static_light_level;
+  gval *= static_light_level;
+  bval *= static_light_level;
 
-	int n = Num_light_levels-1;
+  int n = Num_light_levels-1;
 
-	l_num_lights += Num_relevent_lights[n];
-	l_num_points++;
+  l_num_lights += Num_relevent_lights[n];
+  l_num_points++;
 
-	vec3d to_light;
-	float dot, dist;
-	vec3d temp;
-	for (idx = 0; idx < Num_relevent_lights[n]; idx++) {
-		l = Relevent_lights[idx][n];
+  vec3d to_light;
+  float dot, dist;
+  vec3d temp;
+  for (idx = 0; idx < Num_relevent_lights[n]; idx++) {
+    l = Relevent_lights[idx][n];
 
-		dist = -1.0f;
-		switch(l->type){
-		// point lights
-		case LT_POINT:			
-			vm_vec_sub( &to_light, &l->local_vec, pos );
-			break;
+    dist = -1.0f;
+    switch(l->type){
+    // point lights
+    case LT_POINT:      
+      vm_vec_sub( &to_light, &l->local_vec, pos );
+      break;
 
-		// tube lights
-		case LT_TUBE:						
-			if(vm_vec_dist_to_line(pos, &l->local_vec, &l->local_vec2, &temp, &dist) != 0){
-				continue;
-			}
-			vm_vec_sub(&to_light, &temp, pos);
-			dist *= dist;	// since we use radius squared
-			break;
+    // tube lights
+    case LT_TUBE:            
+      if(vm_vec_dist_to_line(pos, &l->local_vec, &l->local_vec2, &temp, &dist) != 0){
+        continue;
+      }
+      vm_vec_sub(&to_light, &temp, pos);
+      dist *= dist;  // since we use radius squared
+      break;
 
-		case LT_DIRECTIONAL:
-			continue;
+    case LT_DIRECTIONAL:
+      continue;
 
-		case LT_CONE:
-			continue;
+    case LT_CONE:
+      continue;
 
-		// others. BAD
-		default:
-			Int3();
-		}
+    // others. BAD
+    default:
+      Int3();
+    }
 
-		dot = vm_vec_dot(&to_light, norm);
-	//		dot = 1.0f;
-		if ( dot > 0.0f )	{
-			// indicating that we already calculated the distance (vm_vec_dist_to_line(...) does this for us)
-			if(dist < 0.0f){
-				dist = vm_vec_mag_squared(&to_light);
-			}
-			if ( dist < l->rada_squared )	{
-				float ratio;
-				ratio = l->intensity*dot;
-				ratio *= 0.25f;
-				rval += l->r*ratio;
-				gval += l->g*ratio;
-				bval += l->b*ratio;
-			} else if ( dist < l->radb_squared )	{
-				float ratio;
-				// dist from 0 to 
-				float nnum = dist - l->rada_squared;
-				float dden = l->radb_squared - l->rada_squared;
-				ratio = (1.0f - nnum / dden)*dot*l->intensity;
-				ratio *= 0.25f;
-				rval += l->r*ratio;
-				gval += l->g*ratio;
-				bval += l->b*ratio;
-			}
-		}
-	}
+    dot = vm_vec_dot(&to_light, norm);
+  //    dot = 1.0f;
+    if ( dot > 0.0f )  {
+      // indicating that we already calculated the distance (vm_vec_dist_to_line(...) does this for us)
+      if(dist < 0.0f){
+        dist = vm_vec_mag_squared(&to_light);
+      }
+      if ( dist < l->rada_squared )  {
+        float ratio;
+        ratio = l->intensity*dot;
+        ratio *= 0.25f;
+        rval += l->r*ratio;
+        gval += l->g*ratio;
+        bval += l->b*ratio;
+      } else if ( dist < l->radb_squared )  {
+        float ratio;
+        // dist from 0 to 
+        float nnum = dist - l->rada_squared;
+        float dden = l->radb_squared - l->rada_squared;
+        ratio = (1.0f - nnum / dden)*dot*l->intensity;
+        ratio *= 0.25f;
+        rval += l->r*ratio;
+        gval += l->g*ratio;
+        bval += l->b*ratio;
+      }
+    }
+  }
 
-	float m = rval;
-	if ( gval > m ) m = gval;
-	if ( bval > m ) m = bval;
+  float m = rval;
+  if ( gval > m ) m = gval;
+  if ( bval > m ) m = bval;
 
-	if ( m > 1.0f )	{
-		float im = 1.0f / m;
+  if ( m > 1.0f )  {
+    float im = 1.0f / m;
 
-		rval *= im;
-		gval *= im;
-		bval *= im;
-	}
-	
+    rval *= im;
+    gval *= im;
+    bval *= im;
+  }
+  
     CLAMP(rval, 0.0f, 1.0f);
     CLAMP(gval, 0.0f, 1.0f);
     CLAMP(bval, 0.0f, 1.0f);
 
-	*param_r = ubyte(fl2i(rval*255.0f));
-	*param_g = ubyte(fl2i(gval*255.0f));
-	*param_b = ubyte(fl2i(bval*255.0f));
+  *param_r = ubyte(fl2i(rval*255.0f));
+  *param_g = ubyte(fl2i(gval*255.0f));
+  *param_b = ubyte(fl2i(bval*255.0f));
 }
 
 void light_add_cone(const vec3d *pos, const vec3d *dir, float angle, float inner_angle, bool dual_cone, float r1, float r2, float intensity, float r, float g, float b, int light_ignore_objnum, float spec_r, float spec_g, float spec_b, bool specular)
 {
-	Assertion( r1 > 0.0f, "Invalid radius r1 specified for light: %f. Radius must be > 0.0f. Examine stack trace to determine culprit.\n", r1 );
-	Assertion( r2 > 0.0f, "Invalid radius r2 specified for light: %f. Radius must be > 0.0f. Examine stack trace to determine culprit.\n", r2 );
+  Assertion( r1 > 0.0f, "Invalid radius r1 specified for light: %f. Radius must be > 0.0f. Examine stack trace to determine culprit.\n", r1 );
+  Assertion( r2 > 0.0f, "Invalid radius r2 specified for light: %f. Radius must be > 0.0f. Examine stack trace to determine culprit.\n", r2 );
 
-	if(!specular){
-		spec_r = r;
-		spec_g = g;
-		spec_b = b;
-	}
+  if(!specular){
+    spec_r = r;
+    spec_g = g;
+    spec_b = b;
+  }
 
-	light * l;
+  light * l;
 
-	if ( Lighting_off ) return;
+  if ( Lighting_off ) return;
 
-	if (!Lighting_flag) return;
+  if (!Lighting_flag) return;
 
-	if ( Num_lights >= MAX_LIGHTS ) {
-		mprintf(( "Out of lights!\n" ));
-		return;
-	}
+  if ( Num_lights >= MAX_LIGHTS ) {
+    mprintf(( "Out of lights!\n" ));
+    return;
+  }
 
-	l = &Lights[Num_lights++];
+  l = &Lights[Num_lights++];
 
-	l->type = LT_CONE;
-	l->vec = *pos;
-	l->vec2= *dir;
-	l->cone_angle = angle;
-	l->cone_inner_angle = inner_angle;
-	l->dual_cone = dual_cone;
-	l->r = r;
-	l->g = g;
-	l->b = b;
-	l->spec_r = spec_r;
-	l->spec_g = spec_g;
-	l->spec_b = spec_b;
-	l->intensity = intensity;
-	l->rada = r1;
-	l->radb = r2;
-	l->rada_squared = l->rada*l->rada;
-	l->radb_squared = l->radb*l->radb;
-	l->light_ignore_objnum = light_ignore_objnum;
-	l->affected_objnum = -1;
-	l->instance = Num_lights-1;
+  l->type = LT_CONE;
+  l->vec = *pos;
+  l->vec2= *dir;
+  l->cone_angle = angle;
+  l->cone_inner_angle = inner_angle;
+  l->dual_cone = dual_cone;
+  l->r = r;
+  l->g = g;
+  l->b = b;
+  l->spec_r = spec_r;
+  l->spec_g = spec_g;
+  l->spec_b = spec_b;
+  l->intensity = intensity;
+  l->rada = r1;
+  l->radb = r2;
+  l->rada_squared = l->rada*l->rada;
+  l->radb_squared = l->radb*l->radb;
+  l->light_ignore_objnum = light_ignore_objnum;
+  l->affected_objnum = -1;
+  l->instance = Num_lights-1;
 
-	Assert( Num_light_levels <= 1 );
+  Assert( Num_light_levels <= 1 );
 }
 
 bool light_compare_by_type(const light &a, const light &b)
 {
-	return a.type < b.type;
+  return a.type < b.type;
 }
 
 void scene_lights::addLight(const light *light_ptr)
 {
-	Assert(light_ptr != NULL);
+  Assert(light_ptr != NULL);
 
-	AllLights.push_back(*light_ptr);
+  AllLights.push_back(*light_ptr);
 
-	if ( light_ptr->type == LT_DIRECTIONAL ) {
-		StaticLightIndices.push_back(AllLights.size() - 1);
-	}
+  if ( light_ptr->type == LT_DIRECTIONAL ) {
+    StaticLightIndices.push_back(AllLights.size() - 1);
+  }
 }
 
 void scene_lights::setLightFilter(int objnum, const vec3d *pos, float rad)
 {
-	size_t i;
+  size_t i;
 
-	// clear out current filtered lights
-	FilteredLights.clear();
+  // clear out current filtered lights
+  FilteredLights.clear();
 
-	for ( i = 0; i < AllLights.size(); ++i ) {
-		light& l = AllLights[i];
+  for ( i = 0; i < AllLights.size(); ++i ) {
+    light& l = AllLights[i];
 
-		switch ( l.type ) {
-			case LT_DIRECTIONAL:
-				break;
-			case LT_POINT: {
-				// if this is a "unique" light source, it only affects one guy
-				if ( l.affected_objnum >= 0 ) {
-					if ( objnum == l.affected_objnum ) {
-						vec3d to_light;
-						float dist_squared, max_dist_squared;
-						vm_vec_sub( &to_light, &l.vec, pos );
-						dist_squared = vm_vec_mag_squared(&to_light);
+    switch ( l.type ) {
+      case LT_DIRECTIONAL:
+        break;
+      case LT_POINT: {
+        // if this is a "unique" light source, it only affects one guy
+        if ( l.affected_objnum >= 0 ) {
+          if ( objnum == l.affected_objnum ) {
+            vec3d to_light;
+            float dist_squared, max_dist_squared;
+            vm_vec_sub( &to_light, &l.vec, pos );
+            dist_squared = vm_vec_mag_squared(&to_light);
 
-						max_dist_squared = l.radb+rad;
-						max_dist_squared *= max_dist_squared;
+            max_dist_squared = l.radb+rad;
+            max_dist_squared *= max_dist_squared;
 
-						if ( dist_squared < max_dist_squared )	{
-							FilteredLights.push_back(i);
-						}
-					}
-				} else { // otherwise check all relevant objects
-					vec3d to_light;
-					float dist_squared, max_dist_squared;
-					vm_vec_sub( &to_light, &l.vec, pos );
-					dist_squared = vm_vec_mag_squared(&to_light);
+            if ( dist_squared < max_dist_squared )  {
+              FilteredLights.push_back(i);
+            }
+          }
+        } else { // otherwise check all relevant objects
+          vec3d to_light;
+          float dist_squared, max_dist_squared;
+          vm_vec_sub( &to_light, &l.vec, pos );
+          dist_squared = vm_vec_mag_squared(&to_light);
 
-					max_dist_squared = l.radb+rad;
-					max_dist_squared *= max_dist_squared;
+          max_dist_squared = l.radb+rad;
+          max_dist_squared *= max_dist_squared;
 
-					if ( dist_squared < max_dist_squared )	{
-						FilteredLights.push_back(i);
-					}
-				}
-			}
-			break;
-			case LT_TUBE: {
-				if ( l.light_ignore_objnum != objnum ) {
-					vec3d nearest;
-					float dist_squared, max_dist_squared;
-					vm_vec_dist_squared_to_line(pos,&l.vec,&l.vec2,&nearest,&dist_squared);
+          if ( dist_squared < max_dist_squared )  {
+            FilteredLights.push_back(i);
+          }
+        }
+      }
+      break;
+      case LT_TUBE: {
+        if ( l.light_ignore_objnum != objnum ) {
+          vec3d nearest;
+          float dist_squared, max_dist_squared;
+          vm_vec_dist_squared_to_line(pos,&l.vec,&l.vec2,&nearest,&dist_squared);
 
-					max_dist_squared = l.radb+rad;
-					max_dist_squared *= max_dist_squared;
+          max_dist_squared = l.radb+rad;
+          max_dist_squared *= max_dist_squared;
 
-					if ( dist_squared < max_dist_squared ) {
-						FilteredLights.push_back(i);
-					}
-				}
-			}
-			break;
+          if ( dist_squared < max_dist_squared ) {
+            FilteredLights.push_back(i);
+          }
+        }
+      }
+      break;
 
-			case LT_CONE:
-				break;
+      case LT_CONE:
+        break;
 
-			default:
-				break;
-		}
-	}
+      default:
+        break;
+    }
+  }
 }
 
 light_indexing_info scene_lights::bufferLights()
 {
-	size_t i;
+  size_t i;
 
-	light_indexing_info light_info;
+  light_indexing_info light_info;
 
-	light_info.index_start = 0;
-	light_info.num_lights = 0;
+  light_info.index_start = 0;
+  light_info.num_lights = 0;
 
-	// make sure that there are lights to bind?
-	if ( FilteredLights.empty() ) {
-		return light_info;
-	}
+  // make sure that there are lights to bind?
+  if ( FilteredLights.empty() ) {
+    return light_info;
+  }
 
-	light_info.index_start = BufferedLights.size();
-	
-	for ( i = 0; i < FilteredLights.size(); ++i ) {
-		BufferedLights.push_back(FilteredLights[i]);
-	}
+  light_info.index_start = BufferedLights.size();
+  
+  for ( i = 0; i < FilteredLights.size(); ++i ) {
+    BufferedLights.push_back(FilteredLights[i]);
+  }
 
-	light_info.num_lights = FilteredLights.size();
+  light_info.num_lights = FilteredLights.size();
 
-	return light_info;
+  return light_info;
 }
 
 size_t scene_lights::getNumStaticLights()
 {
-	return StaticLightIndices.size();
+  return StaticLightIndices.size();
 }
 
 void scene_lights::resetLightState()
 {
-	current_light_index = static_cast<size_t>(-1);
-	current_num_lights = static_cast<size_t>(-1);
+  current_light_index = static_cast<size_t>(-1);
+  current_num_lights = static_cast<size_t>(-1);
 }
 
 bool scene_lights::setLights(const light_indexing_info *info)
 {
-	if ( info->index_start == current_light_index && info->num_lights == current_num_lights ) {
-		// don't need to set new lights since the ones requested to be set are currently set
-		return false;
-	}
+  if ( info->index_start == current_light_index && info->num_lights == current_num_lights ) {
+    // don't need to set new lights since the ones requested to be set are currently set
+    return false;
+  }
 
-	current_light_index = info->index_start;
-	current_num_lights = info->num_lights;
+  current_light_index = info->index_start;
+  current_num_lights = info->num_lights;
 
-	gr_reset_lighting();
+  gr_reset_lighting();
 
-	for ( size_t i = 0; i < StaticLightIndices.size(); ++i) {
-		auto light_index = StaticLightIndices[i];
-		
-		gr_set_light( &AllLights[light_index] );
-	}
+  for ( size_t i = 0; i < StaticLightIndices.size(); ++i) {
+    auto light_index = StaticLightIndices[i];
+    
+    gr_set_light( &AllLights[light_index] );
+  }
 
-	extern bool Deferred_lighting;
-	if ( Deferred_lighting ) {
-		gr_set_lighting(true, true);
-		return false;
-	}
+  extern bool Deferred_lighting;
+  if ( Deferred_lighting ) {
+    gr_set_lighting(true, true);
+    return false;
+  }
 
-	auto index_start = info->index_start;
-	auto num_lights = info->num_lights;
+  auto index_start = info->index_start;
+  auto num_lights = info->num_lights;
 
-	// check if there are any lights to actually set
-	if ( num_lights <= 0 ) {
-		gr_set_lighting(true, true);
-		return false;
-	}
+  // check if there are any lights to actually set
+  if ( num_lights <= 0 ) {
+    gr_set_lighting(true, true);
+    return false;
+  }
 
-	// we definitely shouldn't be exceeding the number of buffered lights
-	Assert(index_start + num_lights <= BufferedLights.size());
+  // we definitely shouldn't be exceeding the number of buffered lights
+  Assert(index_start + num_lights <= BufferedLights.size());
 
-	for ( size_t i = 0; i < num_lights; ++i ) {
-		auto buffered_light_index = index_start + i;
-		auto light_index = BufferedLights[buffered_light_index];
+  for ( size_t i = 0; i < num_lights; ++i ) {
+    auto buffered_light_index = index_start + i;
+    auto light_index = BufferedLights[buffered_light_index];
 
-		gr_set_light(&AllLights[light_index]);
-	}
+    gr_set_light(&AllLights[light_index]);
+  }
 
-	gr_set_lighting(true, true);
+  gr_set_lighting(true, true);
 
-	return true;
+  return true;
 }

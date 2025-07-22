@@ -20,13 +20,13 @@
  */
 float fl_roundoff(float x, int multiple)
 {
-	float half = (float) multiple / 2.0f;
+  float half = (float) multiple / 2.0f;
 
-	if (x < 0)
-		half = -half;
+  if (x < 0)
+    half = -half;
 
-	x += half;
-	return (float) (((int) x / multiple) * multiple);
+  x += half;
+  return (float) (((int) x / multiple) * multiple);
 }
 
 /**
@@ -34,12 +34,12 @@ float fl_roundoff(float x, int multiple)
  */
 float frand()
 {
-	int i_rval;
-	do {
-		i_rval = myrand();
-	} while (i_rval == RAND_MAX);
-	float rval = i2fl(i_rval) * RAND_MAX_1f;
-	return rval;
+  int i_rval;
+  do {
+    i_rval = myrand();
+  } while (i_rval == RAND_MAX);
+  float rval = i2fl(i_rval) * RAND_MAX_1f;
+  return rval;
 }
 
 /**
@@ -49,12 +49,12 @@ float frand()
  */
 float frand_range(float min, float max)
 {
-	float	rval;
-	
-	rval = frand();
-	rval = rval * (max - min) + min;
+  float  rval;
+  
+  rval = frand();
+  rval = rval * (max - min) + min;
 
-	return rval;
+  return rval;
 }
 
 /**
@@ -65,9 +65,9 @@ float frand_range(float min, float max)
  */
 int rand_chance(float frametime, float chance)
 {
-	while (--chance > 0.0f)
-		if (frand() < frametime)
-			return 1;
+  while (--chance > 0.0f)
+    if (frand() < frametime)
+      return 1;
 
-	return frand() < (frametime * (chance + 1.0f));
+  return frand() < (frametime * (chance + 1.0f));
 }

@@ -9,7 +9,7 @@
 #include "network/multi.h"
 #include "network/multiutil.h"
 
-#define CALLBACK_TERMINATOR	255
+#define CALLBACK_TERMINATOR  255
 int TEMP_DATA_SIZE = -1;
 
 sexp_network_packet Current_sexp_network_packet;
@@ -23,11 +23,11 @@ sexp_network_packet Current_sexp_network_packet;
 * into a new array that will work with the rest of the client-side code.
 */
 void sexp_packet_received(ubyte *received_packet, int num_ubytes)
-{	
+{  
     Current_sexp_network_packet.set_data(received_packet, num_ubytes);
 
-	// start working through the packet
-	multi_sexp_eval();
+  // start working through the packet
+  multi_sexp_eval();
 }
 
 void sexp_network_packet::ensure_space_remains(size_t data_size)
@@ -101,7 +101,7 @@ void sexp_network_packet::reduce_counts(int amount)
 bool sexp_network_packet::argument_count_is_valid()
 {
     if (current_argument_count != 0) {
-        // we have a problem here, either the argument count is wrong or the last SEXP didn't remove all its data from the packet		
+        // we have a problem here, either the argument count is wrong or the last SEXP didn't remove all its data from the packet    
         ubyte possible_terminator;
         bool terminator_found = false;
         for (int i = 0; i < current_argument_count; i++) {
@@ -185,7 +185,7 @@ void sexp_network_packet::start_callback()
 
     //Store the next data index as we'll need it later to write the COUNT.
     argument_count_index = packet_size;
-    // store an invalid count, we'll come back and store the correct value once we know what it is.	
+    // store an invalid count, we'll come back and store the correct value once we know what it is.  
     type[packet_size] = packet_data_type::ARGUMENT_COUNT;
     ADD_INT(TEMP_DATA_SIZE);
 }
