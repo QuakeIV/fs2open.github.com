@@ -10662,7 +10662,7 @@ int ship_fire_primary(object * obj, int stream_weapons, int force)
 		}
 
 	// If a subsystem is targeted, fire in that direction instead
-	if (aip->targeted_subsys != NULL)
+	if ((Player_ai->target_objnum != -1) && (Objects[Player_ai->target_objnum].type == OBJ_SHIP) && aip->targeted_subsys != NULL)
 	{
 		get_subsystem_world_pos(&Objects[aip->target_objnum], aip->targeted_subsys, &target_position);
 	}
