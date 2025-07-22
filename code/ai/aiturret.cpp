@@ -291,6 +291,23 @@ bool all_turret_weapons_have_flags(ship_weapon *swp, Weapon::Info_Flags flags)
     return true;
 }
 
+bool any_turret_weapon_has_flags(ship_weapon *swp, Weapon::Info_Flags flags)
+{
+    int i;
+    for (i = 0; i < swp->num_primary_banks; i++)
+    {
+        if (Weapon_info[swp->primary_bank_weapons[i]].wi_flags[flags])
+            return true;
+    }
+    for (i = 0; i < swp->num_secondary_banks; i++)
+    {
+        if (Weapon_info[swp->secondary_bank_weapons[i]].wi_flags[flags])
+            return true;
+    }
+
+    return false;
+}
+
 /**
  * Returns true if any of the weapons in swp have flags
  *
@@ -536,11 +553,13 @@ void evaluate_obj_as_target(object *objp, eval_enemy_obj_struct *eeo)
 	}
 #endif
 
-	if ( objp->type == OBJ_SHIP ) {
+	if ( objp->type == OBJ_SHIP )
+  {
 		shipp = &Ships[objp->instance];
 
 		// check on enemy team
-		if ( !iff_matches_mask(shipp->team, eeo->enemy_team_mask) ) {
+		if ( !iff_matches_mask(shipp->team, eeo->enemy_team_mask) )
+    {
 			return;
 		}
 
@@ -578,8 +597,10 @@ void evaluate_obj_as_target(object *objp, eval_enemy_obj_struct *eeo)
 		}
 
 		// don't shoot at small ships if we shouldn't
-		if (eeo->eeo_flags & EEOF_BIG_ONLY) {
-			if (!(Ship_info[shipp->ship_info_index].is_big_or_huge())) {
+		if (eeo->eeo_flags & EEOF_BIG_ONLY)
+    {
+			if (!(Ship_info[shipp->ship_info_index].is_big_or_huge()))
+      {
 				return;
 			}
 		}
@@ -748,7 +769,8 @@ void evaluate_obj_as_target(object *objp, eval_enemy_obj_struct *eeo)
 			if (!(ss->flags[Ship::Subsystem_Flags::FOV_Required]) && (eeo->current_enemy == -1)) {
 				turret_has_no_target = true;
 			}
-			if ( (turret_has_no_target) || object_in_turret_fov(objp, ss, eeo->tvec, eeo->tpos, dist + objp->radius) ) {
+			if ( (turret_has_no_target) || object_in_turret_fov(objp, ss, eeo->tvec, eeo->tpos, dist + objp->radius) )
+      {
 				// nprintf(("AI", "Nearest enemy = %s, dist = %7.3f, dot = %6.3f, fov = %6.3f\n", Ships[objp->instance].ship_name, dist, vm_vec_dot(&v2e, tvec), tp->turret_fov));
 				eeo->nearest_attacker_dist = dist_comp;
 				eeo->nearest_attacker_objnum = OBJ_INDEX(objp);
@@ -788,7 +810,7 @@ int is_target_beam_valid(ship_weapon *swp, object *objp)
 			return 0;
 		}
 
-		if (all_turret_weapons_have_flags(swp, Weapon::Info_Flags::Huge)) {
+		if (any_turret_weapon_has_flags(swp, Weapon::Info_Flags::Huge)) {
 			if (objp->type == OBJ_SHIP && !(Ship_info[Ships[objp->instance].ship_info_index].is_big_or_huge()) ) {
 				return 0;
 			}
@@ -846,12 +868,18 @@ int get_nearest_turret_objnum(int turret_parent_objnum, ship_subsys *turret_subs
 
 	// set flags
 	eeo.eeo_flags = 0;
-	if (big_only_flag)
-		eeo.eeo_flags |= EEOF_BIG_ONLY;
-	if (small_only_flag)
-		eeo.eeo_flags |= EEOF_SMALL_ONLY;
-	if (tagged_only_flag)
-		eeo.eeo_flags |= EEOF_TAGGED_ONLY;
+  if (big_only_flag)
+  {
+	  eeo.eeo_flags |= EEOF_BIG_ONLY;
+  }
+  if (small_only_flag)
+  {
+    eeo.eeo_flags |= EEOF_SMALL_ONLY;
+  }
+  if (tagged_only_flag)
+  {
+    eeo.eeo_flags |= EEOF_TAGGED_ONLY;
+  }
 
 	// flags for weapon types
 	if (beam_flag)
@@ -902,7 +930,7 @@ int get_nearest_turret_objnum(int turret_parent_objnum, ship_subsys *turret_subs
 	}
 
 	if (n_tgt_priorities > 0) 
-    {
+  {
 		for(int i = 0; i < n_tgt_priorities; i++) {
 			// courtesy of WMC...
 			ai_target_priority *tt;
@@ -1026,11 +1054,12 @@ int get_nearest_turret_objnum(int turret_parent_objnum, ship_subsys *turret_subs
 				return return_objnum;
 			}
 		}
-	} else 
-    {
-        flagset<Weapon::Info_Flags> tmp_flagset;
-        const Weapon::Info_Flags weapon_flags[] = { Weapon::Info_Flags::Huge, Weapon::Info_Flags::Flak, Weapon::Info_Flags::Homing_aspect, Weapon::Info_Flags::Homing_heat, Weapon::Info_Flags::Homing_javelin, Weapon::Info_Flags::Spawn };
-        tmp_flagset.set_multiple(std::begin(weapon_flags), std::end(weapon_flags));
+	}
+  else 
+  {
+    flagset<Weapon::Info_Flags> tmp_flagset;
+    const Weapon::Info_Flags weapon_flags[] = { Weapon::Info_Flags::Huge, Weapon::Info_Flags::Flak, Weapon::Info_Flags::Homing_aspect, Weapon::Info_Flags::Homing_heat, Weapon::Info_Flags::Homing_javelin, Weapon::Info_Flags::Spawn };
+    tmp_flagset.set_multiple(std::begin(weapon_flags), std::end(weapon_flags));
 
 		for(int i = 0; i < NUM_TURRET_ORDER_TYPES; i++)
 		{
@@ -1074,8 +1103,9 @@ int get_nearest_turret_objnum(int turret_parent_objnum, ship_subsys *turret_subs
 					}
 
 					Assert(eeo.nearest_attacker_objnum < 0 || is_target_beam_valid(swp, &Objects[eeo.nearest_attacker_objnum]));
-						// next highest priority is attacking ship
-					if ( eeo.nearest_attacker_objnum != -1 ) {			// next highest priority is an attacking ship
+          // next highest priority is attacking ship
+					if ( eeo.nearest_attacker_objnum != -1 )
+          {
 						return eeo.nearest_attacker_objnum;
 					}
 					break;
@@ -1136,9 +1166,12 @@ int find_turret_enemy(ship_subsys *turret_subsys, int objnum, vec3d *tpos, vec3d
 
 	enemy_team_mask = iff_get_attackee_mask(obj_team(&Objects[objnum]));
 
-	bool big_only_flag = all_turret_weapons_have_flags(&turret_subsys->weapons, Weapon::Info_Flags::Huge);
-	bool small_only_flag = all_turret_weapons_have_flags(&turret_subsys->weapons, Weapon::Info_Flags::Small_only);
-    bool tagged_only_flag = all_turret_weapons_have_flags(&turret_subsys->weapons, Weapon::Info_Flags::Tagged_only) || (turret_subsys->weapons.flags[Ship::Weapon_Flags::Tagged_Only]);
+  flagset<Weapon::Info_Flags> tmp_flagset;
+	bool big_only_flag = any_turret_weapon_has_flags(&turret_subsys->weapons, Weapon::Info_Flags::Huge);
+	bool small_only_flag = any_turret_weapon_has_flags(&turret_subsys->weapons, Weapon::Info_Flags::Small_only);
+  bool tagged_only_flag = any_turret_weapon_has_flags(&turret_subsys->weapons, Weapon::Info_Flags::Tagged_only) || (turret_subsys->weapons.flags[Ship::Weapon_Flags::Tagged_Only]);
+
+  Assert(!(big_only_flag && small_only_flag)); // yeah no
 
 	bool beam_flag = turret_weapon_has_flags(&turret_subsys->weapons, Weapon::Info_Flags::Beam);
 	bool flak_flag = turret_weapon_has_flags(&turret_subsys->weapons, Weapon::Info_Flags::Flak);
@@ -1221,6 +1254,21 @@ int find_turret_enemy(ship_subsys *turret_subsys, int objnum, vec3d *tpos, vec3d
 		Assert( !((Objects[enemy_objnum].flags[Object::Object_Flags::Flak_protected]) && flak_flag) );
 		Assert( !((Objects[enemy_objnum].flags[Object::Object_Flags::Laser_protected]) && laser_flag) );
 		Assert( !((Objects[enemy_objnum].flags[Object::Object_Flags::Missile_protected]) && missile_flag) );
+
+    if (Objects[enemy_objnum].type == OBJ_SHIP)
+    {
+    	ship *shipp = &Ships[Objects[enemy_objnum].instance];
+      
+      if (big_only_flag)
+  		  Assert(Ship_info[shipp->ship_info_index].is_big_or_huge());
+      if (small_only_flag)
+  		  Assert(!Ship_info[shipp->ship_info_index].is_big_or_huge());
+    }
+    else
+    {
+      // bomb or whatnot
+		  Assert(!big_only_flag);
+    }
 
 		if ( Objects[enemy_objnum].flags[Object::Object_Flags::Protected] ) {
 			Int3();
