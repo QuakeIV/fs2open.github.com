@@ -89,7 +89,6 @@ namespace AI {
         Force_beam_turret_fov,
         Glide_decay_requires_thrust,
         Hack_improve_non_homing_swarm_turret_fire_accuracy,
-        Huge_turret_weapons_ignore_bombs,
         Include_beams_in_stat_calcs,
         Kill_scoring_scales_with_damage,
         Multi_allow_empty_primaries,

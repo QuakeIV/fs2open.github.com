@@ -646,6 +646,12 @@ void evaluate_obj_as_target(object *objp, eval_enemy_obj_struct *eeo)
     shipp = NULL;
   }
 
+  // don't shoot at bombs with anti capital ship weapons
+  if (objp->type == OBJ_WEAPON && eeo->eeo_flags & EEOF_BIG_ONLY)
+  {
+    return;
+  }
+
   // modify dist for BIG|HUGE, getting closest point on bbox, if not inside
   vec3d vec_to_target;
   vm_vec_sub(&vec_to_target, &objp->pos, eeo->tpos);
@@ -1073,7 +1079,7 @@ int get_nearest_turret_objnum(int turret_parent_objnum, ship_subsys *turret_subs
         case 0:
           //Return if a bomb is found
           //don't fire anti capital ship turrets at bombs.
-          if ( !((aip->ai_profile_flags[AI::Profile_Flags::Huge_turret_weapons_ignore_bombs]) && big_only_flag) )
+          if ( !big_only_flag )
           {
             // Missile_obj_list
             for( mo = GET_FIRST(&Missile_obj_list); mo != END_OF_LIST(&Missile_obj_list); mo = GET_NEXT(mo) ) {

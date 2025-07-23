@@ -746,8 +746,6 @@ void parse_ai_class()
   set_aic_flag(aicp, "$smart afterburner management:", AI::Profile_Flags::Smart_afterburner_management);
 
   set_aic_flag(aicp, "$allow rapid secondary dumbfire:", AI::Profile_Flags::Allow_rapid_secondary_dumbfire);
-  
-  set_aic_flag(aicp, "$huge turret weapons ignore bombs:", AI::Profile_Flags::Huge_turret_weapons_ignore_bombs);
 
   set_aic_flag(aicp, "$don't insert random turret fire delay:", AI::Profile_Flags::Dont_insert_random_turret_fire_delay);
 

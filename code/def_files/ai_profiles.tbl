@@ -198,11 +198,7 @@ $smart afterburner management: NO
 																		
 ;; if set, allows an AI ship to switch to rapid fire for dumbfire		
 ;; missiles																
-$allow rapid secondary dumbfire: NO										
-																		
-;; if set, causes huge turret weapons (including anti-capship beams) to	
-;; not target bombs														
-$huge turret weapons ignore bombs: NO									
+$allow rapid secondary dumbfire: NO						
 																		
 ;; if set, removes the random turret fire delay (from .1 to .9 seconds)	
 ;; inserted in addition to AI Fire Delay Scale							

@@ -341,8 +341,6 @@ void parse_ai_profiles_tbl(const char *filename)
 
         set_flag(profile, "$allow rapid secondary dumbfire:", AI::Profile_Flags::Allow_rapid_secondary_dumbfire);
 
-        set_flag(profile, "$huge turret weapons ignore bombs:", AI::Profile_Flags::Huge_turret_weapons_ignore_bombs);
-
         set_flag(profile, "$don't insert random turret fire delay:", AI::Profile_Flags::Dont_insert_random_turret_fire_delay);
 
         set_flag(profile, "$hack improve non-homing swarm turret fire accuracy:", AI::Profile_Flags::Hack_improve_non_homing_swarm_turret_fire_accuracy);
