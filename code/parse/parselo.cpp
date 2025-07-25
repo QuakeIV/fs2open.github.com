@@ -2178,7 +2178,7 @@ void read_raw_file_text(const char *filename, int mode, char *raw_text)
   int file_len = cfilelength(mf);
 
   if(!file_len) {
-        nprintf(("Error", "Oh noes!!  File is empty! (%s)!\n", filename));
+        nprintf(("Error", "Wokka!  File is empty! (%s)!\n", filename));
         throw parse::ParseException("Failed to open file");
   }
 

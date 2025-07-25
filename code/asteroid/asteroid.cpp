@@ -474,11 +474,11 @@ void asteroid_load(int asteroid_info_index, int asteroid_subtype)
       if ( !Is_standalone )
       {
         // just log to file for standalone servers
-        Warning(LOCATION, "For asteroid '%s', detail level\nmismatch (POF needs %d)", asip->name, pm->n_detail_levels );
+        Warning(LOCATION, "For asteroid '%s', detail level\nmismatch (has %d, POF needs %d)", asip->name, asip->num_detail_levels, pm->n_detail_levels );
       }
       else
       {
-        nprintf(("Warning",  "For asteroid '%s', detail level mismatch (POF needs %d)", asip->name, pm->n_detail_levels));
+        nprintf(("Warning",  "For asteroid '%s', detail level mismatch (has %d, POF needs %d)", asip->name, asip->num_detail_levels, pm->n_detail_levels));
       }
     }  
     // Stuff detail level distances.
