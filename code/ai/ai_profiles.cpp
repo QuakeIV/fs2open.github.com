@@ -157,9 +157,6 @@ void parse_ai_profiles_tbl(const char *filename)
       // fill in any and all settings; they're all optional and can be in any order
       while (!check_for_string("$Profile Name:") && !check_for_string("#End"))
       {
-        if (optional_string("$Player Afterburner Recharge Scale:"))
-          parse_float_list(profile->afterburner_recharge_scale, NUM_SKILL_LEVELS);
-
         if (optional_string("$Max Beam Friendly Fire Damage:"))
           parse_float_list(profile->beam_friendly_damage_cap, NUM_SKILL_LEVELS);
 
@@ -271,12 +268,6 @@ void parse_ai_profiles_tbl(const char *filename)
 
         if (optional_string("$Stalemate Distance Threshold:"))
           parse_float_list(profile->stalemate_dist_thresh, NUM_SKILL_LEVELS);
-
-        if (optional_string("$Player Shield Recharge Scale:"))
-          parse_float_list(profile->shield_energy_scale, NUM_SKILL_LEVELS);
-
-        if (optional_string("$Player Weapon Recharge Scale:"))
-          parse_float_list(profile->weapon_energy_scale, NUM_SKILL_LEVELS);
 
         if (optional_string("$Max Turret Target Ownage:"))
           parse_int_list(profile->max_turret_ownage_target, NUM_SKILL_LEVELS);
@@ -533,9 +524,6 @@ void ai_profile_t::reset()
         primary_ammo_burst_mult[i] = 0;
 
         cmeasure_fire_chance[i] = 0;
-        weapon_energy_scale[i] = 0;
-        shield_energy_scale[i] = 0;
-        afterburner_recharge_scale[i] = 0;
         player_damage_scale[i] = 0;
 
         subsys_damage_scale[i] = 0;

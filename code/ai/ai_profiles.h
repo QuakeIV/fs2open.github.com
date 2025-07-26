@@ -44,9 +44,6 @@ public:
 
 	// difficulty-related scale
 	float cmeasure_fire_chance[NUM_SKILL_LEVELS];			// chance a countermeasure will be fired based on skill level (also scaled by ai_class)
-	float weapon_energy_scale[NUM_SKILL_LEVELS];			// weapon energy available
-	float shield_energy_scale[NUM_SKILL_LEVELS];			// shield energy available
-	float afterburner_recharge_scale[NUM_SKILL_LEVELS];		// speed of afterburner recharge
 	float player_damage_scale[NUM_SKILL_LEVELS];			// damage applied to the player
 	
 	float subsys_damage_scale[NUM_SKILL_LEVELS];			// damage applied to a player subsystem

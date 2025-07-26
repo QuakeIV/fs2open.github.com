@@ -1771,7 +1771,7 @@ float get_wing_lowest_av_ab_speed(object *objp)
   }
   else
   {
-    recharge_scale = Energy_levels[shipp->engine_recharge_index] * 2.0f * The_mission.ai_profile->afterburner_recharge_scale[Game_skill_level];
+    recharge_scale = Energy_levels[shipp->engine_recharge_index] * 2.0f;
     recharge_scale = sip->afterburner_recover_rate * recharge_scale / (sip->afterburner_burn_rate + sip->afterburner_recover_rate * recharge_scale);
     lowest_max_av_ab_speed = recharge_scale * (objp->phys_info.afterburner_max_vel.xyz.z - shipp->current_max_speed) + shipp->current_max_speed;
   }
@@ -1796,7 +1796,7 @@ float get_wing_lowest_av_ab_speed(object *objp)
       }
       else
       {
-        recharge_scale = Energy_levels[shipp->engine_recharge_index] * 2.0f * The_mission.ai_profile->afterburner_recharge_scale[Game_skill_level];
+        recharge_scale = Energy_levels[shipp->engine_recharge_index] * 2.0f;
         recharge_scale = osip->afterburner_recover_rate * recharge_scale / (osip->afterburner_burn_rate + osip->afterburner_recover_rate * recharge_scale);
         cur_max = recharge_scale * (o->phys_info.afterburner_max_vel.xyz.z - oshipp->current_max_speed) + oshipp->current_max_speed;
       }
@@ -4434,7 +4434,7 @@ void ai_fly_to_target_position(vec3d* target_pos, bool* pl_done_p=NULL, bool* pl
     max_allowed_speed = 0.9f * get_wing_lowest_max_speed(Pl_objp);
     max_allowed_ab_speed = 0.95f * get_wing_lowest_av_ab_speed(Pl_objp);
     if (ab_allowed) {
-      float self_ab_scale = Energy_levels[shipp->engine_recharge_index] * 2.0f * The_mission.ai_profile->afterburner_recharge_scale[Game_skill_level];
+      float self_ab_scale = Energy_levels[shipp->engine_recharge_index] * 2.0f;
       self_ab_scale = sip->afterburner_recover_rate * self_ab_scale / (sip->afterburner_burn_rate + sip->afterburner_recover_rate * self_ab_scale);
       self_ab_speed = 0.95f * (self_ab_scale * (Pl_objp->phys_info.afterburner_max_vel.xyz.z - shipp->current_max_speed) + shipp->current_max_speed);
     }
