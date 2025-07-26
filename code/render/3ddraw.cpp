@@ -98,7 +98,7 @@ int g3_draw_line(vertex *p0, vertex *p1)
   if (p1->flags&PF_OVERFLOW)
     return must_clip_line(p0,p1,codes_or,0);
 
-    gr_aaline( p0, p1 );
+  gr_aaline( p0, p1 );
 
   return 0;
 }

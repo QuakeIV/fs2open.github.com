@@ -146,11 +146,11 @@ void HudGaugeRadarDradis::drawContact(vec3d *pnt, int idx, int clr_idx, float di
   if ((sub_y_clip && (pnt->xyz.y > 0)) || ((!sub_y_clip) && (pnt->xyz.y <= 0)))
     return;
 
-    memset(&vert, 0, sizeof(vert));
-    
+  memset(&vert, 0, sizeof(vert));
+
   vm_vec_rotate(&p, pnt,  &vmd_identity_matrix); 
   g3_transfer_vertex(&vert, &p);
-  
+
   float sizef = fl_sqrt(vm_vec_dist(&Orb_eye_position, pnt) * 8.0f) * scale_factor;
 
     if ( clr_idx >= 0 ) {

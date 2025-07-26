@@ -1678,10 +1678,10 @@ bool SetCmdlineParams()
   if ( no3dsound_arg.found() )
     Cmdline_no_3d_sound = 1;
 
-    if ( atiswap_arg.found() )
-    {
-        Cmdline_ati_color_swap = 1;
-    }
+  if ( atiswap_arg.found() )
+  {
+      Cmdline_ati_color_swap = 1;
+  }
 
   if ( enable_3d_shockwave_arg.found() )
   {

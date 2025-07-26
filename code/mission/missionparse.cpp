@@ -2076,13 +2076,11 @@ int parse_create_object_sub(p_object *p_objp)
   if (p_objp->flags[Mission::Parse_Object_Flags::SF_Dock_leader])
     shipp->flags.set(Ship::Ship_Flags::Dock_leader);
 
-    if (p_objp->flags[Mission::Parse_Object_Flags::SF_Warp_broken])
-        shipp->flags.set(Ship::Ship_Flags::Warp_broken);
+  if (p_objp->flags[Mission::Parse_Object_Flags::SF_Warp_broken])
+      shipp->flags.set(Ship::Ship_Flags::Warp_broken);
 
-    if (p_objp->flags[Mission::Parse_Object_Flags::SF_Warp_never])
-        shipp->flags.set(Ship::Ship_Flags::Warp_never);
-////////////////////////
-
+  if (p_objp->flags[Mission::Parse_Object_Flags::SF_Warp_never])
+      shipp->flags.set(Ship::Ship_Flags::Warp_never);
 
   // if ship is in a wing, and the wing's no_warp_effect flag is set, then set the equivalent
   // flag for the ship

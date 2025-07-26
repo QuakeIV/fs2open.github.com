@@ -1069,7 +1069,6 @@ int get_nearest_turret_objnum(int turret_parent_objnum, ship_subsys *turret_subs
 
     for(int i = 0; i < NUM_TURRET_ORDER_TYPES; i++)
     {
-      ai_info *aip = &Ai_info[Ships[Objects[eeo.turret_parent_objnum].instance].ai_index];
       switch(turret_subsys->turret_targeting_order[i])
       {
         case -1:

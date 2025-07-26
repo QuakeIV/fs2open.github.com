@@ -179,8 +179,8 @@ void outwnd_print(const char *id, const char *tmp)
   if ( (id == NULL) || (tmp == NULL) )
     return;
 
-    if ( !outwnd_inited )
-      return;
+  if ( !outwnd_inited )
+    return;
 
   if (Outwnd_no_filter_file == 1) {
     Outwnd_no_filter_file = 2;

@@ -1781,7 +1781,8 @@ void parse_tmap(int offset, ubyte *bsp_data)
 
   int problem_count = 0;
 
-  for (int i = 1; i < (n_vert-1); i++) {
+  for (int i = 1; i < (n_vert-1); i++)
+  {
     V = &polygon_list[pof_tex].vert[(polygon_list[pof_tex].n_verts)];
     N = &polygon_list[pof_tex].norm[(polygon_list[pof_tex].n_verts)];
     v = Interp_verts[(int)tverts[0].vertnum];
@@ -1796,7 +1797,7 @@ void parse_tmap(int offset, ubyte *bsp_data)
     if ( IS_VEC_NULL(N) )
       *N = *vp(p);
 
-      problem_count += check_values(N);
+    problem_count += check_values(N);
     vm_vec_normalize_safe(N);
 
     V = &polygon_list[pof_tex].vert[(polygon_list[pof_tex].n_verts)+1];
@@ -1813,7 +1814,7 @@ void parse_tmap(int offset, ubyte *bsp_data)
     if ( IS_VEC_NULL(N) )
       *N = *vp(p);
 
-     problem_count += check_values(N);
+    problem_count += check_values(N);
     vm_vec_normalize_safe(N);
 
     V = &polygon_list[pof_tex].vert[(polygon_list[pof_tex].n_verts)+2];

@@ -3399,9 +3399,9 @@ int WarpEffect::warpEnd()
   if(!this->isValid())
     return 0;
 
-    shipp->flags.remove(Ship::Ship_Flags::Arriving_stage_1);
-    shipp->flags.remove(Ship::Ship_Flags::Arriving_stage_2);
-    shipp->flags.remove(Ship::Ship_Flags::Depart_warp);
+  shipp->flags.remove(Ship::Ship_Flags::Arriving_stage_1);
+  shipp->flags.remove(Ship::Ship_Flags::Arriving_stage_2);
+  shipp->flags.remove(Ship::Ship_Flags::Depart_warp);
 
   // let physics in on it too.
   objp->phys_info.flags &= (~PF_WARP_IN);

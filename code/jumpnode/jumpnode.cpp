@@ -46,16 +46,18 @@ CJumpNode::CJumpNode(vec3d *position) : m_radius(0.0f), m_modelnum(-1), m_objnum
   if (m_modelnum == -1)
     Warning(LOCATION, "Could not load default model for %s", m_name);
   else
+  {
     m_radius = model_get_radius(m_modelnum);
-  
+
     m_pos.xyz.x = position->xyz.x;
     m_pos.xyz.y = position->xyz.y;
     m_pos.xyz.z = position->xyz.z;
     
-  // Create the object
+    // Create the object
     flagset<Object::Object_Flags> default_flags;
     default_flags.set(Object::Object_Flags::Renders);
     m_objnum = obj_create(OBJ_JUMP_NODE, -1, -1, NULL, &m_pos, m_radius, default_flags);
+  }
 }
 
 CJumpNode::CJumpNode(CJumpNode&& other)
