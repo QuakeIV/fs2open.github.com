@@ -156,10 +156,6 @@ typedef struct ai_class {
 	float	ai_link_energy_levels_always[NUM_SKILL_LEVELS];
 	fix		ai_predict_position_delay[NUM_SKILL_LEVELS];
 	float	ai_shield_manage_delay[NUM_SKILL_LEVELS];
-	float	ai_ship_fire_delay_scale_friendly[NUM_SKILL_LEVELS];	
-	float	ai_ship_fire_delay_scale_hostile[NUM_SKILL_LEVELS];
-	float	ai_ship_fire_secondary_delay_scale_friendly[NUM_SKILL_LEVELS];
-	float	ai_ship_fire_secondary_delay_scale_hostile[NUM_SKILL_LEVELS];
 	float	ai_turn_time_scale[NUM_SKILL_LEVELS];
 	float	ai_glide_attack_percent[NUM_SKILL_LEVELS];
 	float	ai_circle_strafe_percent[NUM_SKILL_LEVELS];
@@ -386,11 +382,7 @@ typedef struct ai_info {
 	float	ai_link_energy_levels_maybe;
 	float	ai_link_energy_levels_always;
 	fix		ai_predict_position_delay;
-	float	ai_shield_manage_delay;	
-	float	ai_ship_fire_delay_scale_friendly;
-	float	ai_ship_fire_delay_scale_hostile;
-	float	ai_ship_fire_secondary_delay_scale_friendly;
-	float	ai_ship_fire_secondary_delay_scale_hostile;
+	float	ai_shield_manage_delay;
 	float	ai_turn_time_scale;
 	float	ai_glide_attack_percent;
 	float	ai_circle_strafe_percent;

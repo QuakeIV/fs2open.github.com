@@ -80,7 +80,7 @@ $Predict Position Delay: 2, 1.5, 1.333, 0.5, 0
 																		
 ;; seconds between each instance of an AI ship managing its shields		
 $AI Shield Manage Delay: 5, 4, 2.5, 1.2, 0.1							
-																		
+
 ;; factor applied to 'fire wait' for friendly ships						
 $Friendly AI Fire Delay Scale: 2, 1.4, 1.25, 1.1, 1						
 																		
@@ -201,7 +201,6 @@ $smart afterburner management: NO
 $allow rapid secondary dumbfire: NO						
 																		
 ;; if set, removes the random turret fire delay (from .1 to .9 seconds)	
-;; inserted in addition to AI Fire Delay Scale							
 $don't insert random turret fire delay: NO								
 																		
 ;; if set, triggers a hack to improves the accuracy of non-homing swarm	
@@ -211,12 +210,8 @@ $hack improve non-homing swarm turret fire accuracy: NO
 
 ;; if set, ships will not be able to engage their jump drive if their	
 ;; navigation subsystem is damaged or destroyed							
-$navigation subsystem governs warpout capability: NO					
-																		
-;; if set, will not use a minimum speed limit for docked ships			
-;; (like in FS1)														
-$ignore lower bound for minimum speed of docked ship: NO				
-																		
+$navigation subsystem governs warpout capability: NO
+
 ;; if set, will remove the increased delay when weapons are linked
 $disable linked fire penalty: NO
 

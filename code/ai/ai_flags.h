@@ -93,7 +93,6 @@ namespace AI {
         Multi_allow_empty_primaries,
         Multi_allow_empty_secondaries,
         Navigation_subsys_governs_warp,
-        No_min_dock_speed_cap,
         No_special_player_avoid,
         No_warp_camera,
         Perform_fewer_scream_checks,

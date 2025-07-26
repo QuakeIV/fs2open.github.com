@@ -217,18 +217,6 @@ void parse_ai_profiles_tbl(const char *filename)
         if (optional_string("$AI Shield Manage Delay:") || optional_string("$AI Shield Manage Delays:"))
           parse_float_list(profile->shield_manage_delay, NUM_SKILL_LEVELS);
 
-        if (optional_string("$Friendly AI Fire Delay Scale:"))
-          parse_float_list(profile->ship_fire_delay_scale_friendly, NUM_SKILL_LEVELS);
-
-        if (optional_string("$Hostile AI Fire Delay Scale:"))
-          parse_float_list(profile->ship_fire_delay_scale_hostile, NUM_SKILL_LEVELS);
-
-        if (optional_string("$Friendly AI Secondary Fire Delay Scale:"))
-          parse_float_list(profile->ship_fire_secondary_delay_scale_friendly, NUM_SKILL_LEVELS);
-
-        if (optional_string("$Hostile AI Secondary Fire Delay Scale:"))
-          parse_float_list(profile->ship_fire_secondary_delay_scale_hostile, NUM_SKILL_LEVELS);
-
         if (optional_string("$AI Turn Time Scale:"))
           parse_float_list(profile->turn_time_scale, NUM_SKILL_LEVELS);
 
@@ -346,8 +334,6 @@ void parse_ai_profiles_tbl(const char *filename)
         set_flag(profile, "$hack improve non-homing swarm turret fire accuracy:", AI::Profile_Flags::Hack_improve_non_homing_swarm_turret_fire_accuracy);
 
         set_flag(profile, "$navigation subsystem governs warpout capability:", AI::Profile_Flags::Navigation_subsys_governs_warp);
-
-        set_flag(profile, "$ignore lower bound for minimum speed of docked ship:", AI::Profile_Flags::No_min_dock_speed_cap);
 
         set_flag(profile, "$disable linked fire penalty:", AI::Profile_Flags::Disable_linked_fire_penalty);
 
@@ -571,12 +557,6 @@ void ai_profile_t::reset()
         stalemate_dist_thresh[i] = 0;
         max_aim_update_delay[i] = 0;
         turret_max_aim_update_delay[i] = 0;
-
-        ship_fire_delay_scale_hostile[i] = 0;
-        ship_fire_delay_scale_friendly[i] = 0;
-
-        ship_fire_secondary_delay_scale_hostile[i] = 0;
-        ship_fire_secondary_delay_scale_friendly[i] = 0;
 
         max_turret_ownage_target[i] = 0;
         max_turret_ownage_player[i] = 0;

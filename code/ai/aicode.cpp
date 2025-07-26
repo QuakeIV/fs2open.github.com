@@ -540,10 +540,6 @@ void init_ai_class(ai_class *aicp)
     aicp->ai_link_energy_levels_always[i] = FLT_MIN;
     aicp->ai_predict_position_delay[i] = INT_MIN;
     aicp->ai_shield_manage_delay[i] = FLT_MIN;
-    aicp->ai_ship_fire_delay_scale_friendly[i] = FLT_MIN;
-    aicp->ai_ship_fire_delay_scale_hostile[i] = FLT_MIN;
-    aicp->ai_ship_fire_secondary_delay_scale_friendly[i] = FLT_MIN;
-    aicp->ai_ship_fire_secondary_delay_scale_hostile[i] = FLT_MIN;
     aicp->ai_turn_time_scale[i] = FLT_MIN;
     aicp->ai_glide_attack_percent[i] = FLT_MIN;
     aicp->ai_circle_strafe_percent[i] = FLT_MIN;
@@ -659,18 +655,6 @@ void parse_ai_class()
 
   if (optional_string("$AI Shield Manage Delay:") || optional_string("$AI Shield Manage Delays:"))
     parse_float_list(aicp->ai_shield_manage_delay, NUM_SKILL_LEVELS);
-
-  if (optional_string("$Friendly AI Fire Delay Scale:"))
-    parse_float_list(aicp->ai_ship_fire_delay_scale_friendly, NUM_SKILL_LEVELS);
-
-  if (optional_string("$Hostile AI Fire Delay Scale:"))
-    parse_float_list(aicp->ai_ship_fire_delay_scale_hostile, NUM_SKILL_LEVELS);
-
-  if (optional_string("$Friendly AI Secondary Fire Delay Scale:"))
-    parse_float_list(aicp->ai_ship_fire_secondary_delay_scale_friendly, NUM_SKILL_LEVELS);
-
-  if (optional_string("$Hostile AI Secondary Fire Delay Scale:"))
-    parse_float_list(aicp->ai_ship_fire_secondary_delay_scale_hostile, NUM_SKILL_LEVELS);
 
   if (optional_string("$AI Turn Time Scale:"))
     parse_float_list(aicp->ai_turn_time_scale, NUM_SKILL_LEVELS);
@@ -1353,9 +1337,8 @@ void adjust_accel_for_docking(ai_info *aip)
     float ratio = objp->phys_info.mass / dock_calc_total_docked_mass(objp);
 
     // put cap on how much ship can slow down
-    if ( (ratio < 0.8f) && !(The_mission.ai_profile->flags[AI::Profile_Flags::No_min_dock_speed_cap]) ) {
+    if ( ratio < 0.8f )
       ratio = 0.8f;
-    }
 
     // make sure we at least some velocity
     if (ratio < 0.1f) {
@@ -7789,11 +7772,6 @@ float set_secondary_fire_delay(ai_info *aip, ship *shipp, weapon_info *swip, boo
     t = swip->burst_delay;
   } else {
     t = swip->fire_wait;    //  Base delay for this weapon.
-  }
-  if (shipp->team == Player_ship->team) {
-    t *= aip->ai_ship_fire_secondary_delay_scale_friendly;
-  } else {
-    t *= aip->ai_ship_fire_secondary_delay_scale_hostile;
   }
 
   if (aip->ai_class_autoscale)
@@ -14488,14 +14466,6 @@ void init_aip_from_class_and_profile(ai_info *aip, ai_class *aicp, ai_profile_t 
     profile->predict_position_delay[Game_skill_level] : aicp->ai_predict_position_delay[Game_skill_level];
   aip->ai_shield_manage_delay = (aicp->ai_shield_manage_delay[Game_skill_level] == FLT_MIN) ? 
     profile->shield_manage_delay[Game_skill_level] : aicp->ai_shield_manage_delay[Game_skill_level];
-  aip->ai_ship_fire_delay_scale_friendly = (aicp->ai_ship_fire_delay_scale_friendly[Game_skill_level] == FLT_MIN) ? 
-    profile->ship_fire_delay_scale_friendly[Game_skill_level] : aicp->ai_ship_fire_delay_scale_friendly[Game_skill_level];
-  aip->ai_ship_fire_delay_scale_hostile = (aicp->ai_ship_fire_delay_scale_hostile[Game_skill_level] == FLT_MIN) ? 
-    profile->ship_fire_delay_scale_hostile[Game_skill_level] : aicp->ai_ship_fire_delay_scale_hostile[Game_skill_level];
-  aip->ai_ship_fire_secondary_delay_scale_friendly = (aicp->ai_ship_fire_secondary_delay_scale_friendly[Game_skill_level] == FLT_MIN) ? 
-    profile->ship_fire_secondary_delay_scale_friendly[Game_skill_level] : aicp->ai_ship_fire_secondary_delay_scale_friendly[Game_skill_level];
-  aip->ai_ship_fire_secondary_delay_scale_hostile = (aicp->ai_ship_fire_secondary_delay_scale_hostile[Game_skill_level] == FLT_MIN) ? 
-    profile->ship_fire_secondary_delay_scale_hostile[Game_skill_level] : aicp->ai_ship_fire_secondary_delay_scale_hostile[Game_skill_level];
   aip->ai_turn_time_scale = (aicp->ai_turn_time_scale[Game_skill_level] == FLT_MIN) ? 
     profile->turn_time_scale[Game_skill_level] : aicp->ai_turn_time_scale[Game_skill_level];
   aip->ai_glide_attack_percent = (aicp->ai_glide_attack_percent[Game_skill_level] == FLT_MIN) ? 
