@@ -160,7 +160,6 @@ namespace Ship {
 		Show_ship_model,				// Show ship model even in first person view
 		Surface_shields,				// _argv[-1], 16 Jan 2005: Enable surface shields for this ship.
 		Generate_hud_icon,				// Enable generation of a HUD shield icon
-		Disable_weapon_damage_scaling,	// WMC - Disable weapon scaling based on flags
 		Gun_convergence,				// WMC - Gun convergence based on model weapon norms.
 		No_thruster_geo_noise,			// Echelon9 - No thruster geometry noise.
 		Intrinsic_no_shields,			// Chief - disables shields for this ship even without No Shields in mission.

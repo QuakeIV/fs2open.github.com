@@ -7165,11 +7165,9 @@ float weapon_get_damage_scale(weapon_info *wip, object *wep, object *target)
     total_scale *= 0.1f;
   }
   
-  // if the hit object was a ship and we're doing damage scaling
-  if ( (target->type == OBJ_SHIP) &&
-    !(The_mission.ai_profile->flags[AI::Profile_Flags::Disable_weapon_damage_scaling]) &&
-    !(Ship_info[Ships[target->instance].ship_info_index].flags[Ship::Info_Flags::Disable_weapon_damage_scaling])
-  ) {
+  // if the hit object was a ship do damage scaling
+  if ( (target->type == OBJ_SHIP))
+  {
     ship_info *sip;
 
     // get some info on the ship
@@ -7204,7 +7202,7 @@ float weapon_get_damage_scale(weapon_info *wip, object *wep, object *target)
     if( is_big_damage_ship && !(wip->hurts_big_ships()) ){
 
       // if the player is firing it
-      if ( from_player && !(The_mission.ai_profile->flags[AI::Profile_Flags::Player_weapon_scale_fix])) {
+      if ( from_player ) {
         // if it's a laser weapon
         if(wip->subtype == WP_LASER){
           total_scale *= 0.01f;

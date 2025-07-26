@@ -351,8 +351,6 @@ void parse_ai_profiles_tbl(const char *filename)
 
         set_flag(profile, "$disable linked fire penalty:", AI::Profile_Flags::Disable_linked_fire_penalty);
 
-        set_flag(profile, "$disable weapon damage scaling:", AI::Profile_Flags::Disable_weapon_damage_scaling);
-
         set_flag(profile, "$use additive weapon velocity:", AI::Profile_Flags::Use_additive_weapon_velocity);
 
         set_flag(profile, "$use newtonian dampening:", AI::Profile_Flags::Use_newtonian_dampening);
@@ -404,8 +402,6 @@ void parse_ai_profiles_tbl(const char *filename)
         set_flag(profile, "$allow primary link at mission start:", AI::Profile_Flags::Allow_primary_link_at_start);
 
         set_flag(profile, "$allow beams to damage bombs:", AI::Profile_Flags::Beams_damage_weapons);
-
-        set_flag(profile, "$disable weapon damage scaling for player:", AI::Profile_Flags::Player_weapon_scale_fix);
 
         set_flag(profile, "$countermeasures affect aspect seekers:", AI::Profile_Flags::Aspect_lock_countermeasure);
 

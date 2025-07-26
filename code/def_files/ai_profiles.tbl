@@ -217,14 +217,10 @@ $navigation subsystem governs warpout capability: NO
 ;; (like in FS1)														
 $ignore lower bound for minimum speed of docked ship: NO				
 																		
-;; if set, will remove the increased delay when weapons are linked		
-$disable linked fire penalty: NO										
-																		
-;; if set, will not scale weapon damage according to capital/supercap	
-;; (like in FS1)														
-$disable weapon damage scaling: NO										
-																		
-;; if set, will add the weapon velocity to the firing ship's velocity	
+;; if set, will remove the increased delay when weapons are linked
+$disable linked fire penalty: NO
+
+;; if set, will add the weapon velocity to the firing ship's velocity
 $use additive weapon velocity: NO										
 																		
 ;; if set, will dampening closer to real newtonian physics				
@@ -322,12 +318,9 @@ $allow primary link at mission start:	NO
 																		
 ;; If set, prevents beams from instantly killing all weapons from first	
 ;; hit, instead allows weapon hitpoints to be used instead				
-$allow beams to damage bombs:			NO								
-																		
-;; TBD																	
-$disable weapon damage scaling for player:	NO							
-																		
-;; TBD																	
+$allow beams to damage bombs: NO
+
+;; TBD
 $countermeasures affect aspect seekers:	NO								
 																		
 ;; TBD																	
