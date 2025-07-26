@@ -65,10 +65,8 @@ namespace AI {
 
 	FLAG_LIST(Profile_Flags) {
         Ai_guards_specific_ship_in_wing,
-        All_ships_manage_shields,
         Allow_multi_event_scoring,
         Assist_scoring_scales_with_damage,
-        Glide_decay_requires_thrust,
         Include_beams_in_stat_calcs,
         Kill_scoring_scales_with_damage,
         Multi_allow_empty_primaries,

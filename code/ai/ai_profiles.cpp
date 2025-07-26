@@ -313,8 +313,6 @@ void parse_ai_profiles_tbl(const char *filename)
 
         set_flag(profile, "$perform fewer checks for death screams:", AI::Profile_Flags::Perform_fewer_scream_checks);
 
-        set_flag(profile, "$all ships manage shields:", AI::Profile_Flags::All_ships_manage_shields);
-
         set_flag(profile, "$ai guards specific ship in wing:", AI::Profile_Flags::Ai_guards_specific_ship_in_wing);
 
         profile->ai_path_mode = AI_PATH_MODE_NORMAL;
@@ -331,17 +329,6 @@ void parse_ai_profiles_tbl(const char *filename)
         }
 
         set_flag(profile, "$no warp camera:", AI::Profile_Flags::No_warp_camera);
-
-        set_flag(profile, "$glide decay requires thrust:", AI::Profile_Flags::Glide_decay_requires_thrust);
-
-        profile->bay_arrive_speed_mult = 1.0f;
-        profile->bay_depart_speed_mult = 1.0f;
-        if (optional_string("$bay arrive speed multiplier:")) {
-          stuff_float(&profile->bay_arrive_speed_mult);
-        }
-        if (optional_string("$bay depart speed multiplier:")) {
-          stuff_float(&profile->bay_depart_speed_mult);
-        }
 
         // ----------
 
@@ -429,8 +416,6 @@ void ai_profile_t::reset()
     flags.reset();
 
     ai_path_mode = 0;
-    bay_arrive_speed_mult = 0;
-    bay_depart_speed_mult = 0;
 
     for (int i = 0; i < NUM_SKILL_LEVELS; ++i) {
         max_incoming_asteroids[i] = 0;

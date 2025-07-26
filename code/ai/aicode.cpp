@@ -714,8 +714,6 @@ void parse_ai_class()
 
   if (optional_string("$Turret Max Aim Update Delay:"))
     parse_float_list(aicp->ai_turret_max_aim_update_delay, NUM_SKILL_LEVELS);
-
-  set_aic_flag(aicp, "$all ships manage shields:", AI::Profile_Flags::All_ships_manage_shields);
 }
 
 void reset_ai_class_names()
@@ -3637,7 +3635,7 @@ void set_accel_for_docking(object *objp, ai_info *aip, float dot, float dot_to_n
         }
 
         if (speed_mult == FLT_MIN) {
-          speed_mult = The_mission.ai_profile->bay_arrive_speed_mult;
+          speed_mult = 1.0f;
         }
       } else { // Departing
         if (gsip->pathMetadata.find(pathName) != gsip->pathMetadata.end()) {
@@ -3645,7 +3643,7 @@ void set_accel_for_docking(object *objp, ai_info *aip, float dot, float dot_to_n
         }
 
         if (speed_mult == FLT_MIN) {
-          speed_mult = The_mission.ai_profile->bay_depart_speed_mult;
+          speed_mult = 1.0f;
         }
       }
 
@@ -12122,10 +12120,6 @@ void ai_balance_shield(object *objp)
 //  Try to max out the side that was most recently hit.
 void ai_manage_shield(object *objp, ai_info *aip)
 {
-  ship_info *sip;
-
-  sip = &Ship_info[Ships[objp->instance].ship_info_index];
-
   if (timestamp_elapsed(aip->shield_manage_timestamp)) {
     float delay;
 
@@ -12147,12 +12141,10 @@ void ai_manage_shield(object *objp, ai_info *aip)
     // set timestamp
     aip->shield_manage_timestamp = timestamp((int) (delay * 1000.0f));
 
-    if (sip->is_small_ship() || (aip->ai_profile_flags[AI::Profile_Flags::All_ships_manage_shields])) {
-      if (Missiontime - aip->last_hit_time < F1_0*10)
-        ai_transfer_shield(objp, aip->last_hit_quadrant);
-      else
-        ai_balance_shield(objp);
-    }
+    if (Missiontime - aip->last_hit_time < F1_0*10)
+      ai_transfer_shield(objp, aip->last_hit_quadrant);
+    else
+      ai_balance_shield(objp);
   }
 }
 

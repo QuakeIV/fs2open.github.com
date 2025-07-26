@@ -167,10 +167,6 @@ $multi allow empty secondaries: NO
 ;; a death scream
 $perform fewer checks for death screams: NO
 
-;; If set, allows shield management for all ships
-;; (including capships).
-$all ships manage shields: NO
-
 ;; TBD
 $countermeasures affect aspect seekers:	NO
 

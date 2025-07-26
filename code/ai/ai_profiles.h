@@ -78,12 +78,7 @@ public:
 
 	int ai_path_mode;
 
-	// Ships flying bay paths will gradually accelerate/decelerate instead of
-	// flying the whole path at max speed
-	float bay_arrive_speed_mult;
-	float bay_depart_speed_mult;
-
-    void reset();
+  void reset();
 };
 
 
