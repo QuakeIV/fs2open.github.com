@@ -1716,33 +1716,9 @@ void turret_set_next_fire_timestamp(int weapon_num, weapon_info *wip, ship_subsy
   //Check for the new cooldown flag
   if(!((wip->wi_flags[Weapon::Info_Flags::Same_turret_cooldown]) || ((wip->burst_shots > 0) && (wip->burst_flags[Weapon::Burst_Flags::Fast_firing]))))
   {
-
-    // make side even for team vs. team
-    if (MULTI_TEAM) {
-      // flak guns need to fire more rapidly
-      if (wip->wi_flags[Weapon::Info_Flags::Flak]) {
-        wait *= 0.5f;
-        if (aip->ai_class_autoscale)
-          wait += (Num_ai_classes - aip->ai_class - 1) * 40.0f;
-      } else {
-        if (aip->ai_class_autoscale)
-          wait += (Num_ai_classes - aip->ai_class - 1) * 100.0f;
-      }
-    } else {
-      // flak guns need to fire more rapidly
-      if (wip->wi_flags[Weapon::Info_Flags::Flak]) {
-        wait *= 0.5f;
-        if (aip->ai_class_autoscale)
-          wait += (Num_ai_classes - aip->ai_class - 1) * 40.0f;
-
-      } else if (wip->wi_flags[Weapon::Info_Flags::Huge]) {
-        if (aip->ai_class_autoscale)
-          wait += (Num_ai_classes - aip->ai_class - 1) * 100.0f;
-      } else {
-        if (aip->ai_class_autoscale)
-          wait += (Num_ai_classes - aip->ai_class - 1) * 100.0f;
-      }
-    }
+    // flak guns need to fire more rapidly
+    if (wip->wi_flags[Weapon::Info_Flags::Flak])
+      wait *= 0.5f;
     // vary wait time +/- 10%
     wait *= frand_range(0.9f, 1.1f);
   }

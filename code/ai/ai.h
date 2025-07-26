@@ -173,8 +173,6 @@ typedef struct ai_class {
 	float	ai_shockwave_evade_chance[NUM_SKILL_LEVELS];	
 	float	ai_get_away_chance[NUM_SKILL_LEVELS];	
 	float	ai_secondary_range_mult[NUM_SKILL_LEVELS];
-	bool	ai_class_autoscale;		//Defaults to true, but can be turned off in order to disable extra scaling of some AI behaviors
-									//based on AI class index
 } ai_class;
 
 //	Submode definitions.
@@ -370,7 +368,6 @@ typedef struct ai_info {
 	float	ai_shockwave_evade_chance;	
 	float	ai_get_away_chance;	
 	float	ai_secondary_range_mult;
-	bool	ai_class_autoscale;
 
 	//SUSHI: These were originally in AI_Profiles, adding the option to override in AI.tbl
 	float	ai_cmeasure_fire_chance;

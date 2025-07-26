@@ -562,7 +562,6 @@ void init_ai_class(ai_class *aicp)
     aicp->ai_get_away_chance[i] = FLT_MIN;
     aicp->ai_secondary_range_mult[i] = FLT_MIN;
   }
-  aicp->ai_class_autoscale = true;  //Retail behavior is to do the stupid autoscaling
 }
 
 void set_aic_flag(ai_class *aicp, const char *name, AI::Profile_Flags flag)
@@ -617,9 +616,6 @@ void parse_ai_class()
 
   if (optional_string("$Secondary Range Multiplier:"))
     parse_float_list(aicp->ai_secondary_range_mult, NUM_SKILL_LEVELS);
-
-  if (optional_string("$Autoscale by AI Class Index:"))
-    stuff_boolean(&aicp->ai_class_autoscale);
 
   //Parse optional values for stuff imported from ai_profiles
   if (optional_string("$AI Countermeasure Firing Chance:"))
@@ -7626,9 +7622,6 @@ float set_secondary_fire_delay(ai_info *aip, ship *shipp, weapon_info *swip, boo
     t = swip->fire_wait;    //  Base delay for this weapon.
   }
 
-  if (aip->ai_class_autoscale)
-    t += (Num_ai_classes - aip->ai_class + 1) * 0.5f;
-
   t *= frand_range(0.8f, 1.2f);
 
   //  For the missiles that fire fairly quickly, occasionally add an additional substantial delay.
@@ -11971,14 +11964,6 @@ void ai_maybe_launch_cmeasure(object *objp, ai_info *aip)
   if ( !timestamp_elapsed(shipp->cmeasure_fire_stamp) )
     return;
 
-  //  If not on player's team and Skill_level + ai_class is low, never fire a countermeasure.  The ship is too dumb.
-  if (iff_x_attacks_y(Player_ship->team, shipp->team)) {
-    //SUSHI: Only bail if autoscale is on...
-    if (aip->ai_class_autoscale && Game_skill_level + aip->ai_class < 4){
-      return;
-    }
-  }
-
   if ((aip->nearest_locked_object != -1) && (Objects[aip->nearest_locked_object].type == OBJ_WEAPON)) {
     object  *weapon_objp;
 
@@ -11997,10 +11982,6 @@ void ai_maybe_launch_cmeasure(object *objp, ai_info *aip)
         fire_chance = The_mission.ai_profile->cmeasure_fire_chance[NUM_SKILL_LEVELS/2];
       else
         fire_chance = aip->ai_cmeasure_fire_chance;
-
-      //  Decrease chance to fire at lower ai class (SUSHI: Only if autoscale is on)
-      if (aip->ai_class_autoscale)
-        fire_chance *= (float) aip->ai_class/Num_ai_classes;
 
       float r = frand();
       if (fire_chance < r) {
@@ -12133,10 +12114,6 @@ void ai_manage_shield(object *objp, ai_info *aip)
     {
       delay = The_mission.ai_profile->shield_manage_delay[NUM_SKILL_LEVELS/2];
     }
-
-    //  Scale between 1x and 3x based on ai_class (SUSHI: only if autoscale is on)
-    if (aip->ai_class_autoscale)
-      delay = delay + delay * (float) (3*(Num_ai_classes - aip->ai_class - 1) / (Num_ai_classes - 1));
 
     // set timestamp
     aip->shield_manage_timestamp = timestamp((int) (delay * 1000.0f));
@@ -14287,7 +14264,6 @@ void init_aip_from_class_and_profile(ai_info *aip, ai_class *aicp, ai_profile_t 
   aip->ai_shockwave_evade_chance = aicp->ai_shockwave_evade_chance[Game_skill_level];  
   aip->ai_get_away_chance = aicp->ai_get_away_chance[Game_skill_level];  
   aip->ai_secondary_range_mult = aicp->ai_secondary_range_mult[Game_skill_level];
-  aip->ai_class_autoscale = aicp->ai_class_autoscale;
 
   //Apply overrides from ai class to ai profiles values
   //Only override values which were explicitly set in the AI class
