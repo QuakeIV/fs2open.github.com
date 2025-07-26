@@ -1544,7 +1544,6 @@ int ship_primary_bank_has_ammo(int shipnum);	// check if current primary bank ha
 int ship_secondary_bank_has_ammo(int shipnum);	// check if current secondary bank has ammo
 
 int ship_engine_ok_to_warp(ship *sp);		// check if ship has engine power to warp
-int ship_navigation_ok_to_warp(ship *sp);	// check if ship has navigation power to warp
 
 int ship_return_subsys_path_normal(ship *sp, ship_subsys *ss, vec3d *gsubpos, vec3d *norm);
 int ship_subsystem_in_sight(object* objp, ship_subsys* subsys, vec3d *eye_pos, vec3d* subsys_pos, int do_facing_check=1, float *dot_out=NULL, vec3d *vec_out=NULL);

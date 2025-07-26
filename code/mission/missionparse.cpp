@@ -7009,10 +7009,6 @@ int ship_can_use_warp_drive(ship *shipp)
   if (shipp->flags[Ship::Ship_Flags::No_subspace_drive])
     return 0;
 
-  // navigation must work
-  if (!ship_navigation_ok_to_warp(shipp))
-    return 0;
-
   return 1;
 }
 

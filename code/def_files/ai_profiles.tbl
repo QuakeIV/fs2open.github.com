@@ -140,10 +140,6 @@ $Turret Max Aim Update Delay: 0, 0, 0, 0, 0
 ;; General AI-related flags.  These were previously all lumped together
 ;; under the New AI mission flag.
 
-;; if set, ships will not be able to engage their jump drive if their
-;; navigation subsystem is damaged or destroyed
-$navigation subsystem governs warpout capability: NO
-
 ;; if set, beam damage is counted when calculating kills and assists
 $include beams for kills and assists: NO
 

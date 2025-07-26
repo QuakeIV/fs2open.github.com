@@ -299,8 +299,6 @@ void parse_ai_profiles_tbl(const char *filename)
         if (optional_string("$Turret Max Aim Update Delay:"))
           parse_float_list(profile->turret_max_aim_update_delay, NUM_SKILL_LEVELS);
 
-        set_flag(profile, "$navigation subsystem governs warpout capability:", AI::Profile_Flags::Navigation_subsys_governs_warp);
-
         set_flag(profile, "$include beams for kills and assists:", AI::Profile_Flags::Include_beams_in_stat_calcs);
 
         set_flag(profile, "$score kills based on damage caused:", AI::Profile_Flags::Kill_scoring_scales_with_damage);
@@ -316,8 +314,6 @@ void parse_ai_profiles_tbl(const char *filename)
         set_flag(profile, "$perform fewer checks for death screams:", AI::Profile_Flags::Perform_fewer_scream_checks);
 
         set_flag(profile, "$all ships manage shields:", AI::Profile_Flags::All_ships_manage_shields);
-
-        set_flag(profile, "$countermeasures affect aspect seekers:", AI::Profile_Flags::Aspect_lock_countermeasure);
 
         set_flag(profile, "$ai guards specific ship in wing:", AI::Profile_Flags::Ai_guards_specific_ship_in_wing);
 

@@ -166,7 +166,6 @@ flag_def_list_new<Weapon::Info_Flags> Weapon_Info_Flags[] = {
     { "same emp time for capships",    Weapon::Info_Flags::Use_emp_time_for_capship_turrets,  true, false },
     { "no primary linked penalty",    Weapon::Info_Flags::No_linked_penalty,          true, false },
     { "no homing speed ramp",      Weapon::Info_Flags::No_homing_speed_ramp,        true, false },
-    { "pulls aspect seekers",      Weapon::Info_Flags::Cmeasure_aspect_home_on,      true, false },
     { "turret interceptable",      Weapon::Info_Flags::Turret_Interceptable,        true, false },
     { "fighter interceptable",      Weapon::Info_Flags::Fighter_Interceptable,        true, false },
     { "aoe electronics",                Weapon::Info_Flags::Aoe_Electronics,                    true, false },
@@ -694,12 +693,6 @@ void parse_wi_flags(weapon_info *weaponp, flagset<Weapon::Info_Flags> wi_flags)
     if (!weaponp->wi_flags[Weapon::Info_Flags::Homing_heat] && weaponp->wi_flags[Weapon::Info_Flags::Untargeted_heat_seeker])
     {
         Warning(LOCATION, "Weapon '%s' has the \"untargeted heat seeker\" flag, but Homing Type is not set to \"HEAT\".", weaponp->name);
-    }
-
-    if (!weaponp->wi_flags[Weapon::Info_Flags::Cmeasure] && weaponp->wi_flags[Weapon::Info_Flags::Cmeasure_aspect_home_on])
-    {
-        weaponp->wi_flags.remove(Weapon::Info_Flags::Cmeasure_aspect_home_on);
-        Warning(LOCATION, "Weapon %s has the \"pulls aspect seekers\" flag, but is not a countermeasure.\n", weaponp->name);
     }
 }
 
@@ -4000,16 +3993,7 @@ bool aspect_should_lose_target(weapon* wp)
       weapon_info* target_info = &Weapon_info[Weapons[wp->homing_object->instance].weapon_info_index];
 
       if (target_info->wi_flags[Weapon::Info_Flags::Cmeasure])
-      {
-        // Check if we can home on this countermeasure
-        bool home_on_cmeasure = The_mission.ai_profile->flags[AI::Profile_Flags::Aspect_lock_countermeasure]
-          || target_info->wi_flags[Weapon::Info_Flags::Cmeasure_aspect_home_on];
-
-        if (!home_on_cmeasure)
-        {
-          return true;
-        }
-      }
+        return true;
     }
   }
 
@@ -4185,15 +4169,7 @@ void weapon_home(object *obj, int num, float frame_time)
     break;
   case OBJ_WEAPON:
   {
-    bool home_on_cmeasure = The_mission.ai_profile->flags[AI::Profile_Flags::Aspect_lock_countermeasure]
-      || hobj_infop->wi_flags[Weapon::Info_Flags::Cmeasure_aspect_home_on];
-
-    // don't home on countermeasures or non-bombs, that's handled elsewhere
-    if (((hobj_infop->wi_flags[Weapon::Info_Flags::Cmeasure]) && !home_on_cmeasure))
-    {
-      break;
-    }
-    else if (!(hobj_infop->wi_flags[Weapon::Info_Flags::Bomb]))
+    if (!(hobj_infop->wi_flags[Weapon::Info_Flags::Bomb]))
     {
       break;
     }

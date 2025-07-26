@@ -474,7 +474,6 @@ flag_def_list_new<Weapon::Info_Flags> ai_tgt_weapon_flags[] = {
     { "same emp time for capships",  Weapon::Info_Flags::Use_emp_time_for_capship_turrets,  true, false },
     { "no primary linked penalty",  Weapon::Info_Flags::No_linked_penalty,          true, false },
     { "no homing speed ramp",    Weapon::Info_Flags::No_homing_speed_ramp,        true, false },
-    { "pulls aspect seekers",    Weapon::Info_Flags::Cmeasure_aspect_home_on,      true, false },
     { "turret interceptable",    Weapon::Info_Flags::Turret_Interceptable,        true, false },
     { "fighter interceptable",    Weapon::Info_Flags::Fighter_Interceptable,        true, false },
     { "aoe electronics",      Weapon::Info_Flags::Aoe_Electronics,          true, false },
@@ -14536,29 +14535,6 @@ int ship_engine_ok_to_warp(ship *sp)
 
   // player ships playing above Very Easy can't warp when below a threshold
   if ((sp == Player_ship) && (Game_skill_level > 0) && (engine_strength < SHIP_MIN_ENGINES_TO_WARP))
-    return 0;
-
-  // otherwise, warp is allowed
-  return 1;
-}
-
-// Goober5000
-// see if there is enough navigation power to allow the ship to warp
-// returns 1 if ship is able to warp, otherwise return 0
-int ship_navigation_ok_to_warp(ship *sp)
-{
-  // if not using the special flag, warp is always allowed
-  if (!(The_mission.ai_profile->flags[AI::Profile_Flags::Navigation_subsys_governs_warp]))
-    return 1;
-
-  float navigation_strength = ship_get_subsystem_strength(sp, SUBSYSTEM_NAVIGATION);
-
-  // if at 0% strength, can't warp
-  if (navigation_strength <= 0.0f)
-    return 0;
-
-  // player ships playing above Very Easy can't warp when below a threshold
-  if ((sp == Player_ship) && (Game_skill_level > 0) && (navigation_strength < SHIP_MIN_NAV_TO_WARP))
     return 0;
 
   // otherwise, warp is allowed

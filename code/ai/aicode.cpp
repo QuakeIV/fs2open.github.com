@@ -13185,7 +13185,7 @@ void ai_warp_out(object *objp)
     return;
 
   // Goober5000 - check for engine or navigation failure
-  if (!ship_engine_ok_to_warp(shipp) || !ship_navigation_ok_to_warp(shipp))
+  if (!ship_engine_ok_to_warp(shipp))
   {
     // you shouldn't hit this... if you do, then I need to add a check for it
     // in whatever function initiates a warpout

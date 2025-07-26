@@ -2421,9 +2421,6 @@ int button_function(int n)
       } else if (!ship_engine_ok_to_warp(Player_ship)) {
         gamesnd_play_iface(SND_GENERAL_FAIL);
         HUD_printf("%s", XSTR("Engine failure.  Cannot engage subspace drive.", 40));
-      } else if (!ship_navigation_ok_to_warp(Player_ship)) {
-        gamesnd_play_iface(SND_GENERAL_FAIL);
-        HUD_printf("%s", XSTR("Navigation failure.  Cannot engage subspace drive.", 1596));
       } else if ( (Player_obj != NULL) && object_get_gliding(Player_obj)) {
         gamesnd_play_iface(SND_GENERAL_FAIL);
         HUD_printf("%s", XSTR("Cannot engage subspace drive while gliding.", 1597));
@@ -2779,9 +2776,6 @@ int button_function(int n)
       } else if (!ship_engine_ok_to_warp(Player_ship)) {
         gamesnd_play_iface(SND_GENERAL_FAIL);
         HUD_printf("%s", XSTR("Engine failure.  Cannot engage subspace drive.", 40));
-      } else if (!ship_navigation_ok_to_warp(Player_ship)) {
-        gamesnd_play_iface(SND_GENERAL_FAIL);
-        HUD_printf("%s", XSTR("Navigation failure.  Cannot engage subspace drive.", 1572));
       } else if (Player_obj != NULL && object_get_gliding(Player_obj)) {
         gamesnd_play_iface(SND_GENERAL_FAIL);
         HUD_printf("%s", XSTR("Cannot engage subspace drive while gliding.", 1573));
