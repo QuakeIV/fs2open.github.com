@@ -42,8 +42,7 @@ public:
 	float link_ammo_levels_maybe[NUM_SKILL_LEVELS];			// link if hull strength low
 	float primary_ammo_burst_mult[NUM_SKILL_LEVELS];		// SUSHI: Multiplier adjusting burst frequency for ballistic primary weapons
 
-	// difficulty-related scales
-	float cmeasure_life_scale[NUM_SKILL_LEVELS];			// life of countermeasures
+	// difficulty-related scale
 	float cmeasure_fire_chance[NUM_SKILL_LEVELS];			// chance a countermeasure will be fired based on skill level (also scaled by ai_class)
 	float weapon_energy_scale[NUM_SKILL_LEVELS];			// weapon energy available
 	float shield_energy_scale[NUM_SKILL_LEVELS];			// shield energy available

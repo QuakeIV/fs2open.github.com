@@ -163,9 +163,6 @@ void parse_ai_profiles_tbl(const char *filename)
         if (optional_string("$Max Beam Friendly Fire Damage:"))
           parse_float_list(profile->beam_friendly_damage_cap, NUM_SKILL_LEVELS);
 
-        if (optional_string("$Player Countermeasure Life Scale:"))
-          parse_float_list(profile->cmeasure_life_scale, NUM_SKILL_LEVELS);
-
         if (optional_string("$AI Countermeasure Firing Chance:"))
           parse_float_list(profile->cmeasure_fire_chance, NUM_SKILL_LEVELS);
 
@@ -535,7 +532,6 @@ void ai_profile_t::reset()
         link_ammo_levels_maybe[i] = 0;
         primary_ammo_burst_mult[i] = 0;
 
-        cmeasure_life_scale[i] = 0;
         cmeasure_fire_chance[i] = 0;
         weapon_energy_scale[i] = 0;
         shield_energy_scale[i] = 0;

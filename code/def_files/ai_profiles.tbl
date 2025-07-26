@@ -28,12 +28,9 @@ $Profile Name: FS2 RETAIL
 $Player Afterburner Recharge Scale: 5, 3, 2, 1.5, 1						
 																		
 ;; maximum damage inflicted by friendly beam fire						
-$Max Beam Friendly Fire Damage: 0, 5, 10, 20, 30						
-																		
-;; factor applied to player countermeasure lifetime						
-$Player Countermeasure Life Scale: 3, 2, 1.5, 1.25, 1					
-																		
-;; chance a countermeasure will be fired by an AI-controlled ship		
+$Max Beam Friendly Fire Damage: 0, 5, 10, 20, 30
+
+;; chance a countermeasure will be fired by an AI-controlled ship
 ;; (this is scaled by ai_class)											
 $AI Countermeasure Firing Chance: 0.2, 0.3, 0.5, 0.9, 1.1
 
