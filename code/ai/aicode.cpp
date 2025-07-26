@@ -715,8 +715,6 @@ void parse_ai_class()
   if (optional_string("$Turret Max Aim Update Delay:"))
     parse_float_list(aicp->ai_turret_max_aim_update_delay, NUM_SKILL_LEVELS);
 
-  set_aic_flag(aicp, "$don't insert random turret fire delay:", AI::Profile_Flags::Dont_insert_random_turret_fire_delay);
-
   set_aic_flag(aicp, "$all ships manage shields:", AI::Profile_Flags::All_ships_manage_shields);
 }
 
@@ -6298,14 +6296,10 @@ void set_predicted_enemy_pos(vec3d *predicted_enemy_pos, object *pobjp, vec3d *e
     vec3d  gun_pos, pnt;
     polymodel *pm = model_get(Ship_info[shipp->ship_info_index].model_num);
 
-    //  Compute position of gun in absolute space and use that as fire position 
-    //  ...unless we want to just use the ship center
-    if(pm->gun_banks != NULL && !(The_mission.ai_profile->flags[AI::Profile_Flags::Ai_aims_from_ship_center])){
-      pnt = pm->gun_banks[0].pnt[0];
-    } else {
-      //Use the convergence offset, if there is one
-      vm_vec_copy_scale(&pnt, &Ship_info[shipp->ship_info_index].convergence_offset, 1.0f);
-    }
+
+    //Use the convergence offset, if there is one
+    vm_vec_copy_scale(&pnt, &Ship_info[shipp->ship_info_index].convergence_offset, 1.0f);
+
     vm_vec_unrotate(&gun_pos, &pnt, &pobjp->orient);
     vm_vec_add2(&gun_pos, &pobjp->pos);
 

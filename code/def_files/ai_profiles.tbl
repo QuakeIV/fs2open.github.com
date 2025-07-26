@@ -138,10 +138,7 @@ $Max Aim Update Delay: 0, 0, 0, 0, 0
 $Turret Max Aim Update Delay: 0, 0, 0, 0, 0
 
 ;; General AI-related flags.  These were previously all lumped together
-;; under the New AI mission flag.		
-																		
-;; if set, removes the random turret fire delay (from .1 to .9 seconds)
-$don't insert random turret fire delay: NO
+;; under the New AI mission flag.
 
 ;; if set, ships will not be able to engage their jump drive if their
 ;; navigation subsystem is damaged or destroyed
@@ -181,12 +178,9 @@ $perform fewer checks for death screams: NO
 ;; (including capships).
 $all ships manage shields: NO
 
-;; If set, ai aims using ship center instead of first gunpoint			
-$ai aims from ship center:			NO
-
 ;; TBD
-$countermeasures affect aspect seekers:	NO								
-																		
+$countermeasures affect aspect seekers:	NO
+
 ;; TBD																	
 $ai path mode:	normal													
 																		

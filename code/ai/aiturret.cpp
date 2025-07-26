@@ -617,11 +617,8 @@ void evaluate_obj_as_target(object *objp, eval_enemy_obj_struct *eeo)
     // this check is almost redundant; see the almost identical check in ai_fire_from_turret
     // however if this is removed turrets still track targets but don't fire at them (which looks silly)
     if (eeo->eeo_flags & EEOF_TAGGED_ONLY) {
-      if (!ship_is_tagged(objp) &&
-          ( (The_mission.ai_profile->flags[AI::Profile_Flags::Strict_turred_tagged_only_targeting]) ||
-          ( !(objp->type == OBJ_WEAPON) && !(turret_weapon_has_flags(&eeo->turret_subsys->weapons, Weapon::Info_Flags::Spawn))) )) {
+      if ( !ship_is_tagged(objp) && ( !(objp->type == OBJ_WEAPON) && !(turret_weapon_has_flags(&eeo->turret_subsys->weapons, Weapon::Info_Flags::Spawn))) )
         return;
-      }
     }
 
     // check if valid target in nebula
@@ -2081,12 +2078,6 @@ bool turret_fire_weapon(int weapon_num, ship_subsys *turret, int parent_objnum, 
         turret->turret_animation_done_time = timestamp(100);
     }
   }
-  //Not useful -WMC
-  else if (!(parent_aip->ai_profile_flags[AI::Profile_Flags::Dont_insert_random_turret_fire_delay]) && last_shot_in_salvo)
-  {
-    float wait = 1000.0f * frand_range(0.9f, 1.1f);
-    turret->turret_next_fire_stamp = timestamp((int) wait);
-  }
 
   turret->flags.set(Ship::Subsystem_Flags::Has_fired); //set has fired flag for scriptng - nuke
 
@@ -2450,9 +2441,8 @@ void ai_fire_from_turret(ship *shipp, ship_subsys *ss, int parent_objnum)
         else
         {
           // check tagged-only for non-ship targets
-          if (tagged_only && (!(lep->type == OBJ_WEAPON) || (The_mission.ai_profile->flags[AI::Profile_Flags::Strict_turred_tagged_only_targeting]))) {
+          if (tagged_only && (lep->type != OBJ_WEAPON))
             continue;
-          }
         }
 
         //Add it to the list
@@ -2581,7 +2571,7 @@ void ai_fire_from_turret(ship *shipp, ship_subsys *ss, int parent_objnum)
         ss->turret_next_fire_pos = ffp_pos;
       }
 
-            ship_get_global_turret_gun_info(&Objects[parent_objnum], ss, &gpos, &gvec, use_angles, &predicted_enemy_pos);
+      ship_get_global_turret_gun_info(&Objects[parent_objnum], ss, &gpos, &gvec, use_angles, &predicted_enemy_pos);
 
       // Fire in the direction the turret is facing, not right at the target regardless of turret dir.
       vm_vec_sub(&v2e, &predicted_enemy_pos, &gpos);

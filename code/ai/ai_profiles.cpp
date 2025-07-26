@@ -299,8 +299,6 @@ void parse_ai_profiles_tbl(const char *filename)
         if (optional_string("$Turret Max Aim Update Delay:"))
           parse_float_list(profile->turret_max_aim_update_delay, NUM_SKILL_LEVELS);
 
-        set_flag(profile, "$don't insert random turret fire delay:", AI::Profile_Flags::Dont_insert_random_turret_fire_delay);
-
         set_flag(profile, "$navigation subsystem governs warpout capability:", AI::Profile_Flags::Navigation_subsys_governs_warp);
 
         set_flag(profile, "$use additive weapon velocity:", AI::Profile_Flags::Use_additive_weapon_velocity);
@@ -321,8 +319,6 @@ void parse_ai_profiles_tbl(const char *filename)
 
         set_flag(profile, "$all ships manage shields:", AI::Profile_Flags::All_ships_manage_shields);
 
-        set_flag(profile, "$ai aims from ship center:", AI::Profile_Flags::Ai_aims_from_ship_center);
-
         set_flag(profile, "$countermeasures affect aspect seekers:", AI::Profile_Flags::Aspect_lock_countermeasure);
 
         set_flag(profile, "$ai guards specific ship in wing:", AI::Profile_Flags::Ai_guards_specific_ship_in_wing);
@@ -341,8 +337,6 @@ void parse_ai_profiles_tbl(const char *filename)
         }
 
         set_flag(profile, "$no warp camera:", AI::Profile_Flags::No_warp_camera);
-
-        set_flag(profile, "$strict turret-tagged-only targeting:", AI::Profile_Flags::Strict_turred_tagged_only_targeting);
 
         set_flag(profile, "$glide decay requires thrust:", AI::Profile_Flags::Glide_decay_requires_thrust);
 
