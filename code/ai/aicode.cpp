@@ -6274,7 +6274,7 @@ void set_predicted_enemy_pos(vec3d *predicted_enemy_pos, object *pobjp, vec3d *e
   wip = ai_get_weapon(&shipp->weapons);
   target_moving_direction = *enemy_vel;
 
-  if (wip != NULL && The_mission.ai_profile->flags[AI::Profile_Flags::Use_additive_weapon_velocity])
+  if (wip != NULL)
     vm_vec_scale_sub2(&target_moving_direction, &pobjp->phys_info.vel, wip->vel_inherit_amount);
 
   if (wip != NULL)
@@ -6294,8 +6294,6 @@ void set_predicted_enemy_pos(vec3d *predicted_enemy_pos, object *pobjp, vec3d *e
   } else {
     float  collision_time;
     vec3d  gun_pos, pnt;
-    polymodel *pm = model_get(Ship_info[shipp->ship_info_index].model_num);
-
 
     //Use the convergence offset, if there is one
     vm_vec_copy_scale(&pnt, &Ship_info[shipp->ship_info_index].convergence_offset, 1.0f);

@@ -301,8 +301,6 @@ void parse_ai_profiles_tbl(const char *filename)
 
         set_flag(profile, "$navigation subsystem governs warpout capability:", AI::Profile_Flags::Navigation_subsys_governs_warp);
 
-        set_flag(profile, "$use additive weapon velocity:", AI::Profile_Flags::Use_additive_weapon_velocity);
-
         set_flag(profile, "$include beams for kills and assists:", AI::Profile_Flags::Include_beams_in_stat_calcs);
 
         set_flag(profile, "$score kills based on damage caused:", AI::Profile_Flags::Kill_scoring_scales_with_damage);

@@ -1202,7 +1202,6 @@ void ai_big_attack_get_data(vec3d *enemy_pos, float *dist_to_enemy, float *dot_t
     predicted_enemy_pos=*enemy_pos;
   } else {
     vec3d  gun_pos, pnt;
-    polymodel *po = model_get( Ship_info[shipp->ship_info_index].model_num );
     float    weapon_speed;
 
     //Use the convergence offset, if there is one

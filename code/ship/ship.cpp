@@ -10687,8 +10687,7 @@ int ship_fire_primary(object * obj, int stream_weapons, int force)
     weapon_info* winfo_p = &Weapon_info[weapon_idx];
 
     target_velocity_vec = Objects[aip->target_objnum].phys_info.vel;
-    if (The_mission.ai_profile->flags[AI::Profile_Flags::Use_additive_weapon_velocity])
-      vm_vec_scale_sub2(&target_velocity_vec, &obj->phys_info.vel, winfo_p->vel_inherit_amount);
+    vm_vec_scale_sub2(&target_velocity_vec, &obj->phys_info.vel, winfo_p->vel_inherit_amount);
 
     if (winfo_p->weapon_submodel_rotate_vel > 0.0f) {
       if (shipp->primary_rotate_rate[bank_to_fire] < winfo_p->weapon_submodel_rotate_vel)

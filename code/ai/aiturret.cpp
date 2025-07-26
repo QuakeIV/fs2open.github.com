@@ -1357,9 +1357,7 @@ void ship_get_global_turret_gun_info(object *objp, ship_subsys *ssp, vec3d *gpos
       vec3d target_moving_direction = ssp->last_aim_enemy_vel;
 
       //Try to guess where the enemy will be, and store that spot in predicted_enemy_pos
-      if (The_mission.ai_profile->flags[AI::Profile_Flags::Use_additive_weapon_velocity]) {
-        vm_vec_scale_sub2(&target_moving_direction, &objp->phys_info.vel, wip->vel_inherit_amount);
-      }
+      vm_vec_scale_sub2(&target_moving_direction, &objp->phys_info.vel, wip->vel_inherit_amount);
 
       set_predicted_enemy_pos_turret(&tmp_target, &tmp_pos, objp, &enemy_point, &target_moving_direction, wip->max_speed, ssp->turret_time_enemy_in_range * (weapon_system_strength + 1.0f) / 2.0f);
     } else {
@@ -1453,9 +1451,7 @@ int aifft_rotate_turret(ship *shipp, int parent_objnum, ship_subsys *ss, object 
     target_moving_direction = ss->last_aim_enemy_vel;
 
     //Try to guess where the enemy will be, and store that spot in predicted_enemy_pos
-    if (The_mission.ai_profile->flags[AI::Profile_Flags::Use_additive_weapon_velocity]) {
-      vm_vec_scale_sub2(&target_moving_direction, &objp->phys_info.vel, wip->vel_inherit_amount);
-    }
+    vm_vec_scale_sub2(&target_moving_direction, &objp->phys_info.vel, wip->vel_inherit_amount);
 
     set_predicted_enemy_pos_turret(predicted_enemy_pos, &gun_pos, objp, &enemy_point, &target_moving_direction, wip->max_speed, ss->turret_time_enemy_in_range * (weapon_system_strength + 1.0f)/2.0f);
 

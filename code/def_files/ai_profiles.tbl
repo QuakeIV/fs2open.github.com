@@ -144,9 +144,6 @@ $Turret Max Aim Update Delay: 0, 0, 0, 0, 0
 ;; navigation subsystem is damaged or destroyed
 $navigation subsystem governs warpout capability: NO
 
-;; if set, will add the weapon velocity to the firing ship's velocity
-$use additive weapon velocity: NO
-
 ;; if set, beam damage is counted when calculating kills and assists
 $include beams for kills and assists: NO
 

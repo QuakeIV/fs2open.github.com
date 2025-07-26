@@ -3713,9 +3713,7 @@ void hud_calculate_lead_pos(vec3d *lead_target_pos, vec3d *target_pos, object *t
   target_moved_dist = targetp->phys_info.speed * time_to_target;
 
   target_moving_direction = targetp->phys_info.vel;
-
-  if(The_mission.ai_profile->flags[AI::Profile_Flags::Use_additive_weapon_velocity])
-    vm_vec_scale_sub2(&target_moving_direction, &Player_obj->phys_info.vel, wip->vel_inherit_amount);
+  vm_vec_scale_sub2(&target_moving_direction, &Player_obj->phys_info.vel, wip->vel_inherit_amount);
 
   // test if the target is moving at all
   if ( vm_vec_mag_quick(&target_moving_direction) < 0.1f ) { // Find distance!
@@ -3807,9 +3805,7 @@ void polish_predicted_target_pos(weapon_info *wip, object *targetp, vec3d *enemy
   // additive velocity stuff
   // not just the player's main target
   vec3d enemy_vel = targetp->phys_info.vel;
-  if (The_mission.ai_profile->flags[AI::Profile_Flags::Use_additive_weapon_velocity]) {
-    vm_vec_scale_sub2( &enemy_vel, &Player_obj->phys_info.vel, wip->vel_inherit_amount);
-  }
+  vm_vec_scale_sub2( &enemy_vel, &Player_obj->phys_info.vel, wip->vel_inherit_amount);
 
   for (iteration=0; iteration < num_polish_steps; iteration++) {
     dist_to_enemy = vm_vec_dist_quick(predicted_enemy_pos, &player_pos);

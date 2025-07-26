@@ -77,7 +77,6 @@ namespace AI {
         Navigation_subsys_governs_warp,
         No_warp_camera,
         Perform_fewer_scream_checks,
-        Use_additive_weapon_velocity,
 
 		NUM_VALUES
 	};
