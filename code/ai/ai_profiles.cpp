@@ -299,9 +299,6 @@ void parse_ai_profiles_tbl(const char *filename)
         if (optional_string("$Turret Max Aim Update Delay:"))
           parse_float_list(profile->turret_max_aim_update_delay, NUM_SKILL_LEVELS);
 
-        if (optional_string("$Detail Distance Multiplier:"))
-          parse_float_list(profile->detail_distance_mult, MAX_DETAIL_LEVEL + 1);
-
         set_flag(profile, "$big ships can attack beam turrets on untargeted ships:", AI::Profile_Flags::Big_ships_can_attack_beam_turrets_on_untargeted_ships);
 
         set_flag(profile, "$smart primary weapon selection:", AI::Profile_Flags::Smart_primary_weapon_selection);
@@ -549,9 +546,5 @@ void ai_profile_t::reset()
         repair_penalty[i] = 0;
         delay_bomb_arm_timer[i] = 0;
         chance_to_use_missiles_on_plr[i] = 0;
-    }
-
-    for (int i = 0; i <= MAX_DETAIL_LEVEL; ++i) {
-        detail_distance_mult[i] = 0;
     }
 }

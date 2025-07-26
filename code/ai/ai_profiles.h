@@ -41,13 +41,12 @@ public:
 	float link_ammo_levels_always[NUM_SKILL_LEVELS];		// always link
 	float link_ammo_levels_maybe[NUM_SKILL_LEVELS];			// link if hull strength low
 	float primary_ammo_burst_mult[NUM_SKILL_LEVELS];		// SUSHI: Multiplier adjusting burst frequency for ballistic primary weapons
-
-	// difficulty-related scale
 	float cmeasure_fire_chance[NUM_SKILL_LEVELS];			// chance a countermeasure will be fired based on skill level (also scaled by ai_class)
+
 	float player_damage_scale[NUM_SKILL_LEVELS];			// damage applied to the player
-	
 	float subsys_damage_scale[NUM_SKILL_LEVELS];			// damage applied to a player subsystem
 	float beam_friendly_damage_cap[NUM_SKILL_LEVELS];		// damage cap values for friendly beam fire
+
 	float turn_time_scale[NUM_SKILL_LEVELS];				// speed at which enemy ships turn
 	float glide_attack_percent[NUM_SKILL_LEVELS];			// SUSHI: The likelihood (0.0-1.0) of the AI to use the "glide attack" move
 	float circle_strafe_percent[NUM_SKILL_LEVELS];			// SUSHI: The likelihood (0.0-1.0) of the AI to use the "circle strafe" move
@@ -76,8 +75,6 @@ public:
 
 	// the chance (x/7) that ship is allowed to fire missiles at player ship.
 	int chance_to_use_missiles_on_plr[NUM_SKILL_LEVELS];
-
-	float detail_distance_mult[MAX_DETAIL_LEVEL + 1];	//MAX_DETAIL_LEVEL really needs to be 4
 
 	int ai_path_mode;
 

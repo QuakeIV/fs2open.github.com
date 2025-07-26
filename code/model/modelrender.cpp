@@ -855,19 +855,19 @@ float model_render_determine_depth(int obj_num, int model_num, matrix* orient, v
   if ( detail_level_locked < 0 ) {
     switch (Detail.detail_distance) {
     case 0:    // lowest
-      depth /= The_mission.ai_profile->detail_distance_mult[0];
+      depth /= 0.125;
       break;
     case 1:    // lower than normal
-      depth /= The_mission.ai_profile->detail_distance_mult[1];
+      depth /= 0.25;
       break;
     case 2:    // default
-      depth /= The_mission.ai_profile->detail_distance_mult[2];
+      depth /= 1.0;
       break;
     case 3:    // above normal
-      depth /= The_mission.ai_profile->detail_distance_mult[3];
+      depth /= 4.0;
       break;
     case 4:    // even more normal
-      depth /= The_mission.ai_profile->detail_distance_mult[4];
+      depth /= 8.0;
       break;
     }
 
