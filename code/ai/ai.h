@@ -147,8 +147,7 @@ typedef struct ai_class {
 
 	//SUSHI: These were originally in AI_Profiles, adding the option to override in AI.tbl
 	//INT_MIN and FLT_MIN represent the "not set" state for which defaults are used instead.
-	float	ai_cmeasure_fire_chance[NUM_SKILL_LEVELS];	
-	float	ai_in_range_time[NUM_SKILL_LEVELS];			
+	float	ai_cmeasure_fire_chance[NUM_SKILL_LEVELS];
 	float	ai_link_ammo_levels_maybe[NUM_SKILL_LEVELS];
 	float	ai_link_ammo_levels_always[NUM_SKILL_LEVELS];
 	float	ai_primary_ammo_burst_mult[NUM_SKILL_LEVELS];
@@ -375,7 +374,6 @@ typedef struct ai_info {
 
 	//SUSHI: These were originally in AI_Profiles, adding the option to override in AI.tbl
 	float	ai_cmeasure_fire_chance;
-	float	ai_in_range_time;
 	float	ai_link_ammo_levels_maybe;
 	float	ai_link_ammo_levels_always;
 	float	ai_primary_ammo_burst_mult;

@@ -31,7 +31,6 @@ public:
 	int	max_allowed_player_homers[NUM_SKILL_LEVELS];		// max number of simultaneous homing weapons on player
 	int	max_attackers[NUM_SKILL_LEVELS];					// max number of ships that can attack a ship
 	fix predict_position_delay[NUM_SKILL_LEVELS];			// how long until AI predicts a ship position
-	float in_range_time[NUM_SKILL_LEVELS];					// seconds to add to time it takes to get enemy in range (only for player's enemies)
 	float shield_manage_delay[NUM_SKILL_LEVELS];			// how long before AI manages shields (note that the player's team always uses the average skill's delay)
 
 	// AI ships link primaries if energy levels greater than these percents

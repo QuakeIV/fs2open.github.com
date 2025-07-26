@@ -532,7 +532,6 @@ void init_ai_class(ai_class *aicp)
   for (i = 0; i < NUM_SKILL_LEVELS; i++)
   {
     aicp->ai_cmeasure_fire_chance[i] = FLT_MIN;
-    aicp->ai_in_range_time[i] = FLT_MIN;
     aicp->ai_link_ammo_levels_maybe[i] = FLT_MIN;
     aicp->ai_link_ammo_levels_always[i] = FLT_MIN;
     aicp->ai_primary_ammo_burst_mult[i] = FLT_MIN;
@@ -625,9 +624,6 @@ void parse_ai_class()
   //Parse optional values for stuff imported from ai_profiles
   if (optional_string("$AI Countermeasure Firing Chance:"))
     parse_float_list(aicp->ai_cmeasure_fire_chance, NUM_SKILL_LEVELS);
-
-  if (optional_string("$AI In Range Time:"))
-    parse_float_list(aicp->ai_in_range_time, NUM_SKILL_LEVELS);
 
   if (optional_string("$AI Always Links Ammo Weapons:"))
     parse_float_list(aicp->ai_link_ammo_levels_always, NUM_SKILL_LEVELS);
@@ -6341,10 +6337,6 @@ void set_predicted_enemy_pos_turret(vec3d *predicted_enemy_pos, vec3d *gun_pos, 
 
   range_time = 2.0f;
 
-  //  Make it take longer for enemies to get player's allies in range based on skill level.
-  if (iff_x_attacks_y(Ships[pobjp->instance].team, Player_ship->team))
-    range_time += Ai_info[shipp->ai_index].ai_in_range_time;
-
   if (time_enemy_in_range < range_time) {
     float  dist;
 
@@ -6408,14 +6400,6 @@ void set_predicted_enemy_pos(vec3d *predicted_enemy_pos, object *pobjp, vec3d *e
   weapon_speed = MAX(weapon_speed, 1.0f);    // set not less than 1
 
   range_time = 2.0f;
-
-  //  Make it take longer for enemies to get player's allies in range based on skill level.
-  // but don't bias team v. team missions
-  if ( !(MULTI_TEAM) )
-  {
-    if (iff_x_attacks_y(shipp->team, Player_ship->team))
-      range_time += aip->ai_in_range_time;
-  }
 
   if (aip->time_enemy_in_range < range_time) {
     float  dist;
@@ -14450,8 +14434,6 @@ void init_aip_from_class_and_profile(ai_info *aip, ai_class *aicp, ai_profile_t 
   //Only override values which were explicitly set in the AI class
   aip->ai_cmeasure_fire_chance = (aicp->ai_cmeasure_fire_chance[Game_skill_level] == FLT_MIN) ? 
     profile->cmeasure_fire_chance[Game_skill_level] : aicp->ai_cmeasure_fire_chance[Game_skill_level];
-  aip->ai_in_range_time = (aicp->ai_in_range_time[Game_skill_level] == FLT_MIN) ? 
-    profile->in_range_time[Game_skill_level] : aicp->ai_in_range_time[Game_skill_level];
   aip->ai_link_ammo_levels_maybe = (aicp->ai_link_ammo_levels_maybe[Game_skill_level] == FLT_MIN) ? 
     profile->link_ammo_levels_maybe[Game_skill_level] : aicp->ai_link_ammo_levels_maybe[Game_skill_level];
   aip->ai_link_ammo_levels_always = (aicp->ai_link_ammo_levels_always[Game_skill_level] == FLT_MIN) ? 

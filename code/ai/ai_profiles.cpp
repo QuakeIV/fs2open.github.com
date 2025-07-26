@@ -169,9 +169,6 @@ void parse_ai_profiles_tbl(const char *filename)
         if (optional_string("$AI Countermeasure Firing Chance:"))
           parse_float_list(profile->cmeasure_fire_chance, NUM_SKILL_LEVELS);
 
-        if (optional_string("$AI In Range Time:"))
-          parse_float_list(profile->in_range_time, NUM_SKILL_LEVELS);
-
         if (optional_string("$AI Always Links Ammo Weapons:"))
           parse_float_list(profile->link_ammo_levels_always, NUM_SKILL_LEVELS);
 
@@ -529,7 +526,6 @@ void ai_profile_t::reset()
         max_allowed_player_homers[i] = 0;
         max_attackers[i] = 0;
         predict_position_delay[i] = 0;
-        in_range_time[i] = 0;
         shield_manage_delay[i] = 0;
 
         link_energy_levels_always[i] = 0;
