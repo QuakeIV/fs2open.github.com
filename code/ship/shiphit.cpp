@@ -480,7 +480,7 @@ float do_subobj_hit_stuff(object *ship_objp, object *other_obj, vec3d *hitpos, i
   {
     //  MK, 9/2/99.  Shockwaves do zero subsystem damage on small ships.
     // Goober5000 - added back in via flag
-    if ((Ship_info[ship_p->ship_info_index].is_small_ship()) && !(The_mission.ai_profile->flags[AI::Profile_Flags::Shockwaves_damage_small_ship_subsystems]))
+    if (Ship_info[ship_p->ship_info_index].is_small_ship())
       return damage;
     else {
       damage_left = shockwave_get_damage(other_obj->instance) / 4.0f;

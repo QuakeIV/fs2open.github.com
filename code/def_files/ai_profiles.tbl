@@ -207,12 +207,8 @@ $don't insert random turret fire delay: NO
 ;; if set, triggers a hack to improves the accuracy of non-homing swarm	
 ;; missiles by firing them along the turret's last fire direction		
 ;; rather than the direction it currently faces							
-$hack improve non-homing swarm turret fire accuracy: NO					
-																		
-;; if set, shockwaves will cause damage to small ship subsystems		
-;; (like in FS1)														
-$shockwaves damage small ship subsystems: NO							
-																		
+$hack improve non-homing swarm turret fire accuracy: NO
+
 ;; if set, ships will not be able to engage their jump drive if their	
 ;; navigation subsystem is damaged or destroyed							
 $navigation subsystem governs warpout capability: NO					

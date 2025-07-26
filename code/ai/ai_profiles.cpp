@@ -345,8 +345,6 @@ void parse_ai_profiles_tbl(const char *filename)
 
         set_flag(profile, "$hack improve non-homing swarm turret fire accuracy:", AI::Profile_Flags::Hack_improve_non_homing_swarm_turret_fire_accuracy);
 
-        set_flag(profile, "$shockwaves damage small ship subsystems:", AI::Profile_Flags::Shockwaves_damage_small_ship_subsystems);
-
         set_flag(profile, "$navigation subsystem governs warpout capability:", AI::Profile_Flags::Navigation_subsys_governs_warp);
 
         set_flag(profile, "$ignore lower bound for minimum speed of docked ship:", AI::Profile_Flags::No_min_dock_speed_cap);
