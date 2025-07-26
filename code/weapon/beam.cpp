@@ -2858,32 +2858,31 @@ int beam_collide_early_out(object *a, object *b)
     
   // get the beam
   Assert(a->instance >= 0);
-  if(a->instance < 0){
+  if(a->instance < 0)
     return 1;
-  }
+
   Assert(a->type == OBJ_BEAM);
-  if(a->type != OBJ_BEAM){
+  if(a->type != OBJ_BEAM)
     return 1;
-  }
+
   Assert(Beams[a->instance].objnum == OBJ_INDEX(a));
-  if(Beams[a->instance].objnum != OBJ_INDEX(a)){
+  if(Beams[a->instance].objnum != OBJ_INDEX(a))
     return 1;
-  }  
+
   bm = &Beams[a->instance];
   Assert(bm->weapon_info_index >= 0);
-  if(bm->weapon_info_index < 0){
+  if(bm->weapon_info_index < 0)
     return 1;
-  }
+
   bwi = &Weapon_info[bm->weapon_info_index];
 
   // if the second object has an invalid instance, bail
-  if(b->instance < 0){
+  if(b->instance < 0)
     return 1;
-  }
 
-  if((vm_vec_dist(&bm->last_start, &b->pos)-b->radius) > bwi->b_info.range){
+  //if the object is too far away, don't bother trying to colide with it-Bobboau
+  if((vm_vec_dist(&bm->last_start, &b->pos)-b->radius) > bwi->b_info.range)
     return 1;
-  }//if the object is too far away, don't bother trying to colide with it-Bobboau
 
   // baseline bails
   switch(b->type){
@@ -2901,25 +2900,17 @@ int beam_collide_early_out(object *a, object *b)
       return 1;
     }*/
     // don't ever collide with non hull pieces
-    if(!Debris[b->instance].is_hull){
+    if(!Debris[b->instance].is_hull)
       return 1;
-    }
+
     break;
   case OBJ_WEAPON:
     // targeting lasers only hit ships
 /*    if(bwi->b_info.beam_type == BEAM_TYPE_C){
       return 1;
     }*/
-    if(The_mission.ai_profile->flags[AI::Profile_Flags::Beams_damage_weapons]) {
-      if((Weapon_info[Weapons[b->instance].weapon_info_index].weapon_hitpoints <= 0) && (Weapon_info[Weapons[b->instance].weapon_info_index].subtype == WP_LASER)) {
-        return 1;
-      }
-    } else {
-      // don't ever collide against laser weapons - duh
-      if(Weapon_info[Weapons[b->instance].weapon_info_index].subtype == WP_LASER){
-        return 1;
-      }
-    }
+    if((Weapon_info[Weapons[b->instance].weapon_info_index].weapon_hitpoints <= 0) && (Weapon_info[Weapons[b->instance].weapon_info_index].subtype == WP_LASER))
+      return 1;
     break;
   }
 
@@ -3192,46 +3183,36 @@ void beam_handle_collisions(beam *b)
         break;
 
       case OBJ_WEAPON:
-        if (The_mission.ai_profile->flags[AI::Profile_Flags::Beams_damage_weapons]) {
-          if (!(Game_mode & GM_MULTIPLAYER) || MULTIPLAYER_MASTER) {
-            object *trgt = &Objects[target];
+        if (!(Game_mode & GM_MULTIPLAYER) || MULTIPLAYER_MASTER) {
+          object *trgt = &Objects[target];
 
-            if (trgt->hull_strength > 0) {
-              float attenuation = 1.0f;
-              if ((b->damage_threshold >= 0.0f) && (b->damage_threshold < 1.0f)) {
-                float dist = vm_vec_dist(&b->last_shot, &b->last_start);
-                float range = b->range;
-                float atten_dist = range * b->damage_threshold;
-                if ((range > dist) && (atten_dist < dist)) {
-                  attenuation = (dist - atten_dist) / (range - atten_dist);
-                }
-              }
-
-              float damage = wi->damage * attenuation;
-
-              trgt->hull_strength -= damage;
-
-              if (trgt->hull_strength < 0) {
-                Weapons[trgt->instance].weapon_flags.set(Weapon::Weapon_Flags::Destroyed_by_weapon);
-                weapon_hit(trgt, NULL, &trgt->pos);
-              }
-            } else {
-              if (!(Game_mode & GM_MULTIPLAYER) || MULTIPLAYER_MASTER) {
-                Weapons[trgt->instance].weapon_flags.set(Weapon::Weapon_Flags::Destroyed_by_weapon);
-                weapon_hit(&Objects[target], NULL, &Objects[target].pos);
+          if (trgt->hull_strength > 0) {
+            float attenuation = 1.0f;
+            if ((b->damage_threshold >= 0.0f) && (b->damage_threshold < 1.0f)) {
+              float dist = vm_vec_dist(&b->last_shot, &b->last_start);
+              float range = b->range;
+              float atten_dist = range * b->damage_threshold;
+              if ((range > dist) && (atten_dist < dist)) {
+                attenuation = (dist - atten_dist) / (range - atten_dist);
               }
             }
-            
 
-          }
-        } else {
-          // detonate the missile
-          Assert(Weapon_info[Weapons[Objects[target].instance].weapon_info_index].subtype == WP_MISSILE);
+            float damage = wi->damage * attenuation;
 
-          if (!(Game_mode & GM_MULTIPLAYER) || MULTIPLAYER_MASTER) {
-            Weapons[Objects[target].instance].weapon_flags.set(Weapon::Weapon_Flags::Destroyed_by_weapon);
-            weapon_hit(&Objects[target], NULL, &Objects[target].pos);
+            trgt->hull_strength -= damage;
+
+            if (trgt->hull_strength < 0) {
+              Weapons[trgt->instance].weapon_flags.set(Weapon::Weapon_Flags::Destroyed_by_weapon);
+              weapon_hit(trgt, NULL, &trgt->pos);
+            }
+          } else {
+            if (!(Game_mode & GM_MULTIPLAYER) || MULTIPLAYER_MASTER) {
+              Weapons[trgt->instance].weapon_flags.set(Weapon::Weapon_Flags::Destroyed_by_weapon);
+              weapon_hit(&Objects[target], NULL, &Objects[target].pos);
+            }
           }
+          
+
         }
         break;
 
@@ -3397,27 +3378,11 @@ int beam_ok_to_fire(beam *b)
     vm_vec_sub(&aim_dir, &b->last_shot, &b->last_start);
     vm_vec_normalize(&aim_dir);
 
-    if (The_mission.ai_profile->flags[AI::Profile_Flags::Force_beam_turret_fov]) {
-      vec3d turret_normal;
-
-      if (b->flags & BF_IS_FIGHTER_BEAM) {
-        turret_normal = b->objp->orient.vec.fvec;
-                b->subsys->system_info->flags.remove(Model::Subsystem_Flags::Turret_alt_math);
-      } else {
-        vm_vec_unrotate(&turret_normal, &b->subsys->system_info->turret_norm, &b->objp->orient);
-      }
-
-      if (!(turret_fov_test(b->subsys, &turret_normal, &aim_dir))) {
-        nprintf(("BEAM", "BEAM : powering beam down because of FOV condition!\n"));
-        return 0;
-      }
-    } else {
-      vec3d turret_dir, turret_pos, temp;
-      beam_get_global_turret_gun_info(b->objp, b->subsys, &turret_pos, &turret_dir, 1, &temp, (b->flags & BF_IS_FIGHTER_BEAM) > 0);
-      if (vm_vec_dot(&aim_dir, &turret_dir) < b->subsys->system_info->turret_fov) {
-        nprintf(("BEAM", "BEAM : powering beam down because of FOV condition!\n"));
-        return 0;
-      }
+    vec3d turret_dir, turret_pos, temp;
+    beam_get_global_turret_gun_info(b->objp, b->subsys, &turret_pos, &turret_dir, 1, &temp, (b->flags & BF_IS_FIGHTER_BEAM) > 0);
+    if (vm_vec_dot(&aim_dir, &turret_dir) < b->subsys->system_info->turret_fov) {
+      nprintf(("BEAM", "BEAM : powering beam down because of FOV condition!\n"));
+      return 0;
     }
   }
 

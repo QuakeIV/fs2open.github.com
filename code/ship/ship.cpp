@@ -238,15 +238,13 @@ flag_def_list_new<Model::Subsystem_Flags> Subsystem_flags[] = {
   { "carry no damage",        Model::Subsystem_Flags::Carry_no_damage,                  true, false },
   { "use multiple guns",        Model::Subsystem_Flags::Use_multiple_guns,                  true, false },
   { "fire down normals",        Model::Subsystem_Flags::Fire_on_normal,                      true, false },
-  { "check hull",            Model::Subsystem_Flags::Turret_hull_check,                  true, false },
   { "fixed firingpoints",        Model::Subsystem_Flags::Turret_fixed_fp,                  true, false },
   { "salvo mode",            Model::Subsystem_Flags::Turret_salvo,                    true, false },
   { "no subsystem targeting",      Model::Subsystem_Flags::No_ss_targeting,                  true, false },
   { "fire on target",          Model::Subsystem_Flags::Fire_on_target,                      true, false },
-    { "reset when idle",        Model::Subsystem_Flags::Turret_reset_idle,                  true, false },
+  { "reset when idle",        Model::Subsystem_Flags::Turret_reset_idle,                  true, false },
   { "carry shockwave",        Model::Subsystem_Flags::Carry_shockwave,                  true, false },
   { "allow landing",          Model::Subsystem_Flags::Allow_landing,                    true, false },
-  { "target requires fov",      Model::Subsystem_Flags::Fov_required,                    true, false },
   { "fov edge checks",        Model::Subsystem_Flags::Fov_edge_check,                      true, false },
   { "no replace",            Model::Subsystem_Flags::No_replace,                        true, false },
   { "no live debris",          Model::Subsystem_Flags::No_live_debris,                      true, false },
@@ -257,7 +255,6 @@ flag_def_list_new<Model::Subsystem_Flags> Subsystem_flags[] = {
   { "no aggregate",          Model::Subsystem_Flags::No_aggregate,                    true, false },
   { "wait for animation",         Model::Subsystem_Flags::Turret_anim_wait,                   true, false },
   { "play fire sound for player", Model::Subsystem_Flags::Player_turret_sound,                true, false },
-  { "only target if can fire",    Model::Subsystem_Flags::Turret_only_target_if_can_fire,     true, false },
   { "no disappear",          Model::Subsystem_Flags::No_disappear,                       true, false },
   { "collide submodel",        Model::Subsystem_Flags::Collide_submodel,                   true, false },
   { "allow destroyed rotation",  Model::Subsystem_Flags::Destroyed_rotation,                 true, false },
@@ -5561,8 +5558,7 @@ void physics_ship_init(object *objp)
 
   pi->glide_accel_mult = sinfo->glide_accel_mult;
 
-  //SUSHI: This defaults to the AI_Profile value, and is only optionally overridden
-  pi->use_newtonian_damp = The_mission.ai_profile->flags[AI::Profile_Flags::Use_newtonian_dampening];
+  pi->use_newtonian_damp = false;
   if (sinfo->newtonian_damp_override)
     pi->use_newtonian_damp = sinfo->use_newtonian_damp;
 
@@ -6488,10 +6484,8 @@ int subsys_set(int objnum, int ignore_subsys_info)
     // Wanderer
     if (model_system->flags[Model::Subsystem_Flags::No_ss_targeting])
       ship_system->flags.set(Ship::Subsystem_Flags::No_SS_targeting);
-    if ((The_mission.ai_profile->flags[AI::Profile_Flags::Advanced_turret_fov_edge_checks]) || (model_system->flags[Model::Subsystem_Flags::Fov_edge_check]))
+    if (model_system->flags[Model::Subsystem_Flags::Fov_edge_check])
       ship_system->flags.set(Ship::Subsystem_Flags::FOV_edge_check);
-    if ((The_mission.ai_profile->flags[AI::Profile_Flags::Require_turret_to_have_target_in_fov]) || (model_system->flags[Model::Subsystem_Flags::Fov_required]))
-      ship_system->flags.set(Ship::Subsystem_Flags::FOV_Required);
 
     if (model_system->flags[Model::Subsystem_Flags::No_replace])
       ship_system->flags.set(Ship::Subsystem_Flags::No_replace);
@@ -10751,7 +10745,7 @@ int ship_fire_primary(object * obj, int stream_weapons, int force)
     polymodel *pm = model_get( sip->model_num );
     
     // Goober5000 (thanks to _argv[-1] for the original idea)
-    if ( (num_primary_banks > 1) &&  !(winfo_p->wi_flags[Weapon::Info_Flags::No_linked_penalty]) && !(The_mission.ai_profile->flags[AI::Profile_Flags::Disable_linked_fire_penalty]) )
+    if ( (num_primary_banks > 1) && !(winfo_p->wi_flags[Weapon::Info_Flags::No_linked_penalty]) )
     {
       int effective_primary_banks = 0;
       for (int it = 0; it < num_primary_banks; it++)

@@ -54,29 +54,29 @@ int collide_weapon_weapon( obj_pair * pair )
   A_radius = A->radius;
   B_radius = B->radius;
 
-  if (wipA->weapon_hitpoints > 0) {
+  if (wipA->weapon_hitpoints > 0)
+  {
     if (!(wipA->wi_flags[Weapon::Info_Flags::Hard_target_bomb])) {
       A_radius *= 2;    // Makes bombs easier to hit
     }
     
-    if ((The_mission.ai_profile->flags[AI::Profile_Flags::Aspect_invulnerability_fix]) && (wipA->is_locked_homing()) && (wpA->homing_object != &obj_used_list)) {
+    if ((wipA->is_locked_homing()) && (wpA->homing_object != &obj_used_list))
+    {
       if ( (wipA->max_lifetime - wpA->lifeleft) < The_mission.ai_profile->delay_bomb_arm_timer[Game_skill_level] )
         return 0;
     }
-    else if ( (wipA->lifetime - wpA->lifeleft) < The_mission.ai_profile->delay_bomb_arm_timer[Game_skill_level] )
-      return 0;
   }
 
-  if (wipB->weapon_hitpoints > 0) {
+  if (wipB->weapon_hitpoints > 0)
+  {
     if (!(wipB->wi_flags[Weapon::Info_Flags::Hard_target_bomb])) {
       B_radius *= 2;    // Makes bombs easier to hit
     }
-    if ((The_mission.ai_profile->flags[AI::Profile_Flags::Aspect_invulnerability_fix]) && (wipB->is_locked_homing()) && (wpB->homing_object != &obj_used_list)) {
+    if ((wipB->is_locked_homing()) && (wpB->homing_object != &obj_used_list))
+    {
       if ( (wipB->max_lifetime - wpB->lifeleft) < The_mission.ai_profile->delay_bomb_arm_timer[Game_skill_level] )
         return 0;
     }
-    else if ( (wipB->lifetime - wpB->lifeleft) < The_mission.ai_profile->delay_bomb_arm_timer[Game_skill_level] )
-      return 0;
   }
 
   //  Rats, do collision detection.

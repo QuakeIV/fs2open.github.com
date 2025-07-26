@@ -299,29 +299,11 @@ void parse_ai_profiles_tbl(const char *filename)
         if (optional_string("$Turret Max Aim Update Delay:"))
           parse_float_list(profile->turret_max_aim_update_delay, NUM_SKILL_LEVELS);
 
-        set_flag(profile, "$big ships can attack beam turrets on untargeted ships:", AI::Profile_Flags::Big_ships_can_attack_beam_turrets_on_untargeted_ships);
-
-        set_flag(profile, "$smart primary weapon selection:", AI::Profile_Flags::Smart_primary_weapon_selection);
-
-        set_flag(profile, "$smart secondary weapon selection:", AI::Profile_Flags::Smart_secondary_weapon_selection);
-
-        set_flag(profile, "$smart shield management:", AI::Profile_Flags::Smart_shield_management);
-
-        set_flag(profile, "$smart afterburner management:", AI::Profile_Flags::Smart_afterburner_management);
-
-        set_flag(profile, "$allow rapid secondary dumbfire:", AI::Profile_Flags::Allow_rapid_secondary_dumbfire);
-
         set_flag(profile, "$don't insert random turret fire delay:", AI::Profile_Flags::Dont_insert_random_turret_fire_delay);
-
-        set_flag(profile, "$hack improve non-homing swarm turret fire accuracy:", AI::Profile_Flags::Hack_improve_non_homing_swarm_turret_fire_accuracy);
 
         set_flag(profile, "$navigation subsystem governs warpout capability:", AI::Profile_Flags::Navigation_subsys_governs_warp);
 
-        set_flag(profile, "$disable linked fire penalty:", AI::Profile_Flags::Disable_linked_fire_penalty);
-
         set_flag(profile, "$use additive weapon velocity:", AI::Profile_Flags::Use_additive_weapon_velocity);
-
-        set_flag(profile, "$use newtonian dampening:", AI::Profile_Flags::Use_newtonian_dampening);
 
         set_flag(profile, "$include beams for kills and assists:", AI::Profile_Flags::Include_beams_in_stat_calcs);
 
@@ -331,45 +313,15 @@ void parse_ai_profiles_tbl(const char *filename)
 
         set_flag(profile, "$allow event and goal scoring in multiplayer:", AI::Profile_Flags::Allow_multi_event_scoring);
 
-        set_flag(profile, "$fix linked primary weapon decision bug:", AI::Profile_Flags::Fix_linked_primary_bug);
-
-        set_flag(profile, "$prevent turrets targeting too distant bombs:", AI::Profile_Flags::Prevent_targeting_bombs_beyond_range);
-
-        set_flag(profile, "$smart subsystem targeting for turrets:", AI::Profile_Flags::Smart_subsystem_targeting_for_turrets);
-
-        set_flag(profile, "$fix heat seekers homing on stealth ships bug:", AI::Profile_Flags::Fix_heat_seeker_stealth_bug);
-
         set_flag(profile, "$multi allow empty primaries:", AI::Profile_Flags::Multi_allow_empty_primaries);
 
         set_flag(profile, "$multi allow empty secondaries:", AI::Profile_Flags::Multi_allow_empty_secondaries);
 
-        set_flag(profile, "$allow turrets target weapons freely:", AI::Profile_Flags::Allow_turrets_target_weapons_freely);
-
-        set_flag(profile, "$use only single fov for turrets:", AI::Profile_Flags::Use_only_single_fov_for_turrets);
-
-        set_flag(profile, "$allow vertical dodge:", AI::Profile_Flags::Allow_vertical_dodge);
-
-        set_flag(profile, "$force beam turrets to use normal fov:", AI::Profile_Flags::Force_beam_turret_fov);
-
-        set_flag(profile, "$fix ai class bug:", AI::Profile_Flags::Fix_ai_class_bug);
-
-        set_flag(profile, "$turrets ignore targets radius in range checks:", AI::Profile_Flags::Turrets_ignore_target_radius);
-
-        set_flag(profile, "$no extra collision avoidance vs player:", AI::Profile_Flags::No_special_player_avoid);
-
         set_flag(profile, "$perform fewer checks for death screams:", AI::Profile_Flags::Perform_fewer_scream_checks);
-
-        set_flag(profile, "$advanced turret fov edge checks:", AI::Profile_Flags::Advanced_turret_fov_edge_checks);
-
-        set_flag(profile, "$require turrets to have target in fov:", AI::Profile_Flags::Require_turret_to_have_target_in_fov);
 
         set_flag(profile, "$all ships manage shields:", AI::Profile_Flags::All_ships_manage_shields);
 
         set_flag(profile, "$ai aims from ship center:", AI::Profile_Flags::Ai_aims_from_ship_center);
-
-        set_flag(profile, "$allow primary link at mission start:", AI::Profile_Flags::Allow_primary_link_at_start);
-
-        set_flag(profile, "$allow beams to damage bombs:", AI::Profile_Flags::Beams_damage_weapons);
 
         set_flag(profile, "$countermeasures affect aspect seekers:", AI::Profile_Flags::Aspect_lock_countermeasure);
 
@@ -390,15 +342,9 @@ void parse_ai_profiles_tbl(const char *filename)
 
         set_flag(profile, "$no warp camera:", AI::Profile_Flags::No_warp_camera);
 
-        set_flag(profile, "$fix ai path order bug:", AI::Profile_Flags::Fix_ai_path_order_bug);
-
         set_flag(profile, "$strict turret-tagged-only targeting:", AI::Profile_Flags::Strict_turred_tagged_only_targeting);
 
-        set_flag(profile, "$aspect bomb invulnerability fix:", AI::Profile_Flags::Aspect_invulnerability_fix);
-
         set_flag(profile, "$glide decay requires thrust:", AI::Profile_Flags::Glide_decay_requires_thrust);
-
-        set_flag(profile, "$ai can slow down when attacking big ships:", AI::Profile_Flags::Ai_can_slow_down_attacking_big_ships);
 
         profile->bay_arrive_speed_mult = 1.0f;
         profile->bay_depart_speed_mult = 1.0f;
@@ -419,14 +365,6 @@ void parse_ai_profiles_tbl(const char *filename)
           stuff_boolean(&temp);
                     profile->flags.set(AI::Profile_Flags::Perform_fewer_scream_checks, temp);
         }
-        if (optional_string("$allow primary link delay:"))
-        {
-          mprintf(("Warning: \"$allow primary link delay\" flag is deprecated in favor of \"$allow primary link at mission start\"\n"));
-          bool temp;
-          stuff_boolean(&temp);
-                    profile->flags.set(AI::Profile_Flags::Allow_primary_link_at_start, !temp);
-        }
-
 
         // if we've been through once already and are at the same place, force a move
         if (saved_Mp && (saved_Mp == Mp))

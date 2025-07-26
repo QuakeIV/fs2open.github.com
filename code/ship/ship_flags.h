@@ -18,7 +18,6 @@ namespace Ship {
 		Untargetable,
 		No_SS_targeting,
 		Has_fired,					// used by scripting to flag a turret as having been fired
-		FOV_Required,
 		FOV_edge_check,
 		No_replace,					// prevents 'destroyed' submodel from being rendered if subsys is destroyed.
 		No_live_debris,				// prevents subsystem from generating live debris

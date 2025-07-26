@@ -18,7 +18,7 @@ namespace Model {
 		Carry_no_damage,	// WMC
 		Use_multiple_guns,	// WMC
 		Fire_on_normal,		// forces a turret to fire down its normal vecs
-		Turret_hull_check,	// makes the turret check to see if it's going to shoot through it's own hull before fireing - Bobboau
+		Turret_hull_check,	// makes the turret check to see if it's going to shoot through it's own hull before fireing - Bobboau (deprecated, left to keep enum aligned out of fear of how this interacts with the model files)
 		Turret_fixed_fp,	// forces turret (when defined with multiple weapons) to prevent the firepoints from alternating
 		Turret_salvo,		// forces turret to fire salvos (all guns simultaneously) - independent targeting
 		Fire_on_target,		// prevents turret from firing unless it is pointing at the firingpoints are pointing at the target
@@ -29,7 +29,7 @@ namespace Model {
 		Carry_shockwave,	// subsystem - even with 'carry no damage' flag - will carry shockwave damage to the hull
 		Allow_landing,		// This subsystem can be landed on
 		Fov_edge_check,		// Tells the game to use better FOV edge checking with this turret
-		Fov_required,		// Tells game not to allow this turret to attempt targeting objects out of FOV
+		Fov_required,		// Tells game not to allow this turret to attempt targeting objects out of FOV (deprecated, left to keep enum aligned out of fear of how this interacts with the model files)
 		No_replace,			// set the subsys not to draw replacement ('destroyed') model
 		No_live_debris,		// sets the subsys not to release live debris
 		Ignore_if_dead,		// tells homing missiles to ignore the subsys if its dead and home on to hull instead of earlier subsys pos
@@ -39,7 +39,7 @@ namespace Model {
 		No_aggregate,		// Don't include with aggregate subsystem types - Goober5000
 		Turret_anim_wait,	// Turret won't fire until animation is complete - Sushi
 		Player_turret_sound,
-		Turret_only_target_if_can_fire,// Turrets only target things they're allowed to shoot at (e.g. if check-hull fails, won't keep targeting)
+		Turret_only_target_if_can_fire,// Turrets only target things they're allowed to shoot at (e.g. if check-hull fails, won't keep targeting) (deprecated, left to keep enum aligned out of fear of how this interacts with the model files)
 		No_disappear,		// Submodel won't disappear when subsystem destroyed
 		Collide_submodel,	// subsystem takes damage only from hits which impact the associated submodel
 		Destroyed_rotation, // allows subobjects to continue to rotate even if they have been destroyed

@@ -138,57 +138,21 @@ $Max Aim Update Delay: 0, 0, 0, 0, 0
 $Turret Max Aim Update Delay: 0, 0, 0, 0, 0
 
 ;; General AI-related flags.  These were previously all lumped together
-;; under the New AI mission flag.										
+;; under the New AI mission flag.		
 																		
-																		
-;; if set, big ships can attack a beam turret that's firing on them		
-;; from a ship that they don't currently have targeted.					
-$big ships can attack beam turrets on untargeted ships: NO				
-																		
-;; if set, enables the new primary weapon selection method				
-$smart primary weapon selection: NO										
-																		
-;; if set, enables the new secondary weapon selection method (including	
-;; proper use of bomber+ missiles)										
-$smart secondary weapon selection: NO									
-																		
-;; if set, shields will devote all their charging energy to the weakest	
-;; quadrant(s) and not waste energy on fully-charged quadrants			
-;; (previously was -smart_shields on the command line)					
-$smart shield management: NO											
-																		
-;; if set, the AI will properly use brief pulses of afterburner power	
-;; instead of afterburning until fuel is exhausted						
-$smart afterburner management: NO										
-																		
-;; if set, allows an AI ship to switch to rapid fire for dumbfire		
-;; missiles																
-$allow rapid secondary dumbfire: NO						
-																		
-;; if set, removes the random turret fire delay (from .1 to .9 seconds)	
-$don't insert random turret fire delay: NO								
-																		
-;; if set, triggers a hack to improves the accuracy of non-homing swarm	
-;; missiles by firing them along the turret's last fire direction		
-;; rather than the direction it currently faces							
-$hack improve non-homing swarm turret fire accuracy: NO
+;; if set, removes the random turret fire delay (from .1 to .9 seconds)
+$don't insert random turret fire delay: NO
 
-;; if set, ships will not be able to engage their jump drive if their	
-;; navigation subsystem is damaged or destroyed							
+;; if set, ships will not be able to engage their jump drive if their
+;; navigation subsystem is damaged or destroyed
 $navigation subsystem governs warpout capability: NO
 
-;; if set, will remove the increased delay when weapons are linked
-$disable linked fire penalty: NO
-
 ;; if set, will add the weapon velocity to the firing ship's velocity
-$use additive weapon velocity: NO										
-																		
-;; if set, will dampening closer to real newtonian physics				
-$use newtonian dampening: NO											
-																		
-;; if set, beam damage is counted when calculating kills and assists 	
-$include beams for kills and assists: NO								
-																		
+$use additive weapon velocity: NO
+
+;; if set, beam damage is counted when calculating kills and assists
+$include beams for kills and assists: NO
+
 ;; if set, kills gain score based on the percentage damage the killer	
 ;; inflicted on the dead ship											
 $score kills based on damage caused: NO									
@@ -199,86 +163,26 @@ $score assists based on damage caused: NO
 																		
 ;; if set, players (rather than just their team) can gain score from 	
 ;; events in multiplayer												
-$allow event and goal scoring in multiplayer: NO						
-																		
-;; if set, the AI will properly link primaries according to				
-;; specified percentages of energy levels, instead of retail behavior	
-;; where it mistakenly linked according to absolute energy levels		
-$fix linked primary weapon decision bug: NO								
-																		
-;; if set, prevents turrets from targeting bombs beyond maximum			
-;; range of the weapons of the turret									
-$prevent turrets targeting too distant bombs: NO						
-																		
-;; if set, prevents turrets from trying to target subsystems beyond		
-;; their fov limits, also keeps the turret subsystem targeting			
-;; preference order intact regardless of the angle to the target		
-$smart subsystem targeting for turrets: NO								
-																		
-;; if set, heat-seeking missiles will not home in on stealth ships		
-;; (this mirrors the established behavior where heat-seeking missiles	
-;; do not home in on ships that are hidden from sensors)				
-$fix heat seekers homing on stealth ships bug: NO						
-																		
-;; allow a player to commit into a multiplayer game without primaries	
+$allow event and goal scoring in multiplayer: NO
+
+;; allow a player to commit into a multiplayer game without primaries
 $multi allow empty primaries:		NO									
-																		
-;; allow a player to commit into a multiplayer game without secondaries	
-$multi allow empty secondaries:		NO									
-																		
-;; if set, allows turrets target other weapons than bombs assuming		
-;; it is within allowed target priorities								
-$allow turrets target weapons freely: NO								
-																		
-;; if set forces turrets to use only the set turret fov limits and		
-;; ignore hard coded limits (with 'fire_down_normals' flag)				
-$use only single fov for turrets:		NO								
-																		
-;; allow AI ships to dodge weapons vertically as well as horizontally	
-$allow vertical dodge:	NO												
-																		
-;; If set makes beam turrets use same FOV rules as other weapons do.	
-;; Prevents beam from a turret from following the target beyond the		
-;; turret's FOV.														
-$force beam turrets to use normal fov: NO								
-																		
-;; Fixes a bug where AI class is not properly set if set in the mission	
-;; This should be YES if you want anything in AI.tbl to mean anything	
-$fix AI class bug:	NO													
-																		
-;; TBD																	
-$turrets ignore targets radius in range checks: NO						
-																		
-;; If set, the AI will NOT make extra effort to avoid ramming the player
-;; during dogfights. This results in more aggressive AI.				
-$no extra collision avoidance vs player:	NO							
-																		
-;; If set, the game will not check if the dying ship is a player's		
-;; wingman, or if the maximum number of screams have been played, or 	
-;; even if the dying ship is on the player's team before making it give	
-;; a death scream										 				
-$perform fewer checks for death screams:	NO							
-																		
-;; TBD																	
-$advanced turret fov edge checks: NO									
-																		
-;; TBD																	
-$require turrets to have target in fov: NO								
-																		
-;; If set, allows shield management for all ships						
-;; (including capships).												
-$all ships manage shields:				NO								
-																		
+
+;; allow a player to commit into a multiplayer game without secondaries
+$multi allow empty secondaries: NO
+
+;; If set, the game will not check if the dying ship is a player's
+;; wingman, or if the maximum number of screams have been played, or
+;; even if the dying ship is on the player's team before making it give
+;; a death scream
+$perform fewer checks for death screams: NO
+
+;; If set, allows shield management for all ships
+;; (including capships).
+$all ships manage shields: NO
+
 ;; If set, ai aims using ship center instead of first gunpoint			
-$ai aims from ship center:			NO									
-																		
-;; If set, allows AI fighters to link their weapons at the beginning of	
-;; a mission instead of imposing a delay of 30s to 120s					
-$allow primary link at mission start:	NO								
-																		
-;; If set, prevents beams from instantly killing all weapons from first	
-;; hit, instead allows weapon hitpoints to be used instead				
-$allow beams to damage bombs: NO
+$ai aims from ship center:			NO
 
 ;; TBD
 $countermeasures affect aspect seekers:	NO								

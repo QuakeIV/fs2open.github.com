@@ -3771,7 +3771,7 @@ void find_homing_object(object *weapon_objp, int num)
 
           // Goober5000: if missiles can't home on sensor-ghosted ships,
           // they definitely shouldn't home on stealth ships
-          if ( sp->flags[Ship::Ship_Flags::Stealth] && (The_mission.ai_profile->flags[AI::Profile_Flags::Fix_heat_seeker_stealth_bug]) ) {
+          if ( sp->flags[Ship::Ship_Flags::Stealth] ) {
             continue;
           }
 

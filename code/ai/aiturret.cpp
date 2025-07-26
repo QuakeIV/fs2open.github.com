@@ -511,9 +511,8 @@ int valid_turret_enemy(object *objp, object *turret_parent)
       return 0;
     }
 
-    if ( (!((wip->wi_flags[Weapon::Info_Flags::Bomb]) || (wip->wi_flags[Weapon::Info_Flags::Turret_Interceptable])) && !(Ai_info[Ships[turret_parent->instance].ai_index].ai_profile_flags[AI::Profile_Flags::Allow_turrets_target_weapons_freely]) ) ) {
+    if ( !((wip->wi_flags[Weapon::Info_Flags::Bomb]) || (wip->wi_flags[Weapon::Info_Flags::Turret_Interceptable])) )
       return 0;
-    }
 
     if ( (wip->wi_flags[Weapon::Info_Flags::Local_ssm]) && (wp->lssm_stage == 3) ) {
       return 0;
@@ -683,9 +682,8 @@ void evaluate_obj_as_target(object *objp, eval_enemy_obj_struct *eeo)
   // check if bomb is homing on the turret parent ship
   bool check_weapon = true;
 
-  if ((Ai_info[Ships[turret_parent_obj->instance].ai_index].ai_profile_flags[AI::Profile_Flags::Prevent_targeting_bombs_beyond_range]) && (dist > eeo->weapon_travel_dist)) {
+  if (dist > eeo->weapon_travel_dist)
     check_weapon = false;
-  }
 
   if ((objp->type == OBJ_WEAPON) && check_weapon) {
     //Maybe restrict the number of turrets attacking this bomb
@@ -698,9 +696,6 @@ void evaluate_obj_as_target(object *objp, eval_enemy_obj_struct *eeo)
 
     if ( Weapons[objp->instance].homing_object == &Objects[eeo->turret_parent_objnum] ) {
       if ( dist_comp < eeo->nearest_homing_bomb_dist ) {
-        if (!(ss->flags[Ship::Subsystem_Flags::FOV_Required]) && (eeo->current_enemy == -1)) {
-          turret_has_no_target = true;
-        }
         if ( (turret_has_no_target) || object_in_turret_fov(objp, ss, eeo->tvec, eeo->tpos, dist + objp->radius) ) {
           eeo->nearest_homing_bomb_dist = dist_comp;
           eeo->nearest_homing_bomb_objnum = OBJ_INDEX(objp);
@@ -709,9 +704,6 @@ void evaluate_obj_as_target(object *objp, eval_enemy_obj_struct *eeo)
     // if not homing, check if bomb is flying towards ship
     } else if ( bomb_headed_towards_ship(objp, &Objects[eeo->turret_parent_objnum]) ) {
       if ( dist_comp < eeo->nearest_bomb_dist ) {
-        if (!(ss->flags[Ship::Subsystem_Flags::FOV_Required]) && (eeo->current_enemy == -1)) {
-          turret_has_no_target = true;
-        }
         if ( (turret_has_no_target) || object_in_turret_fov(objp, ss, eeo->tvec, eeo->tpos, dist + objp->radius) ) {
           eeo->nearest_bomb_dist = dist_comp;
           eeo->nearest_bomb_objnum = OBJ_INDEX(objp);
@@ -772,9 +764,6 @@ void evaluate_obj_as_target(object *objp, eval_enemy_obj_struct *eeo)
 
     // maybe update nearest attacker
     if ( dist_comp < eeo->nearest_attacker_dist ) {
-      if (!(ss->flags[Ship::Subsystem_Flags::FOV_Required]) && (eeo->current_enemy == -1)) {
-        turret_has_no_target = true;
-      }
       if ( (turret_has_no_target) || object_in_turret_fov(objp, ss, eeo->tvec, eeo->tpos, dist + objp->radius) )
       {
         // nprintf(("AI", "Nearest enemy = %s, dist = %7.3f, dot = %6.3f, fov = %6.3f\n", Ships[objp->instance].ship_name, dist, vm_vec_dot(&v2e, tvec), tp->turret_fov));
@@ -791,9 +780,6 @@ void evaluate_obj_as_target(object *objp, eval_enemy_obj_struct *eeo)
       dist_comp *= 0.9f + (0.01f * asteroid_time_to_impact(objp));
 
       if (dist_comp < eeo->nearest_dist ) {
-        if (!(ss->flags[Ship::Subsystem_Flags::FOV_Required]) && (eeo->current_enemy == -1)) {
-          turret_has_no_target = true;
-        }
         if ( (turret_has_no_target) || object_in_turret_fov(objp, ss, eeo->tvec, eeo->tpos, dist + objp->radius) ) {
           eeo->nearest_dist = dist_comp;
           eeo->nearest_objnum = OBJ_INDEX(objp);
@@ -1543,17 +1529,12 @@ float  aifft_compute_turret_dot(object *objp, object *enemy_objp, vec3d *abs_gun
     vm_vec_unrotate(&turret_norm, &turret_subsysp->system_info->turret_norm, &objp->orient);
     float dot_return = vm_vec_dot(&turret_norm, &vector_out);
 
-    if (Ai_info[Ships[objp->instance].ai_index].ai_profile_flags[AI::Profile_Flags::Smart_subsystem_targeting_for_turrets]) {
-      if (dot_return > turret_subsysp->system_info->turret_fov) {
-        // target is in sight and in fov
-        return dot_return;
-      } else {
-        // target is in sight but is not in turret's fov
-        return -1.0f;
-      }
-    } else {
-      // target is in sight and we don't care if its in turret's fov or not
+    if (dot_return > turret_subsysp->system_info->turret_fov) {
+      // target is in sight and in fov
       return dot_return;
+    } else {
+      // target is in sight but is not in turret's fov
+      return -1.0f;
     }
   } else
     return -1.0f;
@@ -1593,7 +1574,7 @@ DCF(mf, "Adjusts the maximum number of tries an AI may do when trying to pick a 
  */
 ship_subsys *aifft_find_turret_subsys(object *objp, ship_subsys *ssp, object *enemy_objp, float *dot_out)
 {
-  ship  *eshipp, *shipp;
+  ship  *eshipp;
   ship_info  *esip;
   ship_subsys  *best_subsysp = NULL;
   float dot;
@@ -1602,8 +1583,6 @@ ship_subsys *aifft_find_turret_subsys(object *objp, ship_subsys *ssp, object *en
 
   eshipp = &Ships[enemy_objp->instance];
   esip = &Ship_info[eshipp->ship_info_index];
-
-  shipp = &Ships[objp->instance];
 
   float  best_dot = 0.0f;
   *dot_out = best_dot;
@@ -1672,10 +1651,8 @@ ship_subsys *aifft_find_turret_subsys(object *objp, ship_subsys *ssp, object *en
   int idx;
   float dot_fov_modifier = 0.0f;
 
-  if (Ai_info[shipp->ai_index].ai_profile_flags[AI::Profile_Flags::Smart_subsystem_targeting_for_turrets]) {
-    if (ssp->system_info->turret_fov < 0)
-      dot_fov_modifier = ssp->system_info->turret_fov;
-  }
+  if (ssp->system_info->turret_fov < 0)
+    dot_fov_modifier = ssp->system_info->turret_fov;
 
   for(idx=offset; idx<aifft_list_size; idx+=stride){
     dot = aifft_compute_turret_dot(objp, enemy_objp, &abs_gun_pos, ssp, aifft_list[idx]);      
@@ -2141,14 +2118,9 @@ void turret_swarm_fire_from_turret(turret_swarm_info *tsi)
   //check if this really is a swarm. If not, how the hell did it get here?
   Assert((Weapon_info[tsi->weapon_class].wi_flags[Weapon::Info_Flags::Swarm]) || (Weapon_info[tsi->weapon_class].wi_flags[Weapon::Info_Flags::Corkscrew]));
 
-
-    // *If it's a non-homer, then use the last fire direction instead of turret orientation to fix inaccuracy
-    //  problems with non-homing swarm weapons -Et1
-  if ( (Weapon_info[tsi->weapon_class].subtype == WP_LASER) || ((The_mission.ai_profile->flags[AI::Profile_Flags::Hack_improve_non_homing_swarm_turret_fire_accuracy]) 
-                                  && !(Weapon_info[tsi->weapon_class].is_homing())) )
-  {
+  // lasers can change direction at the muzzle instead of being subject to turret orientation
+  if (Weapon_info[tsi->weapon_class].subtype == WP_LASER)
     turret_fvec = tsi->turret->turret_last_fire_direction;
-  }
 
   // make turret_orient from turret_fvec -- turret->turret_last_fire_direction
   vm_vector_2_matrix(&turret_orient, &turret_fvec, NULL, NULL);
@@ -2332,10 +2304,7 @@ void ai_fire_from_turret(ship *shipp, ship_subsys *ss, int parent_objnum)
   //WMC - build a list of valid weapons. Fire spawns if there are any.
   float dist_to_enemy = 0.0f;
   if(lep != NULL) {
-    if (The_mission.ai_profile->flags[AI::Profile_Flags::Turrets_ignore_target_radius])
-      dist_to_enemy = MAX(0,vm_vec_normalized_dir(&v2e, &predicted_enemy_pos, &gpos));
-    else
-      dist_to_enemy = MAX(0,vm_vec_normalized_dir(&v2e, &predicted_enemy_pos, &gpos) - lep->radius);
+    dist_to_enemy = MAX(0,vm_vec_normalized_dir(&v2e, &predicted_enemy_pos, &gpos));
   }
 
   int valid_weapons[MAX_SHIP_PRIMARY_BANKS + MAX_SHIP_SECONDARY_BANKS];
@@ -2570,9 +2539,7 @@ void ai_fire_from_turret(ship *shipp, ship_subsys *ss, int parent_objnum)
   //This can't happen. See above code
   //Assert(ss->turret_enemy_objnum != -1);
 
-  float dot;
-  bool in_fov;
-  in_fov = turret_fov_test(ss, &gvec, &v2e);
+  bool in_fov = turret_fov_test(ss, &gvec, &v2e);
 
   // Ok, the turret is lined up... now line up a particular gun.
   bool ok_to_fire = false;
@@ -2619,7 +2586,6 @@ void ai_fire_from_turret(ship *shipp, ship_subsys *ss, int parent_objnum)
       // Fire in the direction the turret is facing, not right at the target regardless of turret dir.
       vm_vec_sub(&v2e, &predicted_enemy_pos, &gpos);
       dist_to_enemy = vm_vec_normalize(&v2e);
-      dot = vm_vec_dot(&v2e, &gvec);
 
       if (tp->flags[Model::Subsystem_Flags::Turret_salvo])
         wip = get_turret_weapon_wip(&ss->weapons, valid_weapons[0]);
@@ -2646,59 +2612,31 @@ void ai_fire_from_turret(ship *shipp, ship_subsys *ss, int parent_objnum)
       //    heat seeking and target in a fairly wide cone.
       //    aspect seeking and target is locked.
       //turret_weapon_class = tp->turret_weapon_type;
-      bool in_sight = false;
-      
-      if (The_mission.ai_profile->flags[AI::Profile_Flags::Use_only_single_fov_for_turrets]) {
-        // we have already passed the FOV test of the turret so...
-        in_sight = true;
-      } else {
-        if (wip->wi_flags[Weapon::Info_Flags::Homing_heat]) {
-          if (dot > AICODE_TURRET_HEATSEEK_ANGLE) {
-            in_sight = true;
-          }
-        } else {
-          if (dot > AICODE_TURRET_DUMBFIRE_ANGLE) {
-            in_sight = true;
-          }
-        }
-      }
 
       if ( !(wip->is_homing()) )
       {
-        if ((dist_to_enemy < 75.0f) || in_sight)
-        {
-          turret_update_enemy_in_range(ss, 2*wip->fire_wait);
-          ok_to_fire = true;
-        }
+        turret_update_enemy_in_range(ss, 2*wip->fire_wait);
+        ok_to_fire = true;
       }
       else if ( wip->wi_flags[Weapon::Info_Flags::Homing_heat] )
       {  // if heat seekers
-        if ((dist_to_enemy < 50.0f) || in_sight)
-        {
-          turret_update_enemy_in_range(ss, 2*wip->fire_wait);
-          ok_to_fire = true;
-        }
+        turret_update_enemy_in_range(ss, 2*wip->fire_wait);
+        ok_to_fire = true;
       }
       else if ( wip->wi_flags[Weapon::Info_Flags::Homing_aspect] )
       {  // if aspect seeker
-        if ((dist_to_enemy < 50.0f) || in_sight)
-        {
-          turret_update_enemy_in_range(ss, 2*wip->fire_wait);
-        }
-        if ( turret_should_fire_aspect(ss, wip, in_sight) )
+        turret_update_enemy_in_range(ss, 2*wip->fire_wait);
+        if ( turret_should_fire_aspect(ss, wip, true) )
         {
           ok_to_fire = true;
         }
       }
       else if ( wip->wi_flags[Weapon::Info_Flags::Homing_javelin] )
       {  // if javelin heat seeker
-        if ((dist_to_enemy < 50.0f) || in_sight)
-        {
-          turret_update_enemy_in_range(ss, 2*wip->fire_wait);
-        }
+        turret_update_enemy_in_range(ss, 2*wip->fire_wait);
         // Check if turret should fire and enemy's engines are
         // in line of sight
-        if (turret_should_fire_aspect(ss, wip, in_sight) &&
+        if (turret_should_fire_aspect(ss, wip, true) &&
           ship_get_closest_subsys_in_sight(&Ships[lep->signature], SUBSYSTEM_ENGINE, &gpos))
         {
           ok_to_fire = true;

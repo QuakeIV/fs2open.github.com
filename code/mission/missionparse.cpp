@@ -1932,8 +1932,7 @@ int parse_create_object_sub(p_object *p_objp)
   aip->ai_class = p_objp->ai_class;
   shipp->weapons.ai_class = p_objp->ai_class;  // Fred uses this instead of above.
   //Fixes a bug where the AI class attributes were not copied if the AI class was set in the mission.
-  if (The_mission.ai_profile->flags[AI::Profile_Flags::Fix_ai_class_bug])
-    ship_set_new_ai_class(shipnum, p_objp->ai_class);
+  ship_set_new_ai_class(shipnum, p_objp->ai_class);
 
   // must reset the number of ai goals when the object is created
   for (i = 0; i < MAX_AI_GOALS; i++)

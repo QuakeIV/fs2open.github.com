@@ -90,8 +90,7 @@ void shield_add_strength(object *objp, float delta) {
   if ((delta > 0.0f) && (shield_str >= shield_recharge_limit))
     return;
 
-  if (!(Ai_info[Ships[objp->instance].ai_index].ai_profile_flags[AI::Profile_Flags::Smart_shield_management])
-    || delta <= 0.0f) //SUSHI: We don't want smart shield management for negative delta
+  if (delta <= 0.0f)
   {
     // set the limit for the shield recharge
     if ((delta > 0.0f) && ((shield_str + delta) > shield_recharge_limit))

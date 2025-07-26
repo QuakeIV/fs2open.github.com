@@ -1351,28 +1351,8 @@ void ai_big_strafe_attack()
   turn_towards_point(Pl_objp, &target_pos, NULL, 0.0f);
 
   fix last_hit = Missiontime - aip->last_hit_time;
-  if ( aip->ai_profile_flags[AI::Profile_Flags::Ai_can_slow_down_attacking_big_ships] ) {
-    // Slow down if we've not been hit for a while
-    if ( target_dist > 1200 || last_hit < F1_0*6) {
-      accel = 1.0f;
-    } else {
-      float attack_time;
-      attack_time = f2fl(Missiontime - aip->submode_start_time);
-      if ( attack_time > 15 ) {
-        accel = 0.2f;
-      } else if ( attack_time > 10 ) {
-        accel = 0.4f;
-      } else if ( attack_time > 8 ) {
-        accel = 0.6f;
-      } else if ( attack_time > 5 ) {
-        accel = 0.8f;
-      } else {
-        accel = 1.0f;
-      }
-    }
-  } else {
-    accel = 1.0f;
-  }
+
+  accel = 1.0f;
 
   accelerate_ship(aip, accel);
 
@@ -1809,8 +1789,7 @@ void ai_big_strafe_maybe_attack_turret(object *ship_objp, object *weapon_objp)
   // the ai will not always go after different ships firing beams at them.
   // Approx 1/4 chance we'll go after the other ship's beam.
 
-  bool attack_turret_on_different_ship = (aip->ai_profile_flags[AI::Profile_Flags::Big_ships_can_attack_beam_turrets_on_untargeted_ships])
-    && (Weapon_info[Weapons[weapon_objp->instance].weapon_info_index].wi_flags[Weapon::Info_Flags::Beam]) && (frand()*100 < 25.0f);
+  bool attack_turret_on_different_ship = (Weapon_info[Weapons[weapon_objp->instance].weapon_info_index].wi_flags[Weapon::Info_Flags::Beam]) && (frand()*100 < 25.0f);
 
   // unless we're making an exception, we should only attack a turret if it sits on the current target
   if ( !attack_turret_on_different_ship )
