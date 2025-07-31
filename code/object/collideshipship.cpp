@@ -1219,12 +1219,14 @@ int collide_ship_ship( obj_pair * pair )
 
         //Only do damage if not a landing
         if (!ship_ship_hit_info.is_landing) {
-          //  Scale damage based on skill level for player.
-          if ((LightOne->flags[Object::Object_Flags::Player_ship]) || (HeavyOne->flags[Object::Object_Flags::Player_ship])) {
-            damage *= (float) (Game_skill_level*Game_skill_level+1)/(NUM_SKILL_LEVELS+1);
+          //  Scale damage based on if player.
+          if ((LightOne->flags[Object::Object_Flags::Player_ship]) || (HeavyOne->flags[Object::Object_Flags::Player_ship]))
+          {
+            damage *= 1.0; // no more scaling tbqh, maybe slap a multipleir on it though
           } else if (Ships[LightOne->instance].team == Ships[HeavyOne->instance].team) {
             //  Decrease damage if non-player ships and not large.
             //  Looks dumb when fighters are taking damage from bumping into each other.
+            // TODO: to be honest, if the ai were less retarded about avoiding eachother that would remove the need for this
             if ((LightOne->radius < 50.0f) && (HeavyOne->radius <50.0f)) {
               damage /= 4.0f;
             }
