@@ -2878,6 +2878,7 @@ int parse_object(mission *pm, int flag, p_object *p_objp)
     if (p_objp->ai_class < 0) 
     {
       Warning(LOCATION, "AI Class for ship %s does not exist in ai.tbl. Setting to first available class.\n", p_objp->name);
+      printf("ERROR: AI Class for ship %s does not exist in ai.tbl. Setting to first available class.\n", p_objp->name);
       p_objp->ai_class = 0;
     }    
   }
